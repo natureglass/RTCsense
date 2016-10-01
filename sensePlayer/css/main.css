@@ -1,0 +1,170 @@
+body {
+	margin: 0px;
+	background-color: #000000;		
+	user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;	
+	/*overflow: hidden;*/
+}
+
+#canvasScreen {
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+
+.noSelect {
+	user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+}
+
+#stats_display { position: absolute; right: 0px; top:0px; }
+.dropTitle { padding: 0px; margin: 10px 0px; display: none; }
+.dropSelect { overflow-x: hidden; display: none; }
+.ui-corner-all p { margin: 8px; }
+#dropAlert { color: #e00000; }
+			
+/* *********** Scene Alerts ************* */
+
+#sceneAlerts {
+	position: absolute;
+	left: 0px; top: 0%; color: #fff;
+	display: block; padding: 8px;
+	margin-left: 5px;
+	cursor: pointer;
+	
+	/* display: none; */	
+}
+
+.ui-widget div {
+	margin-top: 5px;
+	padding: 0 .7em;
+}
+.ui-corner-all .ui-icon {
+	margin-right: 5px;	
+}
+
+/* *********** Screen ToolBar ************* */
+#sticky-toolbar {
+	transition: opacity 0.2s ease;
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	background: rgba(0, 0, 0, 0.2);
+	height: 48px;
+	z-index: 2000;
+	/* opacity: 0; */
+	/* display: none; */
+}
+
+#sticky-toolbar i {
+	transition: background 0.2s ease;
+	background: rgba(0, 0, 0, 0.1);
+	font-size: 32px;
+	cursor: pointer;
+	color: white;
+	padding:8px;
+	margin:0px;
+	/* z-index: 2000; */
+	float: right;
+}
+
+@media screen and (min-width: 375px) {
+	
+	#sticky-toolbar i:hover {
+		background: rgba(0, 0, 0, 0.5);
+	}
+}
+
+#sticky-toolbar h3 {
+	color: white;
+}
+
+#btn-vr { display: none; }
+
+#closeBtn {
+  opacity: 0.9;
+  font-size: 18px;
+  position: absolute;
+  float: none;
+  margin-top: -32px;
+  margin-left: -22px;
+  cursor: pointer;
+  background: white;
+  padding: 10px;
+  border-radius: 50px;
+  height: 18px;
+
+}
+
+/* *********** VR MENU ************* */
+
+#VR-menu, #CAMERA-menu, #error-dialog {
+	display: none;
+}
+
+#VR-menu img {
+	padding: 5px;
+	cursor: pointer;
+}
+
+#VR-menu img:hover{
+	border-radius: 5px;
+	background: rgba(0, 0, 150, 0.2);
+}
+
+.selectedVR {
+	border-radius: 5px;
+	background: rgba(150, 0, 0, 0.2);
+}
+
+@media screen and (min-width: 320px) {
+	/* .ui-dialog-titlebar-close { display: none; } */
+}
+
+@media screen and (max-width: 320px) and (orientation : landscape) {
+	.ui-dialog-buttonpane { display: none; }
+}
+/* ********************************** */
+
+#camDropDown-button {
+	overflow-x: hidden;
+	width: 85%;
+}
+
+/* ************** Alert Box ******************** */
+.ui-state-success,
+.ui-widget-content .ui-state-success,
+.ui-widget-header .ui-state-success {
+	border: 1px solid #82b744;
+	background: #a5dd62;
+	color: #4f732a;
+}
+.ui-state-success a,
+.ui-widget-content .ui-state-success a,
+.ui-widget-header .ui-state-success a {
+	color: #4f732a;
+}
+.ui-state-success-text,
+.ui-widget-content .ui-state-success-text,
+.ui-widget-header .ui-state-success-text {
+	color: #4f732a;
+}
+/*
+.ui-state-success .ui-icon,
+.ui-state-success-text .ui-icon {
+	background-image: url("images/ui-icons_cc0000_256x240.png");
+}
+*/
+
+.ui-dialog .ui-dialog-titlebar-close {
+    height: 30px;
+    margin: -15px 0 0;
+    width: 30px;
+}
+/* ********************************** */

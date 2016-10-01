@@ -1,0 +1,1282 @@
+<!doctype html>
+<!--[if lte IE 9]> <html class="lte-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Remove Tap Highlight on Windows Phone IE -->
+    <meta name="msapplication-tap-highlight" content="no"/>
+
+    <link rel="icon" type="image/png" href="assets/img/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="assets/img/favicon-32x32.png" sizes="32x32">
+
+    <title>Altair Admin v2.7.0</title>
+
+
+    <!-- uikit -->
+    <link rel="stylesheet" href="bower_components/uikit/css/uikit.almost-flat.min.css" media="all">
+
+    <!-- flag icons -->
+    <link rel="stylesheet" href="assets/icons/flags/flags.min.css" media="all">
+
+    <!-- style switcher -->
+    <link rel="stylesheet" href="assets/css/style_switcher.min.css" media="all">
+    
+    <!-- altair admin -->
+    <link rel="stylesheet" href="assets/css/main.min.css" media="all">
+
+    <!-- themes -->
+    <link rel="stylesheet" href="assets/css/themes/themes_combined.min.css" media="all">
+
+    <!-- matchMedia polyfill for testing media queries in JS -->
+    <!--[if lte IE 9]>
+        <script type="text/javascript" src="bower_components/matchMedia/matchMedia.js"></script>
+        <script type="text/javascript" src="bower_components/matchMedia/matchMedia.addListener.js"></script>
+        <link rel="stylesheet" href="assets/css/ie.css" media="all">
+    <![endif]-->
+
+</head>
+<body class=" sidebar_main_open sidebar_main_swipe header_double_height main_search_persistent">
+    <!-- main header -->
+    <header id="header_main">
+        <div class="header_main_content">
+            <nav class="uk-navbar">
+                                
+                <!-- main sidebar switch -->
+                <a href="#" id="sidebar_main_toggle" class="sSwitch sSwitch_left">
+                    <span class="sSwitchIcon"></span>
+                </a>
+                
+                <!-- secondary sidebar switch -->
+                <a href="#" id="sidebar_secondary_toggle" class="sSwitch sSwitch_right sidebar_secondary_check">
+                    <span class="sSwitchIcon"></span>
+                </a>
+                
+                    <div id="menu_top_dropdown" class="uk-float-left uk-hidden-small">
+                        <div class="uk-button-dropdown" data-uk-dropdown="{mode:'click'}">
+                            <a href="#" class="top_menu_toggle"><i class="material-icons md-24">&#xE8F0;</i></a>
+                            <div class="uk-dropdown uk-dropdown-width-3">
+                                <div class="uk-grid uk-dropdown-grid">
+                                    <div class="uk-width-2-3">
+                                        <div class="uk-grid uk-grid-width-medium-1-3 uk-margin-bottom uk-text-center">
+                                            <a href="page_mailbox.html" class="uk-margin-top">
+                                                <i class="material-icons md-36 md-color-light-green-600">&#xE158;</i>
+                                                <span class="uk-text-muted uk-display-block">Mailbox</span>
+                                            </a>
+                                            <a href="page_invoices.html" class="uk-margin-top">
+                                                <i class="material-icons md-36 md-color-purple-600">&#xE53E;</i>
+                                                <span class="uk-text-muted uk-display-block">Invoices</span>
+                                            </a>
+                                            <a href="page_chat.html" class="uk-margin-top">
+                                                <i class="material-icons md-36 md-color-cyan-600">&#xE0B9;</i>
+                                                <span class="uk-text-muted uk-display-block">Chat</span>
+                                            </a>
+                                            <a href="page_scrum_board.html" class="uk-margin-top">
+                                                <i class="material-icons md-36 md-color-red-600">&#xE85C;</i>
+                                                <span class="uk-text-muted uk-display-block">Scrum Board</span>
+                                            </a>
+                                            <a href="page_snippets.html" class="uk-margin-top">
+                                                <i class="material-icons md-36 md-color-blue-600">&#xE86F;</i>
+                                                <span class="uk-text-muted uk-display-block">Snippets</span>
+                                            </a>
+                                            <a href="page_user_profile.html" class="uk-margin-top">
+                                                <i class="material-icons md-36 md-color-orange-600">&#xE87C;</i>
+                                                <span class="uk-text-muted uk-display-block">User profile</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="uk-width-1-3">
+                                        <ul class="uk-nav uk-nav-dropdown uk-panel">
+                                            <li class="uk-nav-header">Components</li>
+                                            <li><a href="components_accordion.html">Accordions</a></li>
+                                            <li><a href="components_buttons.html">Buttons</a></li>
+                                            <li><a href="components_notifications.html">Notifications</a></li>
+                                            <li><a href="components_sortable.html">Sortable</a></li>
+                                            <li><a href="components_tabs.html">Tabs</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                <div class="uk-navbar-flip">
+                    <ul class="uk-navbar-nav user_actions">
+                        <li><a href="#" id="full_screen_toggle" class="user_action_icon uk-visible-large"><i class="material-icons md-24 md-light">&#xE5D0;</i></a></li>
+                        <li><a href="#" id="main_search_btn" class="user_action_icon"><i class="material-icons md-24 md-light">&#xE8B6;</i></a></li>
+                        <li data-uk-dropdown="{mode:'click',pos:'bottom-right'}">
+                            <a href="#" class="user_action_icon"><i class="material-icons md-24 md-light">&#xE7F4;</i><span class="uk-badge">16</span></a>
+                            <div class="uk-dropdown uk-dropdown-xlarge">
+                                <div class="md-card-content">
+                                    <ul class="uk-tab uk-tab-grid" data-uk-tab="{connect:'#header_alerts',animation:'slide-horizontal'}">
+                                        <li class="uk-width-1-2 uk-active"><a href="#" class="js-uk-prevent uk-text-small">Messages (12)</a></li>
+                                        <li class="uk-width-1-2"><a href="#" class="js-uk-prevent uk-text-small">Alerts (4)</a></li>
+                                    </ul>
+                                    <ul id="header_alerts" class="uk-switcher uk-margin">
+                                        <li>
+                                            <ul class="md-list md-list-addon">
+                                                <li>
+                                                    <div class="md-list-addon-element">
+                                                        <span class="md-user-letters md-bg-cyan">va</span>
+                                                    </div>
+                                                    <div class="md-list-content">
+                                                        <span class="md-list-heading"><a href="pages_mailbox.html">Delectus officiis quaerat.</a></span>
+                                                        <span class="uk-text-small uk-text-muted">Hic voluptatem eos nam vel voluptatem impedit ab expedita.</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="md-list-addon-element">
+                                                        <img class="md-user-image md-list-addon-avatar" src="assets/img/avatars/avatar_07_tn.png" alt=""/>
+                                                    </div>
+                                                    <div class="md-list-content">
+                                                        <span class="md-list-heading"><a href="pages_mailbox.html">Sit sunt.</a></span>
+                                                        <span class="uk-text-small uk-text-muted">Molestiae pariatur accusamus facere nihil ipsum fugit.</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="md-list-addon-element">
+                                                        <span class="md-user-letters md-bg-light-green">ag</span>
+                                                    </div>
+                                                    <div class="md-list-content">
+                                                        <span class="md-list-heading"><a href="pages_mailbox.html">Dolor dolor aut.</a></span>
+                                                        <span class="uk-text-small uk-text-muted">Quos veniam reprehenderit qui numquam laborum.</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="md-list-addon-element">
+                                                        <img class="md-user-image md-list-addon-avatar" src="assets/img/avatars/avatar_02_tn.png" alt=""/>
+                                                    </div>
+                                                    <div class="md-list-content">
+                                                        <span class="md-list-heading"><a href="pages_mailbox.html">Magnam assumenda.</a></span>
+                                                        <span class="uk-text-small uk-text-muted">Voluptates recusandae dolor omnis a corrupti velit.</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="md-list-addon-element">
+                                                        <img class="md-user-image md-list-addon-avatar" src="assets/img/avatars/avatar_09_tn.png" alt=""/>
+                                                    </div>
+                                                    <div class="md-list-content">
+                                                        <span class="md-list-heading"><a href="pages_mailbox.html">Commodi blanditiis quisquam.</a></span>
+                                                        <span class="uk-text-small uk-text-muted">Amet fugiat voluptatum debitis molestias quod aut quibusdam vel.</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <div class="uk-text-center uk-margin-top uk-margin-small-bottom">
+                                                <a href="page_mailbox.html" class="md-btn md-btn-flat md-btn-flat-primary js-uk-prevent">Show All</a>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <ul class="md-list md-list-addon">
+                                                <li>
+                                                    <div class="md-list-addon-element">
+                                                        <i class="md-list-addon-icon material-icons uk-text-warning">&#xE8B2;</i>
+                                                    </div>
+                                                    <div class="md-list-content">
+                                                        <span class="md-list-heading">Voluptates a natus.</span>
+                                                        <span class="uk-text-small uk-text-muted uk-text-truncate">Dolorum laborum optio nulla minima ea et.</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="md-list-addon-element">
+                                                        <i class="md-list-addon-icon material-icons uk-text-success">&#xE88F;</i>
+                                                    </div>
+                                                    <div class="md-list-content">
+                                                        <span class="md-list-heading">Enim voluptatum.</span>
+                                                        <span class="uk-text-small uk-text-muted uk-text-truncate">In et animi praesentium est neque non dignissimos.</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="md-list-addon-element">
+                                                        <i class="md-list-addon-icon material-icons uk-text-danger">&#xE001;</i>
+                                                    </div>
+                                                    <div class="md-list-content">
+                                                        <span class="md-list-heading">Sit quis recusandae.</span>
+                                                        <span class="uk-text-small uk-text-muted uk-text-truncate">Cupiditate a officia placeat fugiat.</span>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <div class="md-list-addon-element">
+                                                        <i class="md-list-addon-icon material-icons uk-text-primary">&#xE8FD;</i>
+                                                    </div>
+                                                    <div class="md-list-content">
+                                                        <span class="md-list-heading">Qui et.</span>
+                                                        <span class="uk-text-small uk-text-muted uk-text-truncate">Perferendis porro ex et eaque et.</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li data-uk-dropdown="{mode:'click',pos:'bottom-right'}">
+                            <a href="#" class="user_action_image"><img class="md-user-image" src="assets/img/avatars/avatar_11_tn.png" alt=""/></a>
+                            <div class="uk-dropdown uk-dropdown-small">
+                                <ul class="uk-nav js-uk-prevent">
+                                    <li><a href="page_user_profile.html">My profile</a></li>
+                                    <li><a href="page_settings.html">Settings</a></li>
+                                    <li><a href="login.html">Logout</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="header_main_search_form">
+            <i class="md-icon header_main_search_close material-icons">&#xE5CD;</i>
+            <form class="uk-form uk-autocomplete" data-uk-autocomplete="{source:'data/search_data.json'}">
+                <input type="text" class="header_main_search_input" />
+                <button class="header_main_search_btn uk-button-link"><i class="md-icon material-icons">&#xE8B6;</i></button>
+                <script type="text/autocomplete">
+                    <ul class="uk-nav uk-nav-autocomplete uk-autocomplete-results">
+                        {{~items}}
+                        <li data-value="{{ $item.value }}">
+                            <a href="{{ $item.url }}">
+                                {{ $item.value }}<br>
+                                <span class="uk-text-muted uk-text-small">{{{ $item.text }}}</span>
+                            </a>
+                        </li>
+                        {{/items}}
+                    </ul>
+                </script>
+            </form>
+        </div>
+    </header><!-- main header end -->
+    <!-- main sidebar -->
+    <aside id="sidebar_main">
+        
+        <div class="sidebar_main_header">
+            <div class="sidebar_logo">
+                <a href="index.html" class="sSidebar_hide sidebar_logo_large">
+                    <img class="logo_regular" src="assets/img/logo_main.png" alt="" height="15" width="71"/>
+                    <img class="logo_light" src="assets/img/logo_main_white.png" alt="" height="15" width="71"/>
+                </a>
+                <a href="index.html" class="sSidebar_show sidebar_logo_small">
+                    <img class="logo_regular" src="assets/img/logo_main_small.png" alt="" height="32" width="32"/>
+                    <img class="logo_light" src="assets/img/logo_main_small_light.png" alt="" height="32" width="32"/>
+                </a>
+            </div>
+            <div class="sidebar_actions">
+                <select id="lang_switcher" name="lang_switcher">
+                    <option value="gb" selected>English</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="menu_section">
+            <ul>
+                                    <li title="Dashboard">
+                        <a href="index.html">
+                            <span class="menu_icon"><i class="material-icons">&#xE871;</i></span>
+                            <span class="menu_title">Dashboard</span>
+                        </a>
+                                            </li>
+                                    <li title="Mailbox">
+                        <a href="page_mailbox.html">
+                            <span class="menu_icon"><i class="material-icons">&#xE158;</i></span>
+                            <span class="menu_title">Mailbox</span>
+                        </a>
+                                            </li>
+                                    <li title="Invoices">
+                        <a href="page_invoices.html">
+                            <span class="menu_icon"><i class="material-icons">&#xE53E;</i></span>
+                            <span class="menu_title">Invoices</span>
+                        </a>
+                                            </li>
+                                    <li title="Chat">
+                        <a href="page_chat.html">
+                            <span class="menu_icon"><i class="material-icons">&#xE0B9;</i></span>
+                            <span class="menu_title">Chat</span>
+                        </a>
+                                            </li>
+                                    <li title="Scrum Board">
+                        <a href="page_scrum_board.html">
+                            <span class="menu_icon"><i class="material-icons">&#xE85C;</i></span>
+                            <span class="menu_title">Scrum Board</span>
+                        </a>
+                                            </li>
+                                    <li title="Snippets">
+                        <a href="page_snippets.html">
+                            <span class="menu_icon"><i class="material-icons">&#xE86F;</i></span>
+                            <span class="menu_title">Snippets</span>
+                        </a>
+                                            </li>
+                                    <li title="User Profile">
+                        <a href="page_user_profile.html">
+                            <span class="menu_icon"><i class="material-icons">&#xE87C;</i></span>
+                            <span class="menu_title">User Profile</span>
+                        </a>
+                                            </li>
+                                    <li title="Forms">
+                        <a href="#">
+                            <span class="menu_icon"><i class="material-icons">&#xE8D2;</i></span>
+                            <span class="menu_title">Forms</span>
+                        </a>
+                                                    <ul>
+                                                                                                            <li><a href="forms_regular.html">Regular Elements</a></li>
+                                                                                                                                                <li><a href="forms_advanced.html">Advanced Elements</a></li>
+                                                                                                                                                <li><a href="forms_dynamic.html">Dynamic</a></li>
+                                                                                                                                                <li><a href="forms_file_input.html">File Input</a></li>
+                                                                                                                                                <li><a href="forms_file_upload.html">File Upload</a></li>
+                                                                                                                                                <li><a href="forms_validation.html">Validation</a></li>
+                                                                                                                                                <li><a href="forms_wizard.html">Wizard</a></li>
+                                                                                                                                                <li class="menu_subtitle">WYSIWYG Editors</li>
+                                                                                    <li><a href="forms_wysiwyg_ckeditor.html">CKeditor</a></li>
+                                                                                    <li><a href="forms_wysiwyg_inline.html">Ckeditor Inline</a></li>
+                                                                                    <li><a href="forms_wysiwyg_tinymce.html">TinyMCE</a></li>
+                                                                                                                                        </ul>
+                                            </li>
+                                    <li title="Layout">
+                        <a href="#">
+                            <span class="menu_icon"><i class="material-icons">&#xE8F1;</i></span>
+                            <span class="menu_title">Layout</span>
+                        </a>
+                                                    <ul>
+                                                                                                            <li><a href="layout_top_menu.html">Top Menu</a></li>
+                                                                                                                                                <li><a href="layout_header_full.html">Full Header</a></li>
+                                                                                                </ul>
+                                            </li>
+                                    <li title="Kendo UI Widgets">
+                        <a href="#">
+                            <span class="menu_icon"><i class="material-icons">&#xE1BD;</i></span>
+                            <span class="menu_title">Kendo UI Widgets</span>
+                        </a>
+                                                    <ul>
+                                                                                                            <li><a href="kendoui_autocomplete.html">Autocomplete</a></li>
+                                                                                                                                                <li><a href="kendoui_calendar.html">Calendar</a></li>
+                                                                                                                                                <li><a href="kendoui_colorpicker.html">ColorPicker</a></li>
+                                                                                                                                                <li><a href="kendoui_combobox.html">ComboBox</a></li>
+                                                                                                                                                <li><a href="kendoui_datepicker.html">DatePicker</a></li>
+                                                                                                                                                <li><a href="kendoui_datetimepicker.html">DateTimePicker</a></li>
+                                                                                                                                                <li><a href="kendoui_dropdown_list.html">DropDownList</a></li>
+                                                                                                                                                <li><a href="kendoui_masked_input.html">Masked Input</a></li>
+                                                                                                                                                <li><a href="kendoui_menu.html">Menu</a></li>
+                                                                                                                                                <li><a href="kendoui_multiselect.html">MultiSelect</a></li>
+                                                                                                                                                <li><a href="kendoui_numeric_textbox.html">Numeric TextBox</a></li>
+                                                                                                                                                <li><a href="kendoui_panelbar.html">PanelBar</a></li>
+                                                                                                                                                <li><a href="kendoui_timepicker.html">TimePicker</a></li>
+                                                                                                                                                <li><a href="kendoui_toolbar.html">Toolbar</a></li>
+                                                                                                                                                <li><a href="kendoui_window.html">Window</a></li>
+                                                                                                </ul>
+                                            </li>
+                                    <li title="Components">
+                        <a href="#">
+                            <span class="menu_icon"><i class="material-icons">&#xE87B;</i></span>
+                            <span class="menu_title">Components</span>
+                        </a>
+                                                    <ul>
+                                                                                                            <li><a href="components_accordion.html">Accordions</a></li>
+                                                                                                                                                <li><a href="components_autocomplete.html">Autocomplete</a></li>
+                                                                                                                                                <li><a href="components_breadcrumbs.html">Breadcrumbs</a></li>
+                                                                                                                                                <li><a href="components_buttons.html">Buttons</a></li>
+                                                                                                                                                <li><a href="components_fab.html">Buttons: FAB</a></li>
+                                                                                                                                                <li><a href="components_cards.html">Cards</a></li>
+                                                                                                                                                <li><a href="components_colors.html">Colors</a></li>
+                                                                                                                                                <li><a href="components_common.html">Common</a></li>
+                                                                                                                                                <li><a href="components_dropdowns.html">Dropdowns</a></li>
+                                                                                                                                                <li><a href="components_dynamic_grid.html">Dynamic Grid</a></li>
+                                                                                                                                                <li><a href="components_footer.html">Footer</a></li>
+                                                                                                                                                <li><a href="components_grid.html">Grid</a></li>
+                                                                                                                                                <li><a href="components_icons.html">Icons</a></li>
+                                                                                                                                                <li><a href="components_modal.html">Lightbox/Modal</a></li>
+                                                                                                                                                <li><a href="components_lists.html">Lists</a></li>
+                                                                                                                                                <li><a href="components_nestable.html">Nestable</a></li>
+                                                                                                                                                <li><a href="components_notifications.html">Notifications</a></li>
+                                                                                                                                                <li><a href="components_panels.html">Panels</a></li>
+                                                                                                                                                <li><a href="components_preloaders.html">Preloaders</a></li>
+                                                                                                                                                <li><a href="components_slider.html">Slider</a></li>
+                                                                                                                                                <li><a href="components_slideshow.html">Slideshow</a></li>
+                                                                                                                                                <li><a href="components_sortable.html">Sortable</a></li>
+                                                                                                                                                <li><a href="components_switcher.html">Switcher</a></li>
+                                                                                                                                                <li><a href="components_tables.html">Tables</a></li>
+                                                                                                                                                <li><a href="components_tables_examples.html">Tables Examples</a></li>
+                                                                                                                                                <li><a href="components_tabs.html">Tabs</a></li>
+                                                                                                                                                <li><a href="components_tooltips.html">Tooltips</a></li>
+                                                                                                                                                <li><a href="components_typography.html">Typography</a></li>
+                                                                                                </ul>
+                                            </li>
+                                    <li title="E-commerce">
+                        <a href="#">
+                            <span class="menu_icon"><i class="material-icons">&#xE8CB;</i></span>
+                            <span class="menu_title">E-commerce</span>
+                        </a>
+                                                    <ul>
+                                                                                                            <li><a href="ecommerce_product_details.html">Product Details</a></li>
+                                                                                                                                                <li><a href="ecommerce_product_edit.html">Product Edit</a></li>
+                                                                                                                                                <li><a href="ecommerce_products_grid.html">Products Grid</a></li>
+                                                                                                                                                <li><a href="ecommerce_products_list.html">Products List</a></li>
+                                                                                                </ul>
+                                            </li>
+                                    <li title="Plugins">
+                        <a href="#">
+                            <span class="menu_icon"><i class="material-icons">&#xE8C0;</i></span>
+                            <span class="menu_title">Plugins</span>
+                        </a>
+                                                    <ul>
+                                                                                                            <li><a href="plugins_calendar.html">Calendar</a></li>
+                                                                                                                                                <li><a href="plugins_charts.html">Charts</a></li>
+                                                                                                                                                <li><a href="plugins_code_editor.html">Code Editor</a></li>
+                                                                                                                                                <li><a href="plugins_crud_table.html">CRUD Table</a></li>
+                                                                                                                                                <li><a href="plugins_datatables.html">Datatables</a></li>
+                                                                                                                                                <li><a href="plugins_diff.html">Diff View</a></li>
+                                                                                                                                                <li><a href="plugins_filemanager.html">File Manager</a></li>
+                                                                                                                                                <li><a href="plugins_gantt_chart.html">Gantt Chart</a></li>
+                                                                                                                                                <li><a href="plugins_google_maps.html">Google Maps</a></li>
+                                                                                                                                                <li><a href="plugins_idle_timeout.html">Idle Timeout</a></li>
+                                                                                                                                                <li><a href="plugins_tour.html">Tour</a></li>
+                                                                                                                                                <li><a href="plugins_tablesorter.html">Tablesorter</a></li>
+                                                                                                                                                <li><a href="plugins_tree.html">Tree</a></li>
+                                                                                                                                                <li><a href="plugins_vector_maps.html">Vector Maps</a></li>
+                                                                                                </ul>
+                                            </li>
+                                    <li title="Pages">
+                        <a href="#">
+                            <span class="menu_icon"><i class="material-icons">&#xE24D;</i></span>
+                            <span class="menu_title">Pages</span>
+                        </a>
+                                                    <ul>
+                                                                                                            <li><a href="page_blank.html">Blank</a></li>
+                                                                                                                                                <li><a href="page_contact_list.html">Contact List</a></li>
+                                                                                                                                                <li><a href="page_gallery.html">Gallery</a></li>
+                                                                                                                                                <li><a href="page_help.html">Help/Faq</a></li>
+                                                                                                                                                <li><a href="login.html">Login Page</a></li>
+                                                                                                                                                <li><a href="page_notes.html">Notes</a></li>
+                                                                                                                                                <li><a href="page_pricing_tables.html">Pricing Tables</a></li>
+                                                                                                                                                <li class="act_item"><a href="page_search_results.html">Search Results</a></li>
+                                                                                                                                                <li><a href="page_settings.html">Settings</a></li>
+                                                                                                                                                <li><a href="page_todo.html">Todo</a></li>
+                                                                                                                                                <li><a href="page_user_edit.html">User edit</a></li>
+                                                                                                                                                <li class="menu_subtitle">Issue Tracker</li>
+                                                                                    <li><a href="page_issues_list.html">List View</a></li>
+                                                                                    <li><a href="page_issue_details.html">Issue Details</a></li>
+                                                                                                                                                                                        <li class="menu_subtitle">Blog</li>
+                                                                                    <li><a href="page_blog_list.html">Blog List</a></li>
+                                                                                    <li><a href="page_blog_article.html">Blog Article</a></li>
+                                                                                                                                                                                        <li class="menu_subtitle">Errors</li>
+                                                                                    <li><a href="error_404.html">Error 404</a></li>
+                                                                                    <li><a href="error_500.html">Error 500</a></li>
+                                                                                                                                        </ul>
+                                            </li>
+                                <li>
+                    <a href="#">
+                        <span class="menu_icon"><i class="material-icons">&#xE241;</i></span>
+                        <span class="menu_title">Multi level</span>
+                    </a>
+                    <ul>
+                        <li>
+                            <a href="#">First level</a>
+                            <ul>
+                                <li>
+                                    <a href="#">Second Level</a>
+                                    <ul>
+                                        <li>
+                                            <a href="#">Third level</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">Third level</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">Third level</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">Long title to test</a>
+                                    <ul>
+                                        <li>
+                                            <a href="#">Third level</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">Third level</a>
+                                        </li>
+                                        <li>
+                                            <a href="#">Third level</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">Even longer title multi line</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </aside><!-- main sidebar end -->
+
+<div id="page_content">
+    <div id="page_content_inner">
+
+        <ul class="uk-tab uk-tab-double-header uk-margin-bottom" data-uk-tab="{connect:'#tabs_search_content', animation:'slide-left'}" id="tabs_search">
+            <li class="uk-active"><a href="#">All</a></li>
+            <li><a href="#">Images (22)</a></li>
+            <li><a href="#">News</a></li>
+            <li class="tab_maps"><a href="#">Maps</a></li>
+        </ul>
+        <ul id="tabs_search_content" class="uk-switcher">
+            <li>
+                <div class="md-card">
+                    <div class="md-card-content">
+                        <p class="uk-text-small uk-text-muted">About 124 results (0.70 seconds)</p>
+                        <ul class="search_list">
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_accordion.html">Accordions</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_accordion.html</span>
+                                <p>Magni magni possimus ipsam ducimus earum praesentium quaerat consequuntur sit rerum odit nostrum hic ipsam veritatis quia est ipsum dolorum reprehenderit modi voluptatem voluptatem ut et consequuntur facere necessitatibus delectus atque est neque ut dolores nihil laudantium ab et quos tempora sed aspernatur tempore magni vitae voluptatum vitae quis sunt odio omnis vero dolores dolore nihil quia dolores sed quibusdam a quibusdam aut voluptas voluptas odit expedita sed facilis velit aut incidunt et quod sit blanditiis asperiores laborum et nemo adipisci repellendus.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_autocomplete.html">Autocomplete</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_autocomplete.html</span>
+                                <p>Voluptatem sint rem delectus velit debitis placeat quos necessitatibus pariatur nam corrupti aut hic amet et delectus nihil quia quis nemo commodi dolorem nesciunt hic animi dolorem et aut ut hic deleniti voluptas possimus mollitia eos rerum praesentium enim illo dignissimos eius ut similique libero libero animi rerum porro qui cupiditate eos ut dolores aspernatur error aut commodi.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_breadcrumbs.html">Breadcrumbs</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_breadcrumbs.html</span>
+                                <p>Illum ut quae consequuntur voluptas sunt quaerat cupiditate aperiam velit aliquid architecto nihil molestiae quas facere est et reprehenderit quia odit adipisci velit et voluptates atque sed neque maxime facere facere necessitatibus eos sequi vitae nihil facilis et qui molestiae non minus est nemo voluptatibus quos.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_buttons.html">Buttons</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_buttons.html</span>
+                                <p>Quas in aut officia ducimus impedit necessitatibus quaerat aperiam nulla placeat enim fuga qui vitae et accusantium autem praesentium maiores et quia sit dicta placeat et non cum omnis quasi et eaque consequuntur aspernatur et blanditiis aut labore sapiente repellendus a consectetur sit reiciendis debitis qui deserunt fuga dolores omnis possimus qui rerum maxime a omnis deserunt veniam eum aut eos voluptate sint quos inventore ea quae aut ab dolorem aut non facere.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_fab.html">Buttons: FAB</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_fab.html</span>
+                                <p>Repellendus ea dolores unde ipsum fuga sunt amet aliquid quis iure reiciendis quo eos corporis sed eligendi est ut aut animi labore iusto quibusdam maiores est doloremque magni facilis possimus voluptas dolorum ut vitae amet ducimus perferendis et non optio qui harum quo quis et velit labore repellendus neque odio perspiciatis corrupti et aliquam unde cupiditate hic quae ut consequuntur atque illo similique porro voluptatem hic aut animi ea atque reiciendis deleniti eum.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_cards.html">Cards</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_cards.html</span>
+                                <p>Doloribus perspiciatis exercitationem nostrum molestiae illum saepe voluptatibus ut maiores officiis tempore quia iusto ut laborum recusandae sed beatae quasi sunt sit tenetur qui nisi et eveniet quia est veritatis repellat fugit molestiae perferendis tenetur modi qui exercitationem et voluptatum molestiae minus et repellat explicabo doloribus fuga dolorum dolor eos quis quam.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_colors.html">Colors</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_colors.html</span>
+                                <p>Cumque et alias corporis minus quibusdam repellendus vel quisquam id vel ut cupiditate nihil esse nisi quo laudantium aut odio architecto non sit reiciendis quas minus voluptatibus eveniet neque corrupti quisquam ex ut quibusdam voluptas ut atque dolor assumenda rem sint non ut aut nihil eius qui magnam esse et quia.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_common.html">Common</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_common.html</span>
+                                <p>Magni fugiat porro velit doloribus numquam nulla sed eum facere laborum voluptate et cumque magnam voluptatem quia ex architecto ducimus numquam quisquam id corporis temporibus voluptatem mollitia provident inventore omnis rerum est voluptatibus qui voluptate et atque qui dolorem suscipit voluptatem et voluptatem atque mollitia necessitatibus numquam unde omnis dolorem exercitationem vitae sit alias id fugit itaque quaerat assumenda et.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_dropdowns.html">Dropdowns</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_dropdowns.html</span>
+                                <p>Neque magnam dolores eaque nam cum sit facere optio cupiditate quia pariatur eum totam ut tempore sunt ut reprehenderit aspernatur veritatis dolor et ut et omnis iusto quo ipsam est velit voluptatibus vel architecto tempore consequuntur quia et odio et dolores officia qui sapiente delectus nostrum deserunt voluptas eligendi quibusdam.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_dynamic_grid.html">Dynamic Grid</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_dynamic_grid.html</span>
+                                <p>Nostrum dolor commodi deserunt possimus sunt aut cupiditate deserunt consectetur omnis quo et et dolorem voluptas rerum atque quis cum aliquam sunt voluptas voluptas omnis eum ad vero ut facilis deleniti nihil inventore sed voluptate sit unde voluptatem ipsa deserunt sint corporis qui distinctio veniam aut odit ratione atque corporis aliquid in vitae eaque nostrum delectus reprehenderit placeat occaecati ex deleniti dolorum eos molestias neque alias nihil quo eveniet voluptatibus.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_footer.html">Footer</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_footer.html</span>
+                                <p>Nesciunt quam placeat autem consequatur non et iusto voluptatum aspernatur vel impedit asperiores aperiam molestiae eos rerum sapiente corrupti qui qui aperiam enim asperiores aut quia ducimus animi voluptates nostrum sed velit animi non et quae nulla odio et veritatis nihil dolor voluptas ad unde repellendus aut impedit error ut necessitatibus et voluptates dolores officia eaque molestiae temporibus aut aut id repudiandae est voluptas commodi perspiciatis ullam est non veniam expedita aut ducimus dicta repellat est quia.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_grid.html">Grid</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_grid.html</span>
+                                <p>Asperiores quam eius saepe iusto omnis explicabo ea culpa sit illum reprehenderit autem consequatur eveniet soluta quaerat quae aspernatur mollitia laboriosam aut beatae earum quam sit laudantium voluptatem earum blanditiis molestiae natus magni nihil eligendi ab omnis tempore praesentium nemo et natus voluptatem quam temporibus explicabo sapiente voluptatem et sequi inventore quia atque magni nesciunt repudiandae qui ut aspernatur adipisci dicta repudiandae et aut error sapiente ad a molestiae deserunt unde et consequatur fugit explicabo quia modi.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_icons.html">Icons</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_icons.html</span>
+                                <p>Delectus id inventore impedit in voluptatem quia eos sed aut ut corrupti consequatur eligendi ut sit et et earum saepe quis magnam tempore alias debitis tenetur voluptates ut autem delectus est omnis quia quasi et et fuga quia atque impedit quia odit temporibus.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_modal.html">Lightbox/Modal</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_modal.html</span>
+                                <p>Maxime ratione accusamus reprehenderit ea aut rerum sint magnam totam sit dolorem fuga aperiam eveniet vel ea quam delectus ipsa sit hic sint delectus sequi repellat repellat et et est repellendus debitis voluptatem voluptatem nihil consectetur aut repellat pariatur porro nihil nihil rerum iste omnis quis expedita blanditiis nihil aspernatur vel recusandae totam voluptas harum accusamus repellendus beatae hic similique est quam et reiciendis omnis alias.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_lists.html">Lists</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_lists.html</span>
+                                <p>Quia officiis quia fugiat consequatur distinctio rerum autem iste accusamus architecto numquam molestiae iste omnis corporis assumenda autem aliquam sint saepe dolor sed sint eum nesciunt est qui error aliquam distinctio voluptas esse natus quaerat unde beatae vitae consectetur minus facere impedit tenetur nesciunt omnis dolores totam et ratione ea assumenda eum voluptatibus rerum debitis eligendi debitis porro totam aspernatur est omnis totam rem sed iusto cupiditate molestiae commodi vitae assumenda sunt iste odit fuga est dolorem adipisci aliquam est sequi delectus.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_nestable.html">Nestable</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_nestable.html</span>
+                                <p>Laborum sit quis dolorem pariatur dolor sunt veniam vel maxime quia quasi autem reprehenderit vel quam iure ut tempora ut distinctio sint inventore quasi aut reprehenderit fugiat aut vel saepe quaerat et repudiandae incidunt et eveniet ipsam et qui ipsam omnis quia repellendus consequatur ut qui quasi quia qui quae dolor repellat nihil veniam et aut earum quasi dolor voluptatem itaque alias iste voluptatem perferendis doloribus ab dolores odio eum ducimus sed magni porro.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_notifications.html">Notifications</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_notifications.html</span>
+                                <p>Deleniti veniam voluptas architecto id et amet autem eum nihil sit sed natus ex voluptatem ullam officia omnis tempore voluptatem cupiditate rerum incidunt consequatur perferendis odit laborum nobis vel impedit est et ex nobis praesentium nihil voluptates asperiores sed at iure qui aut et fuga sed maiores ut in consequuntur harum ut voluptatem dignissimos est non voluptatum quia molestias est nesciunt expedita ullam fugit consectetur quisquam quo quae rem voluptate minus occaecati qui labore cupiditate aut totam sed eius assumenda ut dolor.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_panels.html">Panels</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_panels.html</span>
+                                <p>Architecto aliquid id tempora quis eaque deleniti velit earum voluptate non id animi fuga omnis adipisci doloribus et reprehenderit aliquid culpa qui alias doloribus asperiores laudantium corrupti dolorem ex eveniet similique quae temporibus ut aperiam perferendis fugiat dicta qui quo alias sint nisi ab porro facere.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_preloaders.html">Preloaders</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_preloaders.html</span>
+                                <p>Vel id et ut eligendi deserunt incidunt et reiciendis dolor facere cupiditate qui iste amet et deserunt ut et impedit nesciunt accusantium eos est sapiente dignissimos eum et praesentium commodi corporis voluptatem omnis quibusdam amet voluptas itaque aliquam accusamus asperiores ut quia quae nemo fugiat pariatur sunt qui qui eius ut voluptate commodi et quibusdam quia esse pariatur reiciendis distinctio aut atque sit sunt tempore et totam pariatur aut deserunt quis.</p>
+                            </li>
+                            <li>
+                                <h3 class="search_list_heading"><a href="http://altair.tzdthemes.com/components_slider.html">Slider</a></h3>
+                                <span class="search_list_link uk-text-truncate">http://altair.tzdthemes.com/components_slider.html</span>
+                                <p>Reiciendis et molestias fuga recusandae molestias hic molestias esse illum ut fuga voluptate nobis deserunt qui quis consequatur quibusdam temporibus possimus quia voluptatem et qui tempora laborum nulla deleniti quia eligendi consectetur sit nulla repudiandae consequuntur tempore et corporis voluptatem id non non ut sapiente voluptatum labore aliquid labore iste ut.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <ul class="uk-pagination uk-margin-medium-top">
+                    <li class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
+                    <li class="uk-active"><span>1</span></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><span>&hellip;</span></li>
+                    <li><a href="#">20</a></li>
+                    <li><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="md-card">
+                    <div class="md-card-content">
+                        <p class="uk-text-small uk-text-muted">About 64 results (0.54 seconds)</p>
+                        <div data-uk-check-display class="uk-grid-width-small-1-2 uk-grid-width-medium-1-3 uk-grid-width-large-1-5" data-uk-grid="{gutter: 4}">
+                        <div>
+                            <a href="assets/img/gallery/Image01.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image01.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image02.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image02.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image03.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image03.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image04.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image04.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image05.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image05.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image06.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image06.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image07.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image07.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image08.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image08.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image09.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image09.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image10.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image10.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image11.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image11.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image12.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image12.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image13.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image13.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image14.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image14.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image15.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image15.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image16.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image16.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image17.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image17.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image18.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image18.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image19.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image19.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image20.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image20.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image21.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image21.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image22.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image22.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image23.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image23.jpg" alt=""/>
+                            </a>
+                        </div>
+                        <div>
+                            <a href="assets/img/gallery/Image24.jpg" data-uk-lightbox="{group:'user-photos'}">
+                                <img src="assets/img/gallery/Image24.jpg" alt=""/>
+                            </a>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="uk-pagination uk-margin-medium-top">
+                    <li class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
+                    <li class="uk-active"><span>1</span></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><span>&hellip;</span></li>
+                    <li><a href="#">20</a></li>
+                    <li><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>
+                </ul>
+            </li>
+            <li>
+                <div class="md-card">
+                    <div class="md-card-content">
+                        <p class="uk-text-small uk-text-muted">About 242 000 results (0.22 seconds)</p>
+                        <ul class="search_list">
+                            <li>
+                                <img src="assets/img/gallery/Image05.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Neque quibusdam eligendi esse et.</a></h3>
+                                    <span class="search_list_link">D'Amore Inc<span class="md-color-grey-500 uk-text-small uk-margin-small-left">18-11-1977</span></span>
+                                    <p>Porro sit odio quasi incidunt blanditiis tenetur minus nihil dicta iste perferendis consequatur dolorem aperiam non eaque cupiditate minima corporis qui dolorem consequatur et quis corporis nihil qui adipisci ratione assumenda velit sapiente facilis quis temporibus amet rem dolore id aut laborum ut veniam soluta.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image06.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Impedit ab mollitia iure.</a></h3>
+                                    <span class="search_list_link">Veum-Abernathy<span class="md-color-grey-500 uk-text-small uk-margin-small-left">21-01-1997</span></span>
+                                    <p>Consequatur laboriosam ut sed perferendis et et suscipit ducimus et consectetur officia quia laboriosam voluptatum sint dignissimos cupiditate sed est quia sit aliquid beatae ea est fuga dolores ad est est quia expedita sed ducimus praesentium eaque repellendus distinctio aliquid sunt dignissimos veritatis repudiandae quam reprehenderit ut in minus commodi ut perspiciatis repellendus beatae dolores ut voluptas nesciunt tenetur omnis enim error sunt amet voluptas rem libero sapiente deleniti adipisci sit aut.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image07.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Et aliquam labore commodi beatae.</a></h3>
+                                    <span class="search_list_link">Gleason-Luettgen<span class="md-color-grey-500 uk-text-small uk-margin-small-left">04-05-1976</span></span>
+                                    <p>Ea nesciunt ut exercitationem atque recusandae hic eos amet aperiam architecto omnis vitae excepturi cumque nam enim atque facere beatae aut aspernatur itaque accusantium est sunt distinctio nulla saepe veritatis qui perferendis praesentium incidunt unde rerum quia consequatur.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image08.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Iure voluptatem nesciunt est quis consequatur.</a></h3>
+                                    <span class="search_list_link">Schneider-D'Amore<span class="md-color-grey-500 uk-text-small uk-margin-small-left">16-07-1999</span></span>
+                                    <p>Delectus consequatur vero voluptatum sequi cum beatae ut molestiae consequatur doloribus sapiente sunt tempora voluptatem esse eveniet voluptas reprehenderit inventore quaerat natus alias in qui et sed aspernatur ducimus voluptatem et quo aut ipsam recusandae fugiat eaque quae amet natus dolores animi voluptas labore blanditiis beatae omnis aperiam corrupti qui quae iure recusandae possimus asperiores dolore aperiam dolorum fuga dignissimos repellendus quas nobis velit ex quaerat error aperiam nemo ipsa qui rerum eum qui consectetur illo occaecati.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image09.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Explicabo aut suscipit vitae.</a></h3>
+                                    <span class="search_list_link">Breitenberg Ltd<span class="md-color-grey-500 uk-text-small uk-margin-small-left">19-03-1999</span></span>
+                                    <p>Perspiciatis beatae iure eligendi sapiente ab quia ut eaque quasi eos quam officia culpa magni ut nihil unde architecto quis sint sunt unde fugit laborum id suscipit fugiat cum vitae quasi facere molestiae aperiam autem adipisci aut beatae nihil consequatur ratione assumenda non itaque tenetur sed laborum ea qui facere pariatur veniam fuga dolores optio quae doloremque fuga consectetur ut quisquam quasi minus est atque accusamus quos alias dolorem quod possimus autem reiciendis voluptas unde aut velit aut tempore dolorum aperiam reiciendis quia.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image10.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Rerum quasi omnis.</a></h3>
+                                    <span class="search_list_link">Brakus, Schoen and Hoeger<span class="md-color-grey-500 uk-text-small uk-margin-small-left">03-11-1988</span></span>
+                                    <p>Asperiores explicabo magnam nobis velit ab quis nam commodi ipsum impedit ullam maiores debitis nihil quae dicta quod a accusamus rerum aut quo commodi omnis nam similique neque est placeat quisquam fugiat ab voluptatem ab qui delectus esse qui dolorem sapiente aut est odit aut sunt ut perspiciatis eveniet tempore recusandae nam nihil veniam velit voluptas quibusdam ut dolor qui ea doloribus aut.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image11.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Iusto aspernatur facere nihil.</a></h3>
+                                    <span class="search_list_link">Bernier, Oberbrunner and Yost<span class="md-color-grey-500 uk-text-small uk-margin-small-left">13-07-2005</span></span>
+                                    <p>Minima quia occaecati sint reprehenderit non possimus dolore a animi doloribus consequatur recusandae est consequatur ea omnis doloribus sit maxime accusamus quam tenetur nam dolore et quia cum consequatur explicabo qui in voluptatibus ad sint natus aut optio est sint in minima voluptas ut mollitia consequatur accusamus aliquid saepe rerum officia at omnis vel ut ut autem aut numquam totam minima fugit aspernatur dolor ex amet dolore sed labore suscipit voluptatem id est voluptas occaecati aut consectetur.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image12.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Fuga rerum nemo ex dolorem in.</a></h3>
+                                    <span class="search_list_link">Predovic-Rice<span class="md-color-grey-500 uk-text-small uk-margin-small-left">21-04-2016</span></span>
+                                    <p>Optio numquam architecto iure distinctio error delectus quia nobis odit et vel architecto et numquam quo numquam et eos quia eius voluptatem tempore ratione aliquam et tempora rerum dolores expedita ratione consequatur consequatur quam neque voluptatem et id explicabo quia sunt repudiandae et est dolor repellat est laudantium et eius voluptas illum.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image13.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Iste autem minus deserunt corporis.</a></h3>
+                                    <span class="search_list_link">Jast Group<span class="md-color-grey-500 uk-text-small uk-margin-small-left">23-06-1986</span></span>
+                                    <p>Qui sed necessitatibus autem molestias incidunt dolorum libero maxime quasi et culpa omnis et in fuga qui dicta perspiciatis ipsam ex tempora id explicabo pariatur provident repellendus a quisquam rem dicta dolor voluptates impedit explicabo voluptatibus est voluptatem voluptatem asperiores iusto sequi nihil earum nostrum voluptas sed quia non ipsam reprehenderit aut blanditiis consectetur est eveniet.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image14.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Cumque fuga rem natus sit quod.</a></h3>
+                                    <span class="search_list_link">Dickinson, Douglas and Wilkinson<span class="md-color-grey-500 uk-text-small uk-margin-small-left">05-04-1970</span></span>
+                                    <p>Maiores eaque eaque ea in sed non explicabo aut saepe nihil nostrum nulla alias et laudantium doloremque blanditiis sit animi qui repudiandae ex modi labore reprehenderit blanditiis est iusto facilis voluptatem rem perspiciatis magnam aut culpa dolor nam.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image15.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Qui non repellendus illum occaecati.</a></h3>
+                                    <span class="search_list_link">Bayer Inc<span class="md-color-grey-500 uk-text-small uk-margin-small-left">31-03-1992</span></span>
+                                    <p>Vitae ad libero ipsum dolor facere consequatur perspiciatis omnis pariatur et expedita et omnis tempora occaecati et earum quia tempora accusamus ut et ullam dolorem at quasi mollitia maiores veritatis delectus consequatur repellendus provident et corporis consequatur iusto vel et ea soluta esse laboriosam nemo fuga saepe nemo voluptatibus pariatur veniam error adipisci hic qui explicabo nulla molestiae quis quia vel qui sed ratione atque quis hic id veritatis esse fugiat aperiam et voluptas est commodi eum quod ut tempore quasi ratione est ut.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image16.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Pariatur eos eaque modi perspiciatis.</a></h3>
+                                    <span class="search_list_link">Zboncak, Dach and Graham<span class="md-color-grey-500 uk-text-small uk-margin-small-left">08-05-2016</span></span>
+                                    <p>Quod voluptas in quis sit est in magni consectetur numquam ducimus accusamus cum dolores maiores consequatur modi modi est rem minima repellat voluptas maxime consequatur explicabo modi voluptatem libero ut perferendis exercitationem maiores labore placeat inventore architecto consequatur commodi minima eos ea aut quisquam ad est blanditiis culpa deserunt officia cupiditate consequatur quia placeat repellendus saepe rerum quos aut incidunt quo voluptas est qui molestias voluptatibus delectus odio sapiente aut ea cumque qui vel omnis iste.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <img src="assets/img/gallery/Image17.jpg" alt="" class="search_list_thumb">
+                                <div class="search_list_content">
+                                    <h3 class="search_list_heading"><a href="#">Non accusantium aut sit deleniti.</a></h3>
+                                    <span class="search_list_link">Brown-Welch<span class="md-color-grey-500 uk-text-small uk-margin-small-left">27-03-1984</span></span>
+                                    <p>Libero animi impedit ipsa necessitatibus assumenda nobis minus ratione sunt rerum sequi nihil iusto quis eaque illum earum quidem modi voluptates qui velit sit sunt illo reprehenderit sed odio modi id voluptas vitae quia eveniet laborum sint possimus sint pariatur quia accusantium sit omnis nobis et qui ipsam omnis consectetur sed laudantium dolores autem et et voluptatem consequatur occaecati atque quam est incidunt et dolorem.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <ul class="uk-pagination uk-margin-medium-top">
+                    <li class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
+                    <li class="uk-active"><span>1</span></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><span>&hellip;</span></li>
+                    <li><a href="#">20</a></li>
+                    <li><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>
+                </ul>
+            </li>
+            <li class="full_height">
+                <div class="map_search_wrapper" data-uk-check-display>
+                    <span id="map_search_list_toggle"><img src="assets/img/md-images/ic_place_black.png" alt=""></span>
+                    <div id="map_search" class="gmap"></div>
+                    <div class="map_search_list_wrapper">
+                        <p class="uk-text-small uk-text-muted uk-margin-left uk-margin-right">About 62 results (1.19 seconds)</p>
+                        <ul class="md-list gmap_list" id="map_search_list">
+                            <li data-gmap-lat="38.35894188"  data-gmap-lon="-92.8538577" data-gmap-company="Hackett LLC" data-gmap-company-address="36451 Brando Passage Apt. 784
+Gorczanyland, NV 76860">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Hackett LLC</span>
+                                    <span class="uk-text-small uk-text-muted">36451 Brando Passage Apt. 784
+Gorczanyland, NV 76860</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                            <li data-gmap-lat="41.05874774"  data-gmap-lon="-92.26713263" data-gmap-company="Homenick Ltd" data-gmap-company-address="0401 Blick Coves
+Volkmanmouth, KS 83195-2381">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Homenick Ltd</span>
+                                    <span class="uk-text-small uk-text-muted">0401 Blick Coves
+Volkmanmouth, KS 83195-2381</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                            <li data-gmap-lat="42.30281602"  data-gmap-lon="-92.06810153" data-gmap-company="Vandervort, Haag and Russel" data-gmap-company-address="43222 Christelle Land
+Lake Erin, UT 80131-2956">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Vandervort, Haag and Russel</span>
+                                    <span class="uk-text-small uk-text-muted">43222 Christelle Land
+Lake Erin, UT 80131-2956</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                            <li data-gmap-lat="41.68463522"  data-gmap-lon="-91.3404159" data-gmap-company="Kilback Group" data-gmap-company-address="93555 Willms Mall Suite 138
+Lake Karinemouth, MN 10365-9764">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Kilback Group</span>
+                                    <span class="uk-text-small uk-text-muted">93555 Willms Mall Suite 138
+Lake Karinemouth, MN 10365-9764</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                            <li data-gmap-lat="41.04467876"  data-gmap-lon="-90.08450673" data-gmap-company="Gusikowski-Reilly" data-gmap-company-address="7626 Hessel Plain
+New Khaliltown, OK 53571-5692">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Gusikowski-Reilly</span>
+                                    <span class="uk-text-small uk-text-muted">7626 Hessel Plain
+New Khaliltown, OK 53571-5692</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                            <li data-gmap-lat="40.26186925"  data-gmap-lon="-91.03261997" data-gmap-company="Braun and Sons" data-gmap-company-address="55682 Nienow Mills
+North Athena, MN 02150-0778">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Braun and Sons</span>
+                                    <span class="uk-text-small uk-text-muted">55682 Nienow Mills
+North Athena, MN 02150-0778</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                            <li data-gmap-lat="39.09442555"  data-gmap-lon=" -96.19775663" data-gmap-company="Collier and Sons" data-gmap-company-address="4354 Crona Run
+North Jeanne, MD 07236-1169">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Collier and Sons</span>
+                                    <span class="uk-text-small uk-text-muted">4354 Crona Run
+North Jeanne, MD 07236-1169</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                            <li data-gmap-lat="42.54209076"  data-gmap-lon="-95.22660793" data-gmap-company="Wintheiser-Hintz" data-gmap-company-address="6922 Walker Trail Suite 801
+Nolanshire, NE 20913">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Wintheiser-Hintz</span>
+                                    <span class="uk-text-small uk-text-muted">6922 Walker Trail Suite 801
+Nolanshire, NE 20913</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                            <li data-gmap-lat="38.50327702"  data-gmap-lon="-91.50773766" data-gmap-company="Lakin-Schiller" data-gmap-company-address="73385 Elwin Light
+Port Gagemouth, TN 72934-4663">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Lakin-Schiller</span>
+                                    <span class="uk-text-small uk-text-muted">73385 Elwin Light
+Port Gagemouth, TN 72934-4663</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                            <li data-gmap-lat="41.40112452"  data-gmap-lon="-90.10399142" data-gmap-company="Hudson-Osinski" data-gmap-company-address="25495 Brandy Alley
+Port Carolynebury, CA 26215-4873">
+                                <div class="md-list-content">
+                                    <span class="md-list-heading">Hudson-Osinski</span>
+                                    <span class="uk-text-small uk-text-muted">25495 Brandy Alley
+Port Carolynebury, CA 26215-4873</span>
+                                    <span class="uk-text-small uk-text-muted uk-margin-small-top">Opening hours: 8.00-20.00</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <ul class="uk-pagination uk-margin-medium-top">
+                            <li class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>
+                            <li><span>1</span></li>
+                            <li class="uk-active"><a href="#">2</a></li>
+                            <li><span>&hellip;</span></li>
+                            <li><a href="#">10</a></li>
+                            <li><a href="#"><i class="uk-icon-angle-double-right"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+</div>
+    <!-- google web fonts -->
+    <script>
+        WebFontConfig = {
+            google: {
+                families: [
+                    'Source+Code+Pro:400,700:latin',
+                    'Roboto:400,300,500,700,400italic:latin'
+                ]
+            }
+        };
+        (function() {
+            var wf = document.createElement('script');
+            wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+            '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+            wf.type = 'text/javascript';
+            wf.async = 'true';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(wf, s);
+        })();
+    </script>
+
+    <!-- common functions -->
+    <script src="assets/js/common.min.js"></script>
+    <!-- uikit functions -->
+    <script src="assets/js/uikit_custom.min.js"></script>
+    <!-- altair common functions/helpers -->
+    <script src="assets/js/altair_admin_common.min.js"></script>
+
+    <!-- page specific plugins -->
+    <!-- maplace (google maps) -->
+    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script src="bower_components/maplace-js/dist/maplace.min.js"></script>
+
+    <!--  search results functions -->
+    <script src="assets/js/pages/page_search.min.js"></script>
+    
+    <script>
+        $(function() {
+            if(isHighDensity) {
+                // enable hires images
+                altair_helpers.retina_images();
+            }
+            if(Modernizr.touch) {
+                // fastClick (touch devices)
+                FastClick.attach(document.body);
+            }
+        });
+        $window.load(function() {
+            // ie fixes
+            altair_helpers.ie_fix();
+        });
+    </script>
+
+
+    <div id="style_switcher">
+        <div id="style_switcher_toggle"><i class="material-icons">&#xE8B8;</i></div>
+        <div class="uk-margin-medium-bottom">
+            <h4 class="heading_c uk-margin-bottom">Colors</h4>
+            <ul class="switcher_app_themes" id="theme_switcher">
+                <li class="app_style_default active_theme" data-app-theme="">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_a" data-app-theme="app_theme_a">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_b" data-app-theme="app_theme_b">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_c" data-app-theme="app_theme_c">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_d" data-app-theme="app_theme_d">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_e" data-app-theme="app_theme_e">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_f" data-app-theme="app_theme_f">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_g" data-app-theme="app_theme_g">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_h" data-app-theme="app_theme_h">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_i" data-app-theme="app_theme_i">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+                <li class="switcher_theme_dark" data-app-theme="app_theme_dark">
+                    <span class="app_color_main"></span>
+                    <span class="app_color_accent"></span>
+                </li>
+            </ul>
+        </div>
+        <div class="uk-visible-large uk-margin-medium-bottom">
+            <h4 class="heading_c">Sidebar</h4>
+            <p>
+                <input type="checkbox" name="style_sidebar_mini" id="style_sidebar_mini" data-md-icheck />
+                <label for="style_sidebar_mini" class="inline-label">Mini Sidebar</label>
+            </p>
+            <p>
+                <input type="checkbox" name="style_sidebar_slim" id="style_sidebar_slim" data-md-icheck />
+                <label for="style_sidebar_slim" class="inline-label">Slim Sidebar</label>
+            </p>
+        </div>
+        <div class="uk-visible-large uk-margin-medium-bottom">
+            <h4 class="heading_c">Layout</h4>
+            <p>
+                <input type="checkbox" name="style_layout_boxed" id="style_layout_boxed" data-md-icheck />
+                <label for="style_layout_boxed" class="inline-label">Boxed layout</label>
+            </p>
+        </div>
+        <div class="uk-visible-large">
+            <h4 class="heading_c">Main menu accordion</h4>
+            <p>
+                <input type="checkbox" name="accordion_mode_main_menu" id="accordion_mode_main_menu" data-md-icheck />
+                <label for="accordion_mode_main_menu" class="inline-label">Accordion mode</label>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        $(function() {
+            var $switcher = $('#style_switcher'),
+                $switcher_toggle = $('#style_switcher_toggle'),
+                $theme_switcher = $('#theme_switcher'),
+                $mini_sidebar_toggle = $('#style_sidebar_mini'),
+                $slim_sidebar_toggle = $('#style_sidebar_slim'),
+                $boxed_layout_toggle = $('#style_layout_boxed'),
+                $accordion_mode_toggle = $('#accordion_mode_main_menu'),
+                $html = $('html'),
+                $body = $('body');
+
+
+            $switcher_toggle.click(function(e) {
+                e.preventDefault();
+                $switcher.toggleClass('switcher_active');
+            });
+
+            $theme_switcher.children('li').click(function(e) {
+                e.preventDefault();
+                var $this = $(this),
+                    this_theme = $this.attr('data-app-theme');
+
+                $theme_switcher.children('li').removeClass('active_theme');
+                $(this).addClass('active_theme');
+                $html
+                    .removeClass('app_theme_a app_theme_b app_theme_c app_theme_d app_theme_e app_theme_f app_theme_g app_theme_h app_theme_i app_theme_dark')
+                    .addClass(this_theme);
+
+                if(this_theme == '') {
+                    localStorage.removeItem('altair_theme');
+                } else {
+                    localStorage.setItem("altair_theme", this_theme);
+                    if(this_theme == 'app_theme_dark') {
+                        $('#kendoCSS').attr('href','bower_components/kendo-ui/styles/kendo.materialblack.min.css')
+                    }
+                }
+
+            });
+
+            // hide style switcher
+            $document.on('click keyup', function(e) {
+                if( $switcher.hasClass('switcher_active') ) {
+                    if (
+                        ( !$(e.target).closest($switcher).length )
+                        || ( e.keyCode == 27 )
+                    ) {
+                        $switcher.removeClass('switcher_active');
+                    }
+                }
+            });
+
+            // get theme from local storage
+            if(localStorage.getItem("altair_theme") !== null) {
+                $theme_switcher.children('li[data-app-theme='+localStorage.getItem("altair_theme")+']').click();
+            }
+
+
+        // toggle mini sidebar
+
+            // change input's state to checked if mini sidebar is active
+            if((localStorage.getItem("altair_sidebar_mini") !== null && localStorage.getItem("altair_sidebar_mini") == '1') || $body.hasClass('sidebar_mini')) {
+                $mini_sidebar_toggle.iCheck('check');
+            }
+
+            $mini_sidebar_toggle
+                .on('ifChecked', function(event){
+                    $switcher.removeClass('switcher_active');
+                    localStorage.setItem("altair_sidebar_mini", '1');
+                    localStorage.removeItem('altair_sidebar_slim');
+                    location.reload(true);
+                })
+                .on('ifUnchecked', function(event){
+                    $switcher.removeClass('switcher_active');
+                    localStorage.removeItem('altair_sidebar_mini');
+                    location.reload(true);
+                });
+
+        // toggle slim sidebar
+
+            // change input's state to checked if mini sidebar is active
+            if((localStorage.getItem("altair_sidebar_slim") !== null && localStorage.getItem("altair_sidebar_slim") == '1') || $body.hasClass('sidebar_slim')) {
+                $slim_sidebar_toggle.iCheck('check');
+            }
+
+            $slim_sidebar_toggle
+                .on('ifChecked', function(event){
+                    $switcher.removeClass('switcher_active');
+                    localStorage.setItem("altair_sidebar_slim", '1');
+                    localStorage.removeItem('altair_sidebar_mini');
+                    location.reload(true);
+                })
+                .on('ifUnchecked', function(event){
+                    $switcher.removeClass('switcher_active');
+                    localStorage.removeItem('altair_sidebar_slim');
+                    location.reload(true);
+                });
+
+        // toggle boxed layout
+
+            if((localStorage.getItem("altair_layout") !== null && localStorage.getItem("altair_layout") == 'boxed') || $body.hasClass('boxed_layout')) {
+                $boxed_layout_toggle.iCheck('check');
+                $body.addClass('boxed_layout');
+                $(window).resize();
+            }
+
+            $boxed_layout_toggle
+                .on('ifChecked', function(event){
+                    $switcher.removeClass('switcher_active');
+                    localStorage.setItem("altair_layout", 'boxed');
+                    location.reload(true);
+                })
+                .on('ifUnchecked', function(event){
+                    $switcher.removeClass('switcher_active');
+                    localStorage.removeItem('altair_layout');
+                    location.reload(true);
+                });
+
+        // main menu accordion mode
+            if($sidebar_main.hasClass('accordion_mode')) {
+                $accordion_mode_toggle.iCheck('check');
+            }
+
+            $accordion_mode_toggle
+                .on('ifChecked', function(){
+                    $sidebar_main.addClass('accordion_mode');
+                })
+                .on('ifUnchecked', function(){
+                    $sidebar_main.removeClass('accordion_mode');
+                });
+
+
+        });
+    </script>
+</body>
+</html>
