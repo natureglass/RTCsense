@@ -414,20 +414,22 @@
 
 		</div>
 
+		<!--- Success Notification at the Bottom --->
 		<button class="md-btn" id="success_notify" data-message="" data-status="success" data-pos="bottom-center" style="display: none;">Success</button>
 
 		<!--- Username Update Form --->
 		<button class="md-btn" id="saveChangesPrompt" data-uk-modal="{target:'#modal_changesPrompt'}" style="display: none;"></button>
-		<div class="uk-modal" id="modal_changesPrompt">
+		<div class="uk-modal" id="modal_changesPrompt" data-saveScene="true">
 		    <div class="uk-modal-dialog">
+				<button type="button" id="closeSavePrompt" class="uk-modal-close uk-close"></button>
 				<div class="uk-modal-header">
 					<h3 class="uk-modal-title" style="color: red;">YOU HAVE UNSAVED CHANGES!</h3>
 					<p>Would you like to save your changes first?</p>
 				</div>
 		        <div class="uk-modal-footer uk-text-right">
 		            <button type="button" id="closeUsrBtn" class="md-btn md-btn-flat uk-modal-close">Cancel</button>
-		            <button type="button" class="md-btn md-btn-flat" onClick="reloadPage();">Ignore</button>
-		            <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" onClick="saveSceneCode(true);">Save</button>
+		            <button type="button" class="md-btn md-btn-flat" onClick="ignoreSave();">Ignore</button>
+		            <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" onClick="saveSceneCode();">Save</button>
 		        </div>
 		    </div>
 		</div>

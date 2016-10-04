@@ -7,7 +7,8 @@
 		<cfinclude template="senseStudio/display/dsp_document_head.cfm">
 		<cfinclude template="senseStudio/qry_scene_layout.cfm">
 		<cfinclude template="senseStudio/dsp_scene_layout.cfm">
-		<!--- <cfinclude template="senseStudio/display/dsp_document_foot.cfm"> --->
+        <cfinclude template="senseStudio/display/inc_footer.cfm">
+		<cfinclude template="senseStudio/display/dsp_document_foot.cfm">
 	</cfcase>
 
   	<cfcase value="saveScene">
@@ -16,6 +17,10 @@
 
   	<cfcase value="loadScene">
 		<cfinclude template="senseStudio/qry_scene_load.cfm">
+	</cfcase>
+
+    <cfcase value="loadSelectedScene">
+		<cfinclude template="senseStudio/act_scene_load.cfm">
 	</cfcase>
 
 	<!--- -------------- RTCsense Studio -------------- --->

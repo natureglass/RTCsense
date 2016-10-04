@@ -78,7 +78,7 @@
 
 	<!-- ThreeJS -->
 	<script src="assets/js/devices/audioVideo/DetectRTC.min.js"></script>
-	<script src="assets/js/threejs/three.js" type="text/javascript"></script>
+	<script src="assets/js/threejs/three.min.js" type="text/javascript"></script>
 	<script src="assets/js/threejs/Detector.js" type="text/javascript"></script>
 	<script src="assets/js/threejs/stats.min.js" type="text/javascript"></script>
 	<script src="assets/js/threejs/Mirror.js" type="text/javascript"></script>

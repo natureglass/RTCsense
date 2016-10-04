@@ -139,25 +139,46 @@ function reloadScene(){
 
 	if(window.sceneCodeChanged === false){
 
-		reloadPage();
+		reloadPage(true);
 
 	} else {
 
+		window.saveScenePrompt = true;
 		$('#saveChangesPrompt').trigger('click');
 
 	}
 
 }
 
-function reloadPage(){
+function ignoreSave(){
+	$('#closeSavePrompt').trigger('click');
+	reloadPage($('#modal_changesPrompt').attr('data-savescene'));
+}
 
-	var sceneID	= $('#sceneID').val();
-	var locationLink = "?fa=studio";
+function reloadPage(saveScenePrompt){
 
-	if(sceneID !== "0"){ locationLink += "&s=" + sceneID + "&e=true"; }
+	console.log(saveScenePrompt);
 
-	location.href = locationLink;
+	if(typeof(saveScenePrompt) === "boolean"){
 
+		if(saveScenePrompt === true){
+
+			var sceneID	= $('#sceneID').val();
+			var locationLink = "?fa=studio";
+
+			if(sceneID !== "0"){ locationLink += "&s=" + sceneID + "&e=true"; }
+
+			location.href = locationLink;
+
+		}
+
+	} else {
+
+		console.log("Reload is not going to happen, the new Scene should be load now!");
+
+	}
+
+	$('#modal_changesPrompt').data('saveScene', true); // back to normal save
 }
 
 function runSceneCode(){
@@ -198,14 +219,15 @@ function isSceneNOTsaved(status){
 	window.sceneCodeChanged = status;
 }
 
-function saveSceneCode(sceneReload){
+function saveSceneCode(){
+
+	$('#closeSavePrompt').trigger('click');
 
 	var userSceneID		= $('#userSceneID').val();
 	var sceneID			= $('#sceneID').val();
 	var sceneCode 		= window.sceneCodeEditor.getValue();
 	var sceneName 		= $('#scene_name').val();
 	var sceneResources	= new Array();
-
 
 	if(sceneName.length !== 0 & sceneCode.length !== 0) {
 
@@ -219,7 +241,6 @@ function saveSceneCode(sceneReload){
 			"sceneName" 		: sceneName,
 			"sceneCode" 		: sceneCode,
 			"sceneResources" 	: sceneResources,
-			"reload"			: sceneReload,
 			"preview"			: false
 		} });
 
@@ -240,13 +261,16 @@ function checkSaveStatus(data){
 
 		var $select = $(document.getElementById('scenesDropDown')).selectize();
 		var dropDownScenes = $select[0].selectize;
-		dropDownScenes.removeOption(result.id);
-		dropDownScenes.addOption({value: result.id, text: result.name});
-		dropDownScenes.addItem(result.id, false);
+
+		var currentSceneName = dropDownScenes.$control[0].innerText;
+
+		//selectize.setValue(selectize.search("My Default Value").items[0].id);
+		//dropDownScenes.removeOption(result.id);
+		//dropDownScenes.addOption({value: result.id, text: result.name});
+		//dropDownScenes.addItem(result.id, false);
 
 		isSceneNOTsaved(false);
-
-		if(result.reload === true){ reloadPage(); }
+		reloadPage($('#modal_changesPrompt').attr('data-savescene'));
 
 	} else {
 		UIkit.modal.alert('<span style="color: red;">ERROR</span><br> the scene <b>'+ result.name +'</b> could not be saved!');

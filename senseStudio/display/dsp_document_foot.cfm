@@ -1,4 +1,8 @@
-<cfinclude template="senseStudio/display/inc_footer.cfm">
+<!-- RTCsense Global Scripts -->
+<script src="_global/js/global_scripts.js" type="text/javascript"></script>
+
+<!-- RTCStudio Scripts -->
+<script src="senseStudio/js/main.js" type="text/javascript"></script>
 
 <!-- codeMirror -->
 <link rel="stylesheet" href="assets/js/CodeMirror/lib/codemirror.css">
@@ -62,6 +66,32 @@
 	$('.scene_resources').on('input',function(){
 		if(window.sceneCodeChanged === false){
 			isSceneNOTsaved(true);
+		}
+	});
+
+	$select_scenesDropDown = $(document.getElementById('scenesDropDown')).selectize({
+	    onChange: function(value) {
+
+			console.log("whaaaaa!");
+
+			var sceneNOTsaved = window.sceneCodeChanged;
+
+			if(!sceneNOTsaved){
+
+				postData({ url:'?fa=loadSelectedScene', callfunction:'',  Args: {
+				 	"sceneNOTsaved"		: sceneNOTsaved,
+				 	"sceneID"			: value
+				} });
+
+				console.log(value);
+
+			} else {
+
+				$('#modal_changesPrompt').attr('data-savescene', value);
+				$('#saveChangesPrompt').trigger('click');
+
+			}
+
 		}
 	});
 
@@ -157,13 +187,7 @@
 
 </script> --->
 
-<!-- RTCsense Global Scripts -->
-<script src="_global/js/global_scripts.js" type="text/javascript"></script>
-
-<!-- RTCStudio Scripts -->
-<script src="senseStudio/js/main.js" type="text/javascript"></script>
-
-
+<!--- <script src="_global/js/global_scripts.js"></script> --->
 <script src="assets/js/custom.js"></script>
 
 <div id="rtcFooter"></div>

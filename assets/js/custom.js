@@ -55,4 +55,11 @@ function loadPageToPlaceHolder(params){
 
 		});
 }
+
+//////////////// Convert to Boolean ////////////////
+function getBool(val){
+	var num = +val;
+	return !isNaN(num) ? !!num : !!String(val).toLowerCase().replace(!!0,'');
+}
+
 /////////////////////////////////////////////////////////////////////////////CONTROL CKEDITOR SITE WIDE //////////////////////////////////////////////////

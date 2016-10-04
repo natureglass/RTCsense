@@ -56,13 +56,7 @@
     <link rel="stylesheet" href="_global/css/global_style.css" media="all">
 
     <!-- RTCStudio Style -->
-    <link rel="stylesheet" href="senseStudio/css/main.css" media="all">    
-
-    <!-- RTCsense Global Scripts -->
-	<!--- <script src="_global/js/global_scripts.js" type="text/javascript"></script> --->
-
-    <!-- RTCStudio Scripts -->
-	<!--- <script src="senseStudio/js/main.js" type="text/javascript"></script> --->
+    <link rel="stylesheet" href="senseStudio/css/main.css" media="all">
 
 	<script type="text/javascript">
 

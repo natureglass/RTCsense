@@ -3,7 +3,6 @@
 <cfparam name="form.sceneResources" default="">
 <cfparam name="form.userSceneID" default="0">
 <cfparam name="form.sceneID" default="0">
-<cfparam name="form.reload" default="false">
 <cfparam name="form.preview" default="false">
 
 <cfset resourcesListID = "">
@@ -147,4 +146,4 @@
 </cfif>
 
 <!--- ------------ RETURN STATUS ------------ --->
-<cfoutput>{"status":"ok", "type": "#saveType#","id": #form.userSceneID#, "sceneID": "#sceneCodeID#", "name": "#form.sceneName#", "reload": #form.reload# }</cfoutput>
+<cfoutput>{"status":"ok", "type": "#saveType#","id": #form.userSceneID#, "sceneID": "#sceneCodeID#", "name": "#form.sceneName#" }</cfoutput>
