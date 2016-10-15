@@ -1,7 +1,8 @@
 window.sceneCodeChanged = false;
+window.selectizeUpdating = false;
+window.changingScene = false;
 
 // *** On Content Loaded *** //
-
 document.addEventListener('DOMContentLoaded', function() {
 
 	var showEditor = getParameterByName('e');
@@ -15,11 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function waitForMouseStop(callback) {
     var timer;
 
-	//var screenContainer = document.getElementById('screenContainer');
-
     function moveMoveHandler(evt) {
-
-		console.log("moving");
 
         evt = evt || window.event;
 
@@ -93,121 +90,63 @@ function refreshEditor(scrollToTop){
 	}
 }
 
-// <!-- ------------------------ -->
-// <!-- ------------------------ -->
+// <!-- ----------------------- -->
+// <!-- --- Sticky ToolBar ---- -->
+// <!-- ----------------------- -->
 
 function initStickyToolbar(){
 	var screenContainer = document.getElementById('leftBlock');
-
-	//screenContainer.removeEventListener( 'mouseenter', showStickToolBar, true );
-	//screenContainer.removeEventListener( 'mouseleave', hideStickToolBar, true );
-
 	screenContainer.addEventListener( 'mouseenter', showStickToolBar, false );
 	screenContainer.addEventListener( 'mouseleave', hideStickToolBar, false );
 }
 
 function showStickToolBar(){
-	//console.log("in");
 	$('#sticky-toolbar').css('opacity', 1);
 }
 
 function hideStickToolBar(){
 	$('#sticky-toolbar').css('opacity', 0);
-	//console.log("out");
 }
 
-// Get URL keys
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+function reloadScene(value){
+	changeScene($('#sceneID').val());
 }
 
+function changeScene(value){
 
+	var sceneID	= value;
+	var sceneNOTsaved = window.sceneCodeChanged;
 
+	if(!sceneNOTsaved){
 
-
-
-
-
-
-function reloadScene(){
-
-	if(window.sceneCodeChanged === false){
-
-		reloadPage(true);
+		reloadIFrame(sceneID, false);
 
 	} else {
 
-		window.saveScenePrompt = true;
-		$('#saveChangesPrompt').trigger('click');
+		var msgHTML = '<div id="confirmDialog"><h3 class="uk-modal-title" style="color: red;">YOU HAVE UNSAVED CHANGES!</h3>'+
+					  '<p>Would you like to save your changes first?</p></div>';
+
+		var confModal = UIkit.modal.confirm(msgHTML, function(){
+			saveSceneCode(false, true);
+		});
+
+		var htmlBtn = '<button class="md-btn md-btn-flat" onClick="ignoreSave();">Ignore</button>';
+		var btnOpt = $('#confirmDialog').closest('.uk-modal-content').next('div');
+		btnOpt.find('.js-modal-confirm-cancel').after(htmlBtn);
+		btnOpt.find('.js-modal-confirm').html('SAVE');
 
 	}
 
-}
-
-function ignoreSave(){
-	$('#closeSavePrompt').trigger('click');
-	reloadPage($('#modal_changesPrompt').attr('data-savescene'));
-}
-
-function reloadPage(saveScenePrompt){
-
-	console.log(saveScenePrompt);
-
-	if(typeof(saveScenePrompt) === "boolean"){
-
-		if(saveScenePrompt === true){
-
-			var sceneID	= $('#sceneID').val();
-			var locationLink = "?fa=studio";
-
-			if(sceneID !== "0"){ locationLink += "&s=" + sceneID + "&e=true"; }
-
-			location.href = locationLink;
-
-		}
-
-	} else {
-
-		console.log("Reload is not going to happen, the new Scene should be load now!");
-
-	}
-
-	$('#modal_changesPrompt').data('saveScene', true); // back to normal save
 }
 
 function runSceneCode(){
-
-	var userSceneID		= $('#userSceneID').val();
-	var sceneID			= $('#sceneID').val();
-	var sceneCode 		= window.sceneCodeEditor.getValue();
-	var sceneResources	= new Array();
-
-	$('.scene_resources').each(function(){
-	    sceneResources.push($(this).val());
-	});
-
-	postData({ url:'?fa=saveScene', callfunction:'reloadIFrame',  Args: {
-		"userSceneID"		: userSceneID,
-		"sceneID"			: sceneID,
-		"sceneCode" 		: sceneCode,
-		"sceneResources" 	: sceneResources,
-		"preview"			: true
-	} });
-
+	saveSceneCode(true, true);
 }
 
-function reloadIFrame(){
-
-	var sceneID		= $('#sceneID').val();
+function reloadIFrame(sceneID, isPreview){
     var frame_id 	= 'threeJSpreview';
-	window.document.getElementById(frame_id).src = "?fa=play&s="+ sceneID +"&prev=true";
-
+	window.document.getElementById(frame_id).src = "?fa=play&s="+ sceneID +"&prev=" + isPreview;
+	loadCodeInEditor(sceneID, isPreview);
 }
 
 function isSceneNOTsaved(status){
@@ -219,7 +158,7 @@ function isSceneNOTsaved(status){
 	window.sceneCodeChanged = status;
 }
 
-function saveSceneCode(){
+function saveSceneCode(isPreview, reloadIt){
 
 	$('#closeSavePrompt').trigger('click');
 
@@ -241,7 +180,8 @@ function saveSceneCode(){
 			"sceneName" 		: sceneName,
 			"sceneCode" 		: sceneCode,
 			"sceneResources" 	: sceneResources,
-			"preview"			: false
+			"preview"			: isPreview,
+			"reload"			: reloadIt
 		} });
 
 	} else {
@@ -257,25 +197,111 @@ function checkSaveStatus(data){
 
 	if(result.status === "ok"){
 
-		$('#success_notify').data("message", result.name + " <b>" + result.type +"!</b>").trigger("click");
+		if(result.preview === "false") {
 
-		var $select = $(document.getElementById('scenesDropDown')).selectize();
-		var dropDownScenes = $select[0].selectize;
+			$('#sceneName').val(result.name);
+			var $select = $('#scenesDropDown').selectize()[0].selectize;
+			var dropSceneID = $select.getValue();
+			var selectizeName = $select.getItem($select.getValue())[0].innerText;
+			if(selectizeName !== result.name){
+				updateDropName(result.sceneID, result.name);
+			}
 
-		var currentSceneName = dropDownScenes.$control[0].innerText;
+			$('#success_notify').data("message", result.name + " <b>" + result.type +"!</b>").trigger("click");
 
-		//selectize.setValue(selectize.search("My Default Value").items[0].id);
-		//dropDownScenes.removeOption(result.id);
-		//dropDownScenes.addOption({value: result.id, text: result.name});
-		//dropDownScenes.addItem(result.id, false);
+			isSceneNOTsaved(false);
 
-		isSceneNOTsaved(false);
-		reloadPage($('#modal_changesPrompt').attr('data-savescene'));
+			if(result.reload === "true"){
+				if(!window.changingScene){
+					reloadIFrame(result.sceneID, false);
+				} else {
+					reloadIFrame(dropSceneID, false);
+					window.changingScene = false;
+				}
+			}
+
+		} else {
+			reloadIFrame(result.sceneID, true);
+		}
 
 	} else {
 		UIkit.modal.alert('<span style="color: red;">ERROR</span><br> the scene <b>'+ result.name +'</b> could not be saved!');
 	}
 
+}
+
+function updateDropName(sceneID, sceneName){
+	window.selectizeUpdating = true;
+	var $selectize = $("#scenesDropDown").selectize()[0].selectize;
+	$selectize.removeOption(sceneID); // Remove Option by Value
+	$selectize.addOption({value: sceneID, text: sceneName}); // Add an Options
+	if(!window.changingScene){
+		$selectize.setValue(sceneID); // Set Default Selected by Value
+	}
+	window.selectizeUpdating = false;
+}
+
+function ignoreSave(){
+	$('#confirmDialog').closest('.uk-modal-content').next('div').find('.js-modal-confirm-cancel').trigger('click');
+	isSceneNOTsaved(false);
+
+	var sceneID = $('#sceneID').val();
+	var sceneName = $('#sceneName').val();
+
+	$('#scene_name').val(sceneName);
+
+	if(!window.changingScene){
+		reloadIFrame(sceneID, false);
+	} else {
+		var $select = $('#scenesDropDown').selectize()[0].selectize;
+		var dropSceneID = $select.getValue();
+		reloadIFrame(dropSceneID, false);
+		window.changingScene = false;
+	}
+
+}
+
+function loadCodeInEditor(sceneID, isPreview){
+	postData({ url:'?fa=loadSelectedScene', callfunction:'loadedCodeReturn',  Args: { "sceneID"	: sceneID, "isPreview" : isPreview } });
+	postData({ url:'?fa=loadSceneResources', callfunction:'buildResources',  Args: { "sceneID"	: sceneID } });
+}
+
+function loadedCodeReturn(code){
+	var saveStatus = window.sceneCodeChanged;
+
+	var $select = $('#scenesDropDown').selectize()[0].selectize;
+	var dropSceneID = $select.getValue();
+	var sceneID = $('#sceneID').val();
+
+	if(dropSceneID !== sceneID) {
+		var selectizeName = $select.getItem($select.getValue())[0].innerText;
+		$('#sceneName').val(selectizeName);
+		$('#scene_name').val(selectizeName);
+		$('#sceneID').val(dropSceneID);
+	}
+
+	window.sceneCodeEditor.setValue(code);
+	window.sceneCodeChanged = saveStatus;
+	isSceneNOTsaved(window.sceneCodeChanged);
+}
+
+function buildResources(resources){
+	var codeRes = JSON.parse(resources), htmlRes = '';
+
+	for(i = 0; i < codeRes.length; i++ ){
+		htmlRes += '<div class="uk-input-group">' +
+				   '<input type="url" class="md-input scene_resources" id="resource_' + i +'" value="' + codeRes[i].uri  + '" placeholder="JavaScript URI" />' +
+				   '<span class="uk-input-group-addon"><a href="javascript:void(0);">';
+		if(i < codeRes.length - 1){
+			htmlRes += '<i class="material-icons md-color-red-500" title="Add more.." data-id="' + i + '" data-type="remove" onClick="insertResourceLine($(this));">&#xE15C;</i>';
+		} else {
+			htmlRes += '<i class="material-icons md-color-light-blue-500" title="Add more.." data-id="' + i + '" data-type="add" onClick="insertResourceLine($(this));">&#xE147;</i>';
+		}
+		htmlRes += '</a></span></div>';
+	}
+
+	$('#inputResources').html(htmlRes);
+	altair_md.init();
 }
 
 function openExtResources(){

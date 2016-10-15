@@ -4,6 +4,7 @@
 <cfparam name="form.userSceneID" default="0">
 <cfparam name="form.sceneID" default="0">
 <cfparam name="form.preview" default="false">
+<cfparam name="form.reload" default="false">
 
 <cfset resourcesListID = "">
 <cfset saveType = "">
@@ -49,7 +50,7 @@
 	<cfset sceneID = sceneID & Mid(charSet, randNum, 1)>
 </cfloop>
 
-<cfif form.preview EQ false>
+<cfif form.preview EQ "false">
 	<cfif sceneCodeID EQ 0>
 
 		<!--- ------------ INSERTING NEW SCENE ------------ --->
@@ -87,13 +88,16 @@
 				,[resources] = <cfqueryparam cfsqltype="cf_sql_varchar" value="#resourcesListID#">
 			WHERE [sceneID] = <cfqueryparam cfsqltype="cf_sql_varchar" value="#sceneCodeID#">
 			AND [userID] = <cfqueryparam cfsqltype="cf_sql_integer" value="#session.userID#">
+			AND [preview] = <cfqueryparam cfsqltype="cf_sql_integer" value="0">
 		</cfquery>
 
 		<cfset saveType = "UPDATED!">
 
 	</cfif>
 
-<cfelse>
+</cfif>
+
+<cfif form.preview EQ "true">
 
 	<!--- ------------ CHECKING FOR PREVIEW DB ENTRY ------------ --->
 	<cfquery datasource="#Application.datasource.rtcsense#" name="scenePreview">
@@ -132,6 +136,7 @@
 			UPDATE [scene_code]
 			SET
 				 [sceneID] = <cfqueryparam cfsqltype="cf_sql_varchar" value="#sceneCodeID#">
+				,[name] = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.sceneName#" maxlength="50">
 				,[code]	= <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.sceneCode#">
 				,[updated] = <cfqueryparam cfsqltype="cf_sql_date" value="#now()#">
 				,[resources] = <cfqueryparam cfsqltype="cf_sql_varchar" value="#resourcesListID#">
@@ -146,4 +151,4 @@
 </cfif>
 
 <!--- ------------ RETURN STATUS ------------ --->
-<cfoutput>{"status":"ok", "type": "#saveType#","id": #form.userSceneID#, "sceneID": "#sceneCodeID#", "name": "#form.sceneName#" }</cfoutput>
+<cfoutput>{"status":"ok", "type": "#saveType#","id": #form.userSceneID#, "sceneID": "#sceneCodeID#", "name": "#form.sceneName#", "preview" : "#form.preview#", "reload" : "#form.reload#" }</cfoutput>

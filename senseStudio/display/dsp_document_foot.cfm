@@ -40,7 +40,7 @@
 		},
 	    extraKeys: {
 	        "Ctrl-S": function(cm) {
-	        	saveSceneCode(false);
+	        	saveSceneCode(false, false);
 	        },
 	        "Ctrl-R": function(cm) {
 	        	runSceneCode(cm.getValue());
@@ -54,6 +54,7 @@
 	window.sceneCodeEditor.on('change',function(cm){
 		if(window.sceneCodeChanged === false){
 			isSceneNOTsaved(true);
+			console.log("Save status Changed! editor...");
 		}
 	});
 
@@ -69,31 +70,14 @@
 		}
 	});
 
-	$select_scenesDropDown = $(document.getElementById('scenesDropDown')).selectize({
-	    onChange: function(value) {
-
-			console.log("whaaaaa!");
-
-			var sceneNOTsaved = window.sceneCodeChanged;
-
-			if(!sceneNOTsaved){
-
-				postData({ url:'?fa=loadSelectedScene', callfunction:'',  Args: {
-				 	"sceneNOTsaved"		: sceneNOTsaved,
-				 	"sceneID"			: value
-				} });
-
-				console.log(value);
-
-			} else {
-
-				$('#modal_changesPrompt').attr('data-savescene', value);
-				$('#saveChangesPrompt').trigger('click');
-
+	 $select_scenesDropDown = $(document.getElementById('scenesDropDown')).selectize({
+	     onChange: function(value) {
+			if(!window.selectizeUpdating){
+				window.changingScene = true;
+	 			changeScene(value);
 			}
-
-		}
-	});
+	 	}
+	 });
 
 <!--- 	window.sceneCodeEditor.setValue(''); --->
 

@@ -11,8 +11,8 @@ $( "#error-dialog" ).dialog({
                .click(function(e) {
             	   $( this ).dialog( "close" );
                    e.preventDefault();
-               });	
-	},		
+               });
+	},
 	buttons: [
 		{
 			text: "Close",
@@ -28,7 +28,7 @@ var popVR = false, popDropDialog = false;
 function waitForMouseStop(stopCallback, movingCallbak) {
     var timer;
     function moveMoveHandler(evt) {
-    	movingCallbak();		
+    	movingCallbak();
         evt = evt || window.event;
         if (timer) { window.clearTimeout(timer); }
         timer = window.setTimeout(function() {
@@ -36,7 +36,7 @@ function waitForMouseStop(stopCallback, movingCallbak) {
 			window.clearTimeout(timer);
         }, 2000);
     }
-    
+
     document.onmousemove = moveMoveHandler;
     document.onmouseout = stopCallback;
     document.ontouchstart = doubletap;
@@ -54,41 +54,41 @@ function doubletap(e) {
 	}
 	mylatesttap = new Date().getTime();
 }
-	
+
 function sceneParameters(scope){
-	
+
 	var VR_effect = false, sControl = true, isActiveFullScreen = false,
 		centerMenu = document.getElementById('centerMenu'),
 		VR_elem = document.getElementById('btn-vr'),
 		RotBtn = document.getElementById('btn-3d-rotation');
-	
+
 	var fullscreenBtn = document.getElementById('btn-fullscreen');
 	fullscreenBtn.addEventListener( 'click', toggleFullScreen, false );
-	
+
 	//var closeBtn = document.getElementById('closeBtn');
 	//closeBtn.addEventListener( 'click', closePopVR, false );
-		
+
 	var cardboard_img = document.getElementById('cardboard_img');
 	cardboard_img.addEventListener( 'click', setVRFX, false );
-	
+
 	var anaglyph_img = document.getElementById('anaglyph_img');
 	anaglyph_img.addEventListener( 'click', setVRFX, false );
-	
+
 	var parallax_img = document.getElementById('parallax_img');
 	parallax_img.addEventListener( 'click', setVRFX, false );
-	
+
 	var default_img = document.getElementById('default_img');
-	default_img.addEventListener( 'click', setVRFX, false );	
-	
+	default_img.addEventListener( 'click', setVRFX, false );
+
 	sceneParam = scope.parameters;
-	
+
     if(sceneParam){
 		for (params in sceneParam) {
-						
+
 			var varValue = sceneParam[params], displayRotBtn = false;
-			
+
 			// ** Render Effect Button ** //
-			
+
 			if(params === "effectVR"){
 
 				var vrFX = 0, oneEffect, stereo = false,
@@ -100,18 +100,18 @@ function sceneParameters(scope){
 				if(sceneParam.effectVR.ParallaxBarrier){ vrFX++; parallax = true; }
 
 				if(vrFX > 0) {
-										
+
 					VR_elem.style.display = 'block';
 
 					VR_elem.addEventListener('click', function() {
 						if(popVR){
 							$( "#VR-menu" ).dialog( "close" );
-							popVR = false;							
+							popVR = false;
 						} else {
 							$( "#VR-menu" ).dialog( "open" );
 							popVR = true;
 						}
-						
+
 						// If only One effect
 						if(vrFX === 1 & VR_effect){
 							renderer = default_renderer;
@@ -126,17 +126,17 @@ function sceneParameters(scope){
 					}, false );
 				}
 
-			}			
-			
+			}
+
 			// ** Sensor Control ToolBar Button ** //
-			
+
 			if(params === "sensorControl"){
 				if(sceneParam[params]){
-					
+
 					var controlStatus = sceneParam[params];
-					
+
 					displayRotBtn = true;
-					
+
 					if(sceneParam[params].init){
 						sControl = true;
 						RotBtn.innerHTML = "touch_app";
@@ -144,7 +144,7 @@ function sceneParameters(scope){
 						sControl = false;
 						RotBtn.innerHTML = "3d_rotation";
 					}
-					
+
 					if(sceneParam[params].showMobileOnly){
 						if(system.isMobileDevice){
 							displayRotBtn = true;
@@ -152,30 +152,30 @@ function sceneParameters(scope){
 							displayRotBtn = false;
 						}
 					}
-					
+
 					if(displayRotBtn){
 
 						RotBtn.style.display = 'block';
 
 						RotBtn.addEventListener( 'click', function(){
-								
+
 							if(sControl){
 								sControl = false;
 								RotBtn.innerHTML = "3d_rotation";
-							} else { 
+							} else {
 								sControl = true;
 								RotBtn.innerHTML = "touch_app";
 							}
 
 							controlStatus.onClick(sControl);
-							
-						}, false );						
+
+						}, false );
 					} else {
 						RotBtn.style.display = 'none';
 					}
 				}
 			}
-			
+
 			if(params == "mediaDevice"){
 				var mediaOptions = varValue;
 				if(mediaOptions){
@@ -192,7 +192,7 @@ function sceneParameters(scope){
 							initCameras(mediaOptions);
 						});
 					}
-					
+
 					if(mediaOptions.autoInit){
 						initCameras(mediaOptions);
 					}
@@ -213,7 +213,7 @@ function sceneParameters(scope){
 					$('.alert-MidiReq').click(function(){
 						initMidi(midiOptions);
 					});
-					
+
 					if(midiOptions.autoInit){
 						initMidi(midiOptions);
 					}
@@ -234,12 +234,12 @@ function sceneParameters(scope){
 					$('.alert-GamepadReq').click(function(){
 						initGamepad(gamepadOptions);
 					});
-					
+
 					if(gamepadOptions.autoInit){
 						initGamepad(gamepadOptions);
 					}
 				}
-			}			
+			}
 
 			if(params == "geolocation"){
 				var gpsOptions = varValue;
@@ -255,29 +255,29 @@ function sceneParameters(scope){
 					$('.alert-GpsReq').click(function(){
 						initGeolocation(gpsOptions);
 					});
-					
+
 					if(gpsOptions.autoInit){
 						initGeolocation(gpsOptions);
 					}
 				}
 			}
-			
+
 			console.log(params);
-			
+
 		}
-		
-    }    
-	    
+
+    }
+
 	function setVRFX(){
 		cardboard_img.className = ""; anaglyph_img.className = ""; parallax_img.className = ""; default_img.className = "";
 		var imgID = this.id, effect = imgID.substring(0, imgID.length - 4);
-	
+
 		if(effect === 'cardboard'){ renderer = CardboardEffect;
 		} else if(effect === 'anaglyph'){ renderer = AnaglyphEffect;
 		} else if(effect === 'parallax'){ renderer = ParallaxBarrier;
 		} else if(effect === 'default') { renderer = default_renderer; }
 		this.className = "selectedVR";
-	
+
 		VR_effect = true;
 	}
 
@@ -285,23 +285,23 @@ function sceneParameters(scope){
 
 		// iOS iframe auto-resize workaround
 		if(scope.system.isIphone){
-			
+
 			if(isActiveFullScreen){
 				isActiveFullScreen = false;
-				parent.toggleFullScreen(false);			
+				parent.toggleFullScreen(false);
 			} else {
 				isActiveFullScreen = true;
 				parent.toggleFullScreen(true);
 			}
-			
-		} else {			
-		
+
+		} else {
+
 			var doc = window.document;
 			var docEl = doc.documentElement;
-			
+
 			var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
 			var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-			
+
 			if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
 				requestFullScreen.call(docEl);
 			} else {
@@ -310,7 +310,7 @@ function sceneParameters(scope){
 
 		}
 
-		
+
 	}
 
 	function initCameras(options){
@@ -330,7 +330,7 @@ function sceneParameters(scope){
 			}
 		}
 	}
-	
+
 	function initMidi(options){
 		if(scope.system.isIphone || navigator.requestMIDIAccess === undefined){
 			$( "#error-dialog" ).dialog('option', 'title', 'Sorry...');
@@ -358,8 +358,8 @@ function sceneParameters(scope){
 			$('.alert-GamepadReq').remove();
 		} else {
 			if(!$('#dropMenu').dialog('isOpen')){
-				if(!scope.gamepad){					
-					scope.gamepad = new GamepadDevice(scope);					
+				if(!scope.gamepad){
+					scope.gamepad = new GamepadDevice(scope);
 					scope.gamepad.reqPads = options.inputs;
 				}
 				scope.gamepad.options = options;
@@ -367,7 +367,7 @@ function sceneParameters(scope){
 			}
 		}
 	}
-	
+
 	function initGeolocation(options){
 		var geolocation = navigator.geolocation ? true : false;
 		if(!geolocation){
@@ -381,23 +381,23 @@ function sceneParameters(scope){
 					scope.geolocation = new Geolocation(scope);
 				}
 				scope.geolocation.options = options;
-				scope.geolocation.init();				
+				scope.geolocation.init();
 			}
 		}
 	}
-	
+
 }
 
 function openSelectDialog(title, skipBtn){
 
 	if(skipBtn){ $('#dropBtnCancel').show();
 	} else { $('#dropBtnCancel').hide(); }
-	
+
 	$( "#dropMenu" ).dialog('option', 'title', title);
 	$( "#dropMenu" ).dialog( "open" );
 	popDropDialog = true;
 	$( "#dropMenu" ).dialog( "open" );
-	
+
 }
 
 function screenUpdated(e) {
@@ -406,9 +406,9 @@ function screenUpdated(e) {
 
 function initElements(scope){
 	$('.ui-dialog-titlebar-close').click(function(){
-		closeVRdialog();	
+		closeVRdialog();
 	});
-	
+
 	// VR Dialog Menu
 	$( "#VR-menu" ).dialog({
 		autoOpen: false,
@@ -421,16 +421,16 @@ function initElements(scope){
 	               .click(function(e) {
 	            	   closeVRdialog();
 	                   e.preventDefault();
-	               });	
-		},		
-		buttons: [
-			{
-				text: "Close",
-				click: function() {
-					closeVRdialog();
-				}
-			}
-		]
+	               });
+		}		
+		// ,buttons: [
+		// 	{
+		// 		text: "Close",
+		// 		click: function() {
+		// 			closeVRdialog();
+		// 		}
+		// 	}
+		// ]
 	});
 
 	// VR Dialog Menu
@@ -446,12 +446,12 @@ function initElements(scope){
 	               .click(function(e) {
 	            	   closeDropDialog();
 	                   e.preventDefault();
-	               });	
-		},		
+	               });
+		},
 		buttons: [
 		    {
 				id: "dropBtnCancel",
-				text: "Skip",				
+				text: "Skip",
 				click: function() {
 					closeDropDialog();
 					var type = $( "#DropDown1 option:selected" ).data('type');
@@ -471,12 +471,12 @@ function initElements(scope){
 		    },
 			{
 				id: "dropBtnStart",
-				text: "Start",				
+				text: "Start",
 				click: function() {
-					
+
 					if($("#DropDown1 option:selected" ).val()){
 						closeDropDialog();
-						
+
 						var type = $( "#DropDown1 option:selected" ).data('type');
 						switch (type) {
 						    case 'midi':
@@ -487,19 +487,19 @@ function initElements(scope){
 						        	outName: $( "#DropDown2 option:selected" ).text(),
 						        	outID: $( "#DropDown2 option:selected" ).val()
 						        }
-								scope.midiDevice.startMidi(midiSelection);					        
+								scope.midiDevice.startMidi(midiSelection);
 						        break;
-						        
+
 						    case 'media':
 						    	console.log("MEDIA!");
-								var selName = $( "#DropDown1 option:selected" ).text();					
+								var selName = $( "#DropDown1 option:selected" ).text();
 								var selId = $( "#DropDown1 option:selected" ).val();
 								scope.audioVideo.startMedia(selName, selId);
 						        break;
 						    case 'gamepad':
 						    	console.log("GAMEPAD!");
 						    	var gamepadSelection = {
-						    		selName : $( "#DropDown1 option:selected" ).text(),					
+						    		selName : $( "#DropDown1 option:selected" ).text(),
 						    		selId : $( "#DropDown1 option:selected" ).val()
 						    	}
 								scope.gamepad.startGamePad(gamepadSelection);
@@ -514,7 +514,7 @@ function initElements(scope){
     $( "#DropDown1" ).selectmenu();
     $( "#DropDown2" ).selectmenu();
     $( "#DropDown3" ).selectmenu();
-    
+
 }
 
 function closeVRdialog(){
@@ -526,10 +526,10 @@ function closeDropDialog(){
 	popDropDialog = false;
 	$( "#dropMenu" ).dialog( "close" );
 }
-	
+
 // --- Sorting Media Error --- //
 function sortError(err){
-	
+
 	if (err.name === 'ConstraintNotSatisfiedError') {
 		return 'The resolution ' + constraints.video.width.exact + 'x' +
 			constraints.video.width.exact + ' px is not supported by your device.';
@@ -539,5 +539,5 @@ function sortError(err){
 	} else {
 		return err;
 	}
-	
+
 }

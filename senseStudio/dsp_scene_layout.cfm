@@ -129,7 +129,7 @@
 				<div class="md-card-toolbar">
 					<div class="md-card-toolbar-actions">
 						<i class="md-icon material-icons md-color-red-500" title="Run Code" onClick="runSceneCode();">&#xE038;</i>
-						<i class="md-icon material-icons md-color-light-blue-500" title="Save/Update" id="saveSceneBtn" onClick="saveSceneCode(false);">&#xE161;</i>
+						<i class="md-icon material-icons md-color-light-blue-500" title="Save/Update" id="saveSceneBtn" onClick="saveSceneCode(false, false);">&#xE161;</i>
 						<i class="md-icon material-icons" title="SandBox On/Off" onClick="showSandBox();">&#xE14C;</i>
 						<div class="md-card-dropdown" data-uk-dropdown="{pos:'bottom-right'}">
 							<i class="md-icon material-icons">&#xE5D4;</i>
@@ -151,6 +151,7 @@
 					</h3>
 
 					<input type="hidden" id="userSceneID" value="#scene.id#">
+					<input type="hidden" id="sceneName" value="#scene.name#">
 					<input type="hidden" id="sceneID" value="#scene.sceneID#">
 
 				</div>
@@ -213,7 +214,7 @@
 										</cfif>
 
 										<cfloop query="qryUserScenes">
-											<option value="#qryUserScenes.id#" <cfif qryUserScenes.sceneID EQ scene.sceneID>selected="selected"</cfif>>#qryUserScenes.name#</option>
+											<option value="#qryUserScenes.sceneID#" <cfif qryUserScenes.sceneID EQ scene.sceneID>selected="selected"</cfif>>#qryUserScenes.name#</option>
 										</cfloop>
 
 									</select>
@@ -418,7 +419,7 @@
 		<button class="md-btn" id="success_notify" data-message="" data-status="success" data-pos="bottom-center" style="display: none;">Success</button>
 
 		<!--- Username Update Form --->
-		<button class="md-btn" id="saveChangesPrompt" data-uk-modal="{target:'#modal_changesPrompt'}" style="display: none;"></button>
+		<button class="md-btn" id="saveChangesPrompt" data-uk-modal="{target:'#modal_changesPrompt', bgClose: false}" style="display: none;"></button>
 		<div class="uk-modal" id="modal_changesPrompt" data-saveScene="true">
 		    <div class="uk-modal-dialog">
 				<button type="button" id="closeSavePrompt" class="uk-modal-close uk-close"></button>
@@ -429,7 +430,7 @@
 		        <div class="uk-modal-footer uk-text-right">
 		            <button type="button" id="closeUsrBtn" class="md-btn md-btn-flat uk-modal-close">Cancel</button>
 		            <button type="button" class="md-btn md-btn-flat" onClick="ignoreSave();">Ignore</button>
-		            <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" onClick="saveSceneCode();">Save</button>
+		            <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" onClick="saveSceneCode(false, true);">Save</button>
 		        </div>
 		    </div>
 		</div>

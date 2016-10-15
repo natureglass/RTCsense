@@ -23,6 +23,10 @@
 		<cfinclude template="senseStudio/act_scene_load.cfm">
 	</cfcase>
 
+    <cfcase value="loadSceneResources">
+        <cfinclude template="senseStudio/act_resources_load.cfm">
+    </cfcase>
+
 	<!--- -------------- RTCsense Studio -------------- --->
 	<!--- --------------------------------------------- --->
 
