@@ -1,14 +1,58 @@
-# 2.15.1-0 / Unreleased
+# 2.17.0-0 / Unreleased
+  *
 
-# 2.15.0 / 2015-01-11
+# 2.17.0 / 2016-04-11
+  * [Added]  `node.addClass()`, `.removeClass()`, and `.toggleClass()`
+  * [Added] ext-filter: matcher-callback for `tree.filterNodes()` may now return 
+    `"branch"` and `"skip"`
+  * [Added] ext-filter: new option`nodata` allows to configure a status node for
+    empty results
+  * [Added] `digits` argument to `node.getIndexHier(separator, digits)`.
+  * [Added] tree option `.tabindex`, default is "0". Pass "" to resolve #577.
+  * [DEPRECATED] tree option `.tabbable`. Use `.tabindex` instead
+  * [Added] New option `mode='firstChild'` for `node.moveTo()`
+  * [Added] New option `digits=<int>` for `node.getIndexHier()`
+  * [Fixed] ext-filter: branch mode honors `autoExpand: true`
+  * [Fixed] #584: aria-labelledby ids not unique
+  * Update to jQuery UI 1.11.4
+
+# 2.16.1 / 2016-03-18
+  * [Added] ext-glyph: new icon for 'nodata' status nodes
+  * [Fixed] #575 missing loading icon in non-bootstrap themes.<br>
+    Glyph themes now display status images in icon span (was expander span before).
+
+# 2.16.0 / 2016-03-16
+  * [Added] ext-clones: new method node.setRefKey(refKey)
+  * [Added] modifier class `.fancytree-fade-expander` to be set on container
+  * [Added] ext-dnd: `.dragExpand()` callback to prevent auto-expand
+  * [Improved] load error reporting
+  * [Improved] bootstrap theme icons and style (samples use bootstrap 3.3)
+  * [Improved] status nodes don't have icons
+  * [Improved] pass data argument to `source` callback
+  * [Improved] Handle exceptions inside `postProcess`
+  * [Improved] #568 ext-dnd: Auto-expanding of collapsed nodes should also work 
+    when dropping is not allowed
+  * [Improved] #567 ext-dnd: fix revert position
+  * [Improved] #565 ext-dnd: fix intermediate display of wrong icon (sending 'over' after 'enter')
+  * [Fixed] #569 node.navigate does not return a Promise object
+  * [Fixed] #563 `tree.reactivate(false)` sets fancytree-treefocus and `tree.reactivate(true)` 
+    doesn't set keyboard focus
+  * [Fixed] #562 Node span tag leaks outside table cell
+  * [Fixed] #526 tree.setFocus() does not set keyboard focus
+  * Updated to jQuery 1.12.1
+  * Updated grunt devDependencies
+  * Add jQuery 3.0 beta to test suite
+  * Added LICENSE.txt to dist
+
+# 2.15.0 / 2016-01-11
   * [Changed] Renamed class `fancytree-statusnode-wait` to `fancytree-statusnode-loading`
   * [Added] new event `renderStatusColumns`
-  * [Deprecated] ext-table option `customStatus`. Use `renderStatusColumns` instead
+  * [DEPRECATED] ext-table option `customStatus`. Use `renderStatusColumns` instead
   * [Added] new event `clickPaging`
   * [Added] new mode `nodata` for use with node.setStatus()
   * [Added] new method `node.addPagingNode()`
   * [Added] new method `node.replaceWith()`
-  * `node.statusNodeType`
+  * [Added] new type 'paging' for `node.statusNodeType`
   * [Added] #542 new method `node.getSelectedNodes()`
   * [Added] Helper class `glyphicon-spin` to allow rotating loading icon with bootstrap
   * [Improved] #356: serialize load requests
@@ -26,10 +70,10 @@
       containing a class name or image url.<br>
       This option existed before, but was stored in the `node.data.icon` namespace,
       and did not accept class names.
-    * [Deprecated] `options.iconClass` callback: use `options.icon` instead
-    * [Deprecated] `options.icons`: use `options.icon` instead
-    * [Deprecated] `node.data.iconclass` option: use `node.icon` instead
-    * [Deprecated] `node.data.icon` option: use `node.icon` instead
+    * [DEPRECATED] `options.iconClass` callback: use `options.icon` instead
+    * [DEPRECATED] `options.icons`: use `options.icon` instead
+    * [DEPRECATED] `node.data.iconclass` option: use `node.icon` instead
+    * [DEPRECATED] `node.data.icon` option: use `node.icon` instead
   * [Added] `tree.clear()` method.
   * [Added] #520 ext-persist: new event `beforeRestore`
   * [Fixed] #533 table-ext: nodeSetExpanded triggers redundant events
@@ -184,7 +228,7 @@
   * [Fixed] #316 Fix hasChildren() when children = []
   * [Fixed] #237 ajax LoadError not updated in StatusNode with Table ext
   * [Fixed] #295 loadKeyPath with multiple paths
-  * [Deprecated] node.isRoot(). Use node.isRootNode() instead
+  * [DEPRECATED] node.isRoot(). Use node.isRootNode() instead
 
 # 2.3.0 / 2014-08-17
   * [CHANGED] renamed (undocumented) event 'loaderror' to 'loadError'
@@ -223,8 +267,8 @@
   * [Fixed] #235: D'n'd helper is displaced, when window is scrolled
   * [Fixed] #241: fromDict() does not update node title
   * [Fixed] relative custom imagePath option
-  * [Deprecated] [ext-filter] Use filterNodes() instead of applyFilter()
-  * [Deprecated] [ext-filter] 'leavesOnly' option removed (see filterNodes())
+  * [DEPRECATED] [ext-filter] Use filterNodes() instead of applyFilter()
+  * [DEPRECATED] [ext-filter] 'leavesOnly' option removed (see filterNodes())
 
 
 # 2.0.0 / 2014-05-01
@@ -265,7 +309,7 @@
 
 # 2.0.0-9 / 2014-04-02
   * [Added] New helper method $.ui.fancytree.escapeHtml().
-  * [Added] [ext-clones] new method node,reRegister(key, refKey)
+  * [Added] [ext-clones] new method node.reRegister(key, refKey)
   * [Added] Support for bower.
   * [Added] dist/ folder to repository
   * [Improved] [ext-edit] handles `<`, `>`, ...

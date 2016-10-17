@@ -94,7 +94,7 @@
 .app_theme_h #header_main {
   background: #d32f2f;
 }
-.app_theme_h.header_double_height:after {
+.app_theme_h .header_double_height:after {
   background: #d32f2f;
 }
 .app_theme_h #top_bar .top_bar_nav > li > a:hover {
@@ -115,20 +115,20 @@
 .app_theme_h #sidebar_main .menu_section > ul > li.current_section > a .menu_title {
   color: #0277bd;
 }
-.app_theme_h.sidebar_mini #sidebar_main .menu_section > ul > li > a > .menu_title {
+.app_theme_h .sidebar_mini #sidebar_main .menu_section > ul > li > a > .menu_title {
   background: #0277bd;
   color: #fff;
 }
-.app_theme_h.sidebar_mini #sidebar_main .menu_section > ul > li:hover.sidebar_submenu {
+.app_theme_h .sidebar_mini #sidebar_main .menu_section > ul > li:hover.sidebar_submenu {
   background: #0277bd;
 }
-.app_theme_h.sidebar_mini #sidebar_main .menu_section > ul > li:hover.sidebar_submenu > a .menu_icon .material-icons {
+.app_theme_h .sidebar_mini #sidebar_main .menu_section > ul > li:hover.sidebar_submenu > a .menu_icon .material-icons {
   color: #fff;
 }
-.app_theme_h.sidebar_mini #sidebar_main .menu_section > ul > li:hover.sidebar_submenu ul {
+.app_theme_h .sidebar_mini #sidebar_main .menu_section > ul > li:hover.sidebar_submenu ul {
   border-left-color: #0277bd;
 }
-.app_theme_h.sidebar_mini #sidebar_main .menu_section > ul > li.current_section > a > .menu_icon .material-icons {
+.app_theme_h .sidebar_mini #sidebar_main .menu_section > ul > li.current_section > a > .menu_icon .material-icons {
   color: #0277bd;
 }
 .app_theme_h .clndr .clndr_days .clndr_days_grid .day.today > span {

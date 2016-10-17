@@ -72,8 +72,8 @@
 				) SELECT @@IDENTITY AS id
 		</cfquery>
 
-		<cfset saveType = "SAVED!">
-		<cfset sceneCodeID = sceneCode.id>
+		<cfset saveType = "NEW">
+		<cfset sceneCodeID = sceneID>
 
 	<cfelse>
 
@@ -91,7 +91,7 @@
 			AND [preview] = <cfqueryparam cfsqltype="cf_sql_integer" value="0">
 		</cfquery>
 
-		<cfset saveType = "UPDATED!">
+		<cfset saveType = "UPDATED">
 
 	</cfif>
 

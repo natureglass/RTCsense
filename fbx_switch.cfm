@@ -27,7 +27,7 @@
         <cfinclude template="senseStudio/act_resources_load.cfm">
     </cfcase>
 
-	<!--- -------------- RTCsense Studio -------------- --->
+	<!--- -------------- RTCsense Player -------------- --->
 	<!--- --------------------------------------------- --->
 
   	<cfcase value="iframe">
@@ -35,8 +35,10 @@
 	</cfcase>
 
   	<cfcase value="play">
+        <cfinclude template="display/init_session.cfm">
 		<cfinclude template="sensePlayer/qry_scene_container.cfm">
-		<cfinclude template="sensePlayer/inc_scene_container.cfm">
+		<cfinclude template="sensePlayer/dsp_scene_container.cfm">
+        <cfinclude template="sensePlayer/inc_websockets.cfm">
 	</cfcase>
 
   	<cfcase value="detectrtc">
@@ -75,7 +77,13 @@
 		<cfinclude template="dsp_rtcsense_fx.cfm">
 	</cfcase>
 
-	<!--- ----------------------------- --->
+	<!--- -------- websockets --------------- --->
+
+    <cfcase value="chat-ping">
+		<cfinclude template="server/chat-ping.cfm">
+	</cfcase>
+
+    <!--- ----------------------------- --->
 
   	<cfcase value="home">
 		<cfinclude template="dsp_layout_home.cfm">

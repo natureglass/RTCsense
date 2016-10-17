@@ -59,10 +59,13 @@
     function scrollbarWidth(){var a=jQuery('<div style="width: 100%; height:200px;">test</div>'),b=jQuery('<div style="width:200px;height:150px; position: absolute; top: 0; left: 0; visibility: hidden; overflow:hidden;"></div>').append(a),c=a[0],a=b[0];jQuery("body").append(a);c=c.offsetWidth;b.css("overflow","scroll");a=a.clientWidth;b.remove();return c-a};
 
     /* random id generator */
-        function randID_generator() {
-            var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-            return randLetter + Date.now();
-        }
+    function randID_generator() {
+        var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+        return randLetter + Date.now();
+    }
+
+    /* detect IE */
+    function detectIE(){var a=window.navigator.userAgent,b=a.indexOf("MSIE ");if(0<b)return parseInt(a.substring(b+5,a.indexOf(".",b)),10);if(0<a.indexOf("Trident/"))return b=a.indexOf("rv:"),parseInt(a.substring(b+3,a.indexOf(".",b)),10);b=a.indexOf("Edge/");return 0<b?parseInt(a.substring(b+5,a.indexOf(".",b)),10):!1};
 
     /* reverse array */
     jQuery.fn.reverse = [].reverse;
@@ -187,7 +190,7 @@
     // 3.2 page init functions
     altair_page_onload = {
         init: function() {
-            $window.load(function(){
+            $window.on('load',function(){
                 // fire functions on window load
                 altair_helpers.hierarchical_show();
                 altair_helpers.hierarchical_slide();
@@ -240,13 +243,13 @@
             $selectize.each(function(){
                 var $this = $(this);
                 if(!$this.hasClass('selectized')) {
-                    var thisPosBottom = $this.attr('data-md-selectize-bottom');
+                    var thisPosBottom = $this.attr('data-md-selectize-bottom'),
+                        sel_plugins = ['tooltip'];
+
                     $this
                         .after('<div class="selectize_fix"></div>')
                         .selectize({
-                            plugins: [
-                                'tooltip'
-                            ],
+                            plugins: sel_plugins,
                             hideSelected: true,
                             dropdownParent: 'body',
                             onDropdownOpen: function($dropdown) {
@@ -274,6 +277,11 @@
                                         duration: 200,
                                         easing: easing_swiftOut
                                     });
+                            },
+                            onChange: function(value) {
+                                if( !!$this.attr('data-parsley-id')) {
+                                    $this.parsley().validate();
+                                }
                             }
                         });
                 }
@@ -321,6 +329,11 @@
                                         duration: 200,
                                         easing: easing_swiftOut
                                     });
+                            },
+                            onChange: function(value) {
+                                if( !!$this.attr('data-parsley-id')) {
+                                    $this.parsley().validate();
+                                }
                             }
                         });
                 }
@@ -1444,13 +1457,13 @@
             if(object.prop('disabled')) {
                 object.closest('.md-input-wrapper').addClass('md-input-wrapper-disabled')
             }
-            if(object.hasClass('label-fixed')) {
-                object.closest('.md-input-wrapper').addClass('md-input-filled')
-            }
             if(object.val() != '') {
                 object.closest('.md-input-wrapper').addClass('md-input-filled')
             } else {
                 object.closest('.md-input-wrapper').removeClass('md-input-filled')
+            }
+            if(object.hasClass('label-fixed')) {
+                object.closest('.md-input-wrapper').addClass('md-input-filled')
             }
         },
         fab_speed_dial: function() {
@@ -1785,24 +1798,28 @@
             });
         },
         ie_fix: function() {
-
-            if (Function('/*@cc_on return document.documentMode===10@*/')()){
-                $html.addClass('lt-ie10');
-            }
-
-            if($html.hasClass('lt-ie10') || $html.hasClass('lte-ie9')) {
+            if(detectIE()) {
+                $('svg,canvas,video').each(function() {
+                    $(this).css('height', 0);
+                });
                 setTimeout(function() {
                     $('svg,canvas,video').each(function() {
                         var $this = $(this),
-                            height = $(this).attr('height');
+                            height = $(this).attr('height'),
+                            width = $(this).attr('width');
+
                         if(height) {
                             $this.css('height', height);
                         }
-                        if($this.hasClass('peity')) {
-                            $this.prev('span').peity()
+                        if(width) {
+                            $this.css('width', width);
+                        }
+                        var peity = $this.prev('.peity_data');
+                        if(peity.length) {
+                            peity.peity().change()
                         }
                     });
-                }, 3000)
+                }, 1000)
             }
         }
     };

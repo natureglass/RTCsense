@@ -241,7 +241,7 @@
   margin: 8px 8px 0 0;
   display: block;
 }
-.uk-modal-card-fullscreen .md-card-toolbar {
+.uk-modal-card-fullscreen > .uk-modal-dialog > .md-card > .md-card-toolbar {
   position: fixed;
   top: 0;
   left: 0;
@@ -249,7 +249,7 @@
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   z-index: 10;
 }
-.uk-modal-card-fullscreen .md-card-content {
+.uk-modal-card-fullscreen > .uk-modal-dialog > .md-card > .md-card-content {
   position: absolute;
   top: 48px;
   bottom: 0;
@@ -680,7 +680,7 @@
 }
 /* ------------ Components ------------ */
 /* accordion */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Accordion
  ========================================================================== */
@@ -694,7 +694,7 @@
   font-size: 18px;
   line-height: 24px;
   cursor: pointer;
-  border: 1px solid #dddddd;
+  border: 1px solid #ddd;
   border-radius: 4px;
 }
 /* Sub-object: `uk-accordion-content`
@@ -803,7 +803,7 @@
   padding: 24px;
 }
 /* dotnav */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Dotnav
  ========================================================================== */
@@ -928,7 +928,7 @@
   float: none;
 }
 /* progress */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Progress
  ========================================================================== */
@@ -970,7 +970,7 @@
   transition: width 0.6s ease;
   /* 2 */
   font-size: 12px;
-  color: #ffffff;
+  color: #fff;
   text-align: center;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
@@ -1050,7 +1050,7 @@
   background-color: #ffa000;
 }
 /* htmleditor */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: HTML editor
  ========================================================================== */
@@ -1097,14 +1097,14 @@
   padding: 0 15px;
   line-height: 40px;
   /* 2 */
-  color: #444444;
+  color: #444;
   font-size: 11px;
   cursor: pointer;
   margin-top: -1px;
   margin-left: -1px;
   border: 1px solid transparent;
   border-bottom-width: 0;
-  text-shadow: 0 1px 0 #ffffff;
+  text-shadow: 0 1px 0 #fff;
 }
 /*
  * Hover
@@ -1114,7 +1114,7 @@
 .uk-htmleditor-navbar-nav > li:hover > a,
 .uk-htmleditor-navbar-nav > li > a:focus {
   background-color: #fafafa;
-  color: #444444;
+  color: #444;
   outline: none;
   /* 2 */
   position: relative;
@@ -1125,8 +1125,8 @@
 }
 /* OnClick */
 .uk-htmleditor-navbar-nav > li > a:active {
-  background-color: #eeeeee;
-  color: #444444;
+  background-color: #eee;
+  color: #444;
   border-left-color: rgba(0, 0, 0, 0.1);
   border-right-color: rgba(0, 0, 0, 0.1);
   border-top-color: rgba(0, 0, 0, 0.2);
@@ -1134,7 +1134,7 @@
 /* Active */
 .uk-htmleditor-navbar-nav > li.uk-active > a {
   background-color: #fafafa;
-  color: #444444;
+  color: #444;
   border-left-color: rgba(0, 0, 0, 0.1);
   border-right-color: rgba(0, 0, 0, 0.1);
   border-top-color: rgba(0, 0, 0, 0.1);
@@ -1153,10 +1153,10 @@
 /* Sub-object `uk-htmleditor-content`
  ========================================================================== */
 .uk-htmleditor-content {
-  border-left: 1px solid #dddddd;
-  border-right: 1px solid #dddddd;
-  border-bottom: 1px solid #dddddd;
-  background: #ffffff;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 }
@@ -1218,7 +1218,7 @@
   width: 50%;
 }
 [data-mode='split'] .uk-htmleditor-code {
-  border-right: 1px solid #eeeeee;
+  border-right: 1px solid #eee;
 }
 /* Sub-object `uk-htmleditor-iframe`
  ========================================================================== */
@@ -1306,7 +1306,7 @@
   top: 38px;
 }
 /* upload */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Form file
  ========================================================================== */
@@ -1340,7 +1340,7 @@
   /* 2 */
   font-size: 500px;
 }
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Upload
  ========================================================================== */
@@ -1368,6 +1368,9 @@
 div.uk-form-file {
   padding: 3px 2px;
 }
+div.uk-form-file.md-btn {
+  padding: 2px 12px;
+}
 .uk-form-file input[type="file"] {
   position: absolute;
   top: 0;
@@ -1382,7 +1385,7 @@ div.uk-form-file {
   cursor: pointer;
 }
 /* form select */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Form select
  ========================================================================== */
@@ -1439,6 +1442,11 @@ div.uk-form-file {
   font: 400 16px / 22px "Roboto", sans-serif;
   color: #fff;
   text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 0 4px;
+}
+.uk-datepicker-nav .uk-form-select + .uk-form-select {
+  margin-left: 2px;
 }
 .uk-datepicker-previous {
   float: left;
@@ -1541,7 +1549,7 @@ a.uk-datepicker-table-muted {
   color: #727272;
 }
 /* nestable */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Nestable
  ========================================================================== */
@@ -1607,7 +1615,7 @@ a.uk-datepicker-table-muted {
   bottom: 0;
   left: 0;
   right: 0;
-  border: 1px dashed #dddddd;
+  border: 1px dashed #ddd;
   opacity: 1;
 }
 /* Empty List
@@ -1633,6 +1641,10 @@ a.uk-datepicker-table-muted {
 .uk-nestable-moving,
 .uk-nestable-moving * {
   cursor: move;
+}
+/* Fixes dragging items over iframes */
+.uk-nestable-moving iframe {
+  pointer-events: none;
 }
 /* [data-nestable-action='toggle']
  ========================================================================== */
@@ -1676,7 +1688,7 @@ a.uk-datepicker-table-muted {
   background: #f5f5f5;
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  text-shadow: 0 1px 0 #ffffff;
+  text-shadow: 0 1px 0 #fff;
 }
 .uk-nestable-handle {
   margin-right: 16px;
@@ -1722,7 +1734,7 @@ a.uk-datepicker-table-muted {
   content: "\e313";
 }
 /* notify */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Notify
  ========================================================================== */
@@ -1775,12 +1787,12 @@ a.uk-datepicker-table-muted {
   position: relative;
   margin-bottom: 10px;
   padding: 15px;
-  background: #444444;
-  color: #ffffff;
+  background: #444;
+  color: #fff;
   font-size: 16px;
   line-height: 22px;
   cursor: pointer;
-  border: 1px solid #444444;
+  border: 1px solid #444;
   border-radius: 4px;
 }
 /* Close in notify
@@ -1956,7 +1968,7 @@ a.uk-datepicker-table-muted {
   }
 }
 /* slideshow */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Slideshow
  ========================================================================== */
@@ -2102,10 +2114,19 @@ a.uk-datepicker-table-muted {
   animation: uk-fade 0.5s ease-in-out reverse;
 }
 /* slider */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Slider
  ========================================================================== */
+/*
+ * RTL Compatibility
+ */
+[data-uk-slider] {
+  direction: ltr;
+}
+html[dir="rtl"] .uk-slider > * {
+  direction: rtl;
+}
 /*
  * 1. Create position context
  * 2. Create stacking context to prevent z-index issues with other components
@@ -2200,7 +2221,7 @@ a.uk-datepicker-table-muted {
   opacity: 1;
 }
 /* slidenav */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Slidenav
  ========================================================================== */
@@ -2299,7 +2320,7 @@ a.uk-datepicker-table-muted {
   color: rgba(255, 255, 255, 0.9);
 }
 /* tooltips */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Tooltip
  ========================================================================== */
@@ -2320,7 +2341,7 @@ a.uk-datepicker-table-muted {
   max-width: 200px;
   padding: 5px 8px;
   /* 4 */
-  background: #333333;
+  background: #333;
   color: rgba(255, 255, 255, 0.7);
   font-size: 12px;
   line-height: 18px;
@@ -2339,7 +2360,7 @@ a.uk-datepicker-table-muted {
   width: 0;
   height: 0;
   /* 1 */
-  border: 5px dashed #333333;
+  border: 5px dashed #333;
 }
 /* Direction modifiers
  ========================================================================== */
@@ -2354,7 +2375,7 @@ a.uk-datepicker-table-muted {
   border-bottom: none;
   border-left-color: transparent;
   border-right-color: transparent;
-  border-top-color: #333333;
+  border-top-color: #333;
 }
 /*
  * Bottom
@@ -2367,7 +2388,7 @@ a.uk-datepicker-table-muted {
   border-top: none;
   border-left-color: transparent;
   border-right-color: transparent;
-  border-bottom-color: #333333;
+  border-bottom-color: #333;
 }
 /*
  * Top/Bottom center
@@ -2402,7 +2423,7 @@ a.uk-datepicker-table-muted {
   border-right: none;
   border-top-color: transparent;
   border-bottom-color: transparent;
-  border-left-color: #333333;
+  border-left-color: #333;
 }
 /*
  * Right
@@ -2415,7 +2436,7 @@ a.uk-datepicker-table-muted {
   border-left: none;
   border-top-color: transparent;
   border-bottom-color: transparent;
-  border-right-color: #333333;
+  border-right-color: #333;
 }
 .uk-tooltip {
   background: #424242;
@@ -2596,7 +2617,7 @@ a.uk-datepicker-table-muted {
   display: block;
 }
 /* sortable */
-/*! UIkit 2.26.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.26.4 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 /* ========================================================================
    Component: Sortable
  ========================================================================== */
@@ -2659,6 +2680,10 @@ a.uk-datepicker-table-muted {
 .uk-sortable-moving,
 .uk-sortable-moving * {
   cursor: move;
+}
+/* Fixes dragging items over iframes */
+.uk-sortable-moving iframe {
+  pointer-events: none;
 }
 .uk-sortable > * {
   -ms-touch-action: auto;
@@ -3201,6 +3226,20 @@ body > .content-preloader.preloader-active {
 .md-btn.uk-active,
 .uk-button-dropdown.uk-open > .md-btn {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+.md-btn.uk-active {
+  position: relative;
+}
+.md-btn.uk-active:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  content: '';
+  border: 2px solid rgba(0, 0, 0, 0.4);
+  border-radius: 2px;
 }
 .md-btn-flat {
   box-shadow: none !important;
@@ -7632,7 +7671,7 @@ button.md-icon {
 .icheckbox_md.hover.checked,
 .icheckbox_md.checked {
   background: #009688;
-  border-color: #009688;
+  border-color: #009688 !important;
 }
 .icheckbox_md.disabled:after {
   display: none;
@@ -7688,7 +7727,7 @@ button.md-icon {
   transition: all 200ms ease-out;
 }
 .iradio_md.checked {
-  border-color: #009688;
+  border-color: #009688 !important;
 }
 .iradio_md.checked:after {
   background: #009688;
@@ -9063,55 +9102,156 @@ body.CodeMirror-fullscreen-active .CodeMirror-fullscreen #code_editor_close {
   white-space: nowrap !important;
 }
 /* plugins */
-.md-colVis li.ColVis_Special {
-  cursor: pointer;
+.dt_colVis_buttons:before,
+.dt_colVis_buttons:after {
+  content: " ";
+  display: table;
 }
-.DTTT {
-  margin-bottom: 8px;
+.dt_colVis_buttons:after {
+  clear: both;
 }
-.DTTT_btn {
-  position: relative;
-  margin-bottom: 8px;
+.dt_colVis_buttons:before,
+.dt_colVis_buttons:after {
+  content: " ";
+  display: table;
 }
-.DTTT_Print {
-  overflow-y: auto !important;
-  height: auto;
-  padding-top: 0;
+.dt_colVis_buttons:after {
+  clear: both;
 }
-.DTTT_Print #page_content {
-  display: block !important;
-  height: auto;
-  overflow-y: hidden;
-  margin-left: 0 !important;
-}
-.DTTT_Print #page_content_inner {
-  padding: 24px;
-}
-.DTTT_print_info {
+div.dt-button-info {
   position: fixed;
   top: 50%;
   left: 50%;
   width: 400px;
-  height: 150px;
+  margin-top: -100px;
   margin-left: -200px;
-  margin-top: -75px;
+  background-color: #fff;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  border-radius: 3px;
   text-align: center;
+  z-index: 21;
+}
+div.dt-button-info h2 {
+  padding: 16px;
+  margin: 0;
+  font: 400 20px / 24px "Roboto", sans-serif;
+}
+div.dt-button-info > div {
+  padding: 16px 24px;
+}
+.dt-button embed {
+  outline: none;
+}
+div.dt-buttons {
+  position: relative;
+  float: left;
+}
+div.dt-buttons.buttons-right {
+  float: right;
+}
+.dt-button-collection.uk-dropdown {
+  margin-top: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 1 !important;
+  -webkit-transform: scale(1);
+  transform: scale(1);
+  z-index: 2020;
+}
+.dt-button-collection.uk-dropdown .dt-button.buttons-columnVisibility a {
+  position: relative;
+  padding-left: 32px;
   color: #212121;
-  padding: 24px 32px;
-  background: #fff;
-  border-radius: 4px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-  box-sizing: border-box;
-}
-.DTTT_print_info h6 {
-  font-weight: normal;
-  font-size: 28px;
-  line-height: 28px;
-  color: #7cb342;
-}
-.DTTT_print_info p {
-  font-size: 16px;
+  font-size: 15px;
   line-height: 20px;
+}
+.dt-button-collection.uk-dropdown .dt-button.buttons-columnVisibility a:before {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  content: '\e835';
+  font-family: "Material Icons";
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.54);
+}
+.dt-button-collection.uk-dropdown .dt-button.buttons-columnVisibility.active a:before {
+  content: '\e834';
+  color: #009688;
+}
+div.dt-button-collection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150px;
+  margin-top: 3px;
+  padding: 8px 8px 4px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  background-color: white;
+  overflow: hidden;
+  z-index: 2002;
+  border-radius: 5px;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+  -webkit-column-gap: 8px;
+  -moz-column-gap: 8px;
+  column-gap: 8px;
+}
+div.dt-button-collection.fixed {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -75px;
+  border-radius: 0;
+}
+div.dt-button-collection.fixed.two-column {
+  margin-left: -150px;
+}
+div.dt-button-collection.fixed.three-column {
+  margin-left: -225px;
+}
+div.dt-button-collection.fixed.four-column {
+  margin-left: -300px;
+}
+div.dt-button-collection > * {
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+div.dt-button-collection.two-column {
+  width: 300px;
+  padding-bottom: 1px;
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  column-count: 2;
+}
+div.dt-button-collection.three-column {
+  width: 450px;
+  padding-bottom: 1px;
+  -webkit-column-count: 3;
+  -moz-column-count: 3;
+  column-count: 3;
+}
+div.dt-button-collection.four-column {
+  width: 600px;
+  padding-bottom: 1px;
+  -webkit-column-count: 4;
+  -moz-column-count: 4;
+  column-count: 4;
+}
+div.dt-button-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2001;
+  background: rgba(0, 0, 0, 0.08);
+}
+@media screen and (max-width: 640px) {
+  div.dt-buttons {
+    float: none !important;
+    text-align: center;
+  }
 }
 /* fullcalendar */
 .fc-state-default {
@@ -10213,7 +10353,7 @@ div.ganttview .ui-resizable-w {
 .tablesorter-altair .tablesorter-processing {
   background-position: center center !important;
   background-repeat: no-repeat !important;
-  background-image: url(assets/img/spinners/spinner.gif) !important;
+  background-image: url(../assets/img/spinners/spinner.gif) !important;
 }
 .tablesorter-altair caption {
   background-color: #fff;
@@ -10282,6 +10422,12 @@ div.ganttview .ui-resizable-w {
 }
 .tablesorter-altair td:nth-child(3) .ts-align-right i {
   color: #e53935;
+}
+.tablesorter-altair input[type="search"]::-webkit-search-decoration,
+.tablesorter-altair input[type="search"]::-webkit-search-cancel-button,
+.tablesorter-altair input[type="search"]::-webkit-search-results-button,
+.tablesorter-altair input[type="search"]::-webkit-search-results-decoration {
+  display: none;
 }
 .tablesorter .filtered {
   display: none;
@@ -10606,6 +10752,35 @@ a.waves-effect .waves-ripple {
 }
 div.kineticjs-content {
   position: absolute !important;
+}
+.cr_preview {
+  overflow: hidden;
+  border: 1px solid #555;
+  margin: 8px 8px 8px 0;
+}
+.cr_preview_lg {
+  width: 264px;
+  height: 148px;
+}
+.cr_preview_md {
+  width: 140px;
+  height: 78px;
+}
+.cr_preview_sm {
+  width: 68px;
+  height: 48px;
+}
+.cr_preview_xs {
+  width: 36px;
+  height: 36px;
+}
+.canvasModalImage {
+  margin: 0 auto;
+  text-align: center;
+}
+.canvasModalImage > * {
+  border: 1px solid #ccc;
+  padding: 4px;
 }
 /* 7. partials (header,sidebars,top bar) ============= */
 /* main header */
@@ -12025,7 +12200,6 @@ div.kineticjs-content {
 }
 #scrum_board {
   height: 100%;
-  min-width: 976px;
   padding: 0 4px;
   box-sizing: border-box;
   overflow: hidden;
@@ -12033,8 +12207,7 @@ div.kineticjs-content {
 #scrum_board > div {
   height: 100%;
   float: left;
-  width: 25%;
-  min-width: 240px;
+  width: 320px;
   box-sizing: border-box;
   position: relative;
   padding: 46px 0 8px;

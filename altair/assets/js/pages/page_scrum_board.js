@@ -1,17 +1,21 @@
 $(function() {
+    // set width for scrum board container
+    altair_scrum_board.init();
     // draggable tasks
     altair_scrum_board.draggable_tasks();
 });
 
 altair_scrum_board = {
+    init: function() {
+        var $scrumBoard = $('#scrum_board'),
+            childWidth = $scrumBoard.children('div').width(),
+            childsCount = $scrumBoard.children('div').length;
+
+            $scrumBoard.width(childWidth * childsCount);
+    },
     draggable_tasks: function() {
 
-        var drake = dragula([
-            $('#scrum_column_todo')[0],
-            $('#scrum_column_inAnalysis')[0],
-            $('#scrum_column_inProgress')[0],
-            $('#scrum_column_done')[0]
-        ]);
+        var drake = dragula($('.scrum_column > div').toArray());
 
         var containers = drake.containers,
             length = containers.length;

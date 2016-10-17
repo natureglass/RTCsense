@@ -9,8 +9,8 @@
  * Released under the MIT license
  * https://github.com/mar10/fancytree/wiki/LicenseInfo
  *
- * @version 2.15.0
- * @date 2016-01-11T21:43
+ * @version 2.17.0
+ * @date 2016-04-11T20:10
  */
 
 ;(function($, window, document, undefined) {
@@ -27,7 +27,7 @@ function _getIcon(opts, type){
 
 $.ui.fancytree.registerExtension({
 	name: "glyph",
-	version: "0.3.0",
+	version: "0.4.0",
 	// Default options for this extension.
 	options: {
 		map: {
@@ -43,6 +43,7 @@ $.ui.fancytree.registerExtension({
 			expanderClosed: "icon-caret-right",
 			expanderLazy: "icon-angle-right",
 			expanderOpen: "icon-caret-down",
+			nodata: "icon-meh",
 			noExpander: "",
 			dragHelper: "icon-caret-right",
 			dropMarker: "icon-caret-right",
@@ -63,25 +64,22 @@ $.ui.fancytree.registerExtension({
 		tree.$container.addClass("fancytree-ext-glyph");
 	},
 	nodeRenderStatus: function(ctx) {
-		var icon, span,
+		var icon, res, span,
 			node = ctx.node,
 			$span = $(node.span),
 			opts = ctx.options.glyph,
-			// callback = opts.icon,
-			map = opts.map
-			// $span = $(node.span)
-			;
+			map = opts.map;
 
-		this._superApply(arguments);
+		res = this._superApply(arguments);
 
 		if( node.isRoot() ){
-			return;
+			return res;
 		}
 		span = $span.children("span.fancytree-expander").get(0);
 		if( span ){
-			if( node.isLoading() ){
-				icon = "loading";
-			}else if( node.expanded ){
+			// if( node.isLoading() ){
+				// icon = "loading";
+			if( node.expanded ){
 				icon = "expanderOpen";
 			}else if( node.isUndefined() ){
 				icon = "expanderLazy";
@@ -107,33 +105,35 @@ $.ui.fancytree.registerExtension({
 		// that might be set by opts.icon callbacks)
 		span = $span.children("span.fancytree-icon").get(0);
 		if( span ){
-			if( node.folder ){
+			if( node.statusNodeType ){
+				icon = _getIcon(opts, node.statusNodeType); // loading, error
+			}else if( node.folder ){
 				icon = node.expanded ? _getIcon(opts, "folderOpen") : _getIcon(opts, "folder");
 			}else{
 				icon = node.expanded ? _getIcon(opts, "docOpen") : _getIcon(opts, "doc");
 			}
 			span.className = "fancytree-icon " + icon;
 		}
+		return res;
 	},
 	nodeSetStatus: function(ctx, status, message, details) {
-		var span,
+		var res, span,
 			opts = ctx.options.glyph,
 			node = ctx.node;
 
-		this._superApply(arguments);
+		res = this._superApply(arguments);
 
-		if(node.parent){
-			span = $("span.fancytree-expander", node.span).get(0);
-		}else{
-			span = $(".fancytree-statusnode-loading, .fancytree-statusnode-error", node[this.nodeContainerAttrName])
-				.find("span.fancytree-expander").get(0);
+		if( status === "error" || status === "loading" || status === "nodata" ){
+			if(node.parent){
+				span = $("span.fancytree-expander", node.span).get(0);
+				span.className = "fancytree-expander " + _getIcon(opts, status);
+			}else{ //
+				span = $(".fancytree-statusnode-" + status, node[this.nodeContainerAttrName])
+					.find("span.fancytree-icon").get(0);
+				span.className = "fancytree-icon " + _getIcon(opts, status);
+			}
 		}
-		if( status === "loading"){
-			// $("span.fancytree-expander", ctx.node.span).addClass(_getIcon(opts, "loading"));
-			span.className = "fancytree-expander " + _getIcon(opts, "loading");
-		}else if( status === "error"){
-			span.className = "fancytree-expander " + _getIcon(opts, "error");
-		}
+		return res;
 	}
 });
 }(jQuery, window, document));

@@ -134,3 +134,8 @@ body {
 .CodeMirror-scroll { min-height: 256px; }
 
 /* ***************************************** */
+
+.uk-nav-disabled > a {
+    pointer-events:none;
+    opacity:0.4;
+}

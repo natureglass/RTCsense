@@ -4,7 +4,7 @@ $(function() {
     altair_datatables.dt_scroll();
     altair_datatables.dt_individual_search();
     altair_datatables.dt_colVis();
-    altair_datatables.dt_tableTools();
+    altair_datatables.dt_tableExport();
 });
 
 altair_datatables = {
@@ -54,101 +54,61 @@ altair_datatables = {
         }
     },
     dt_colVis: function() {
-        var $dt_colVis = $('#dt_colVis');
+        var $dt_colVis = $('#dt_colVis'),
+            $dt_buttons = $dt_colVis.prev('.dt_colVis_buttons');
+
         if($dt_colVis.length) {
 
             // init datatables
-            var colVis_table = $dt_colVis.DataTable();
-
-            // init colVis
-            var colvis = new $.fn.dataTable.ColVis( colVis_table, {
-                buttonText: 'Select columns',
-                exclude: [ 0 ],
-                restore: "Restore",
-                showAll: "Show all",
-                showNone: "Show none"
+            var colVis_table = $dt_colVis.DataTable({
+                buttons: [
+                    {
+                        extend: 'colvis',
+                        fade: 0
+                    }
+                ]
             });
 
-            // custom colVis elements
-            var _colVis_button = $(colvis.dom.button).off('click').attr('class','md-btn md-btn-colVis');
-            var _colVis_wrapper = $('<div class="uk-button-dropdown uk-text-left" data-uk-dropdown="{mode:\'click\'}"/>').append(_colVis_button);
-            var _colVis_wrapper_outer = $('<div class="md-colVis uk-text-right"/>').append(_colVis_wrapper);
-            var _colVis_collection = $(colvis.dom.collection);
-
-            // Modify colVis collection
-            $(_colVis_collection)
-                .attr({
-                    'class': 'md-list-inputs',
-                    'style': ''
-                })
-                .find('input')
-                .each(function(index) {
-                    var inputClone = $(this).clone().hide();
-                    $(this).attr({
-                        'class': 'data-md-icheck',
-                        'id': 'col_' + index
-                    }).css({
-                        'float': 'left'
-                    }).before(inputClone)
-                })
-                .end()
-                .find('span').unwrap()
-                .each(function() {
-                    var thisText = $(this).text();
-                    var thisInputId =  $(this).prev('input').attr('id');
-                    $(this)
-                        .after('<label for="' + thisInputId + '">' + thisText + '</label>')
-                        .end()
-                })
-                .remove();
-
-            // append collection to collection wrapper
-            var _colVis_collection_wrapper = $('<div class="uk-dropdown uk-dropdown-flip"/>').append(_colVis_collection);
-
-            // append collection wrapper to colVis wrapper
-            _colVis_wrapper
-                .append(_colVis_collection_wrapper);
-
-            // insert colVis elements before datatable header
-            $dt_colVis.closest('.dt-uikit').find('.dt-uikit-header').before(_colVis_wrapper_outer);
-
-            // initialize styled checkboxes in dropdown
-            altair_md.checkbox_radio();
-
-            // custom events
-            $dt_colVis.closest('.dt-uikit').find('.md-colVis .data-md-icheck').on('ifClicked',function() {
-                $(this).closest('li').click();
-            });
-
-            $dt_colVis.closest('.dt-uikit').find('.md-colVis .ColVis_ShowAll,.md-colVis .ColVis_Restore').on('click',function() {
-                $(this).closest('.uk-dropdown').find('.data-md-icheck').prop('checked',true).iCheck('update')
-            });
-
-            $dt_colVis.closest('.dt-uikit').find('.md-colVis .ColVis_ShowNone').on('click',function() {
-                $(this).closest('.uk-dropdown').find('.data-md-icheck').prop('checked',false).iCheck('update')
-            });
+            colVis_table.buttons().container().appendTo( $dt_buttons );
 
         }
     },
-    dt_tableTools: function() {
-        var $dt_tableTools = $('#dt_tableTools');
-        if($dt_tableTools.length) {
-            var table_tableTools = $dt_tableTools.DataTable();
+    dt_tableExport: function() {
+        var $dt_tableExport = $('#dt_tableExport'),
+            $dt_buttons = $dt_tableExport.prev('.dt_colVis_buttons');
 
-            var tt = new $.fn.dataTable.TableTools( table_tableTools, {
-                "sSwfPath": "bower_components/datatables-tabletools/swf/copy_csv_xls_pdf.swf"
+        if($dt_tableExport.length) {
+            var table_export = $dt_tableExport.DataTable({
+                buttons: [
+                    {
+                        extend:    'copyHtml5',
+                        text:      '<i class="uk-icon-files-o"></i> Copy',
+                        titleAttr: 'Copy'
+                    },
+                    {
+                        extend:    'print',
+                        text:      '<i class="uk-icon-print"></i> Print',
+                        titleAttr: 'Print'
+                    },
+                    {
+                        extend:    'excelHtml5',
+                        text:      '<i class="uk-icon-file-excel-o"></i> XLSX',
+                        titleAttr: ''
+                    },
+                    {
+                        extend:    'csvHtml5',
+                        text:      '<i class="uk-icon-file-text-o"></i> CSV',
+                        titleAttr: 'CSV'
+                    },
+                    {
+                        extend:    'pdfHtml5',
+                        text:      '<i class="uk-icon-file-pdf-o"></i> PDF',
+                        titleAttr: 'PDF'
+                    }
+                ]
             });
 
-            $( tt.fnContainer() ).insertBefore( $dt_tableTools.closest('.dt-uikit').find('.dt-uikit-header'));
-
-            $body.on('click',function(e) {
-                if($body.hasClass('DTTT_Print')) {
-                    if ( !$(e.target).closest(".DTTT").length && !$(e.target).closest(".uk-table").length) {
-                        var esc = $.Event("keydown", { keyCode: 27 });
-                        $body.trigger(esc);
-                    }
-                }
-            })
+            table_export.buttons().container().appendTo( $dt_buttons );
 
         }
     }

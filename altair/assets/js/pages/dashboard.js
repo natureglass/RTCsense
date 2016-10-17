@@ -21,7 +21,7 @@ altair_dashboard = {
         altair_dashboard.maplace_maps();
 
         // run animations after page is fully loaded
-        $window.load(function(){
+        $window.on('load',function(){
             altair_dashboard.circular_statistics();
             altair_dashboard.count_animated();
         });

@@ -3,9 +3,11 @@
 <cfscript>
 	THIS.clientmanagement	= "Yes";
 	THIS.sessionmanagement	= "Yes";
-	THIS.applicationtimeout	= CreateTimeSpan(0,0,35,0);
-	THIS.sessiontimeout		= CreateTimeSpan(0,0,25,0);
+	THIS.applicationtimeout	= CreateTimeSpan(1,0,0,0);
+	THIS.sessiontimeout		= CreateTimeSpan(1,0,0,0);
 	THIS.SessionManagement 	= true;
+
+	THIS.wschannels = [{ name="chat", cfclistener="server/myChannelListener"}];
 
 	if(Find("127.0.0.1",cgi.HTTP_HOST) OR FindNoCase("localhost",cgi.HTTP_HOST) or find('192.168.254' ,cgi.HTTP_HOST)){
 		THIS.environment="development";
@@ -104,21 +106,23 @@
 		<cfabort>
 	</cffunction>
 
-<!--- 	<cffunction name="onWSAuthenticate">
-		<cfargument name="extraInfo" type="string">
-		<cfargument name="clientType" type="string">
+	<!--- WebSockets Authantication --->
+	<cffunction name="onWSAuthenticate" output="true">
+		<!--- <cfargument name="username" type="string"> --->
+		<cfargument name="sceneID" type="string">
+		<cfargument name="userID" type="string">
+
 		<cfargument name="connectionInfo" type="struct">
-		<cfset extraInfo = deserializeJSON(extraInfo)>
 
 	    <!--- Put some authentication logic here --->
-	    <cfset connectionInfo.username = arguments.extraInfo.username>
-	    <cfset connectionInfo.password = arguments.extraInfo.password>
-		<cfset connectionInfo.userid = arguments.extraInfo.clientid>
-	    <cfset connectionInfo.clientType = arguments.clientType>
-	    <cfset connectionInfo.videoStreamID = 0>
+		<!--- <cfset connectionInfo.username = arguments.username> --->
+		<cfset connectionInfo.sceneID = arguments.sceneID>
+		<cfset connectionInfo.userID = arguments.userID>
+
 		<cfset arguments.connectionInfo.authenticated = true>
+
 	    <cfreturn true>
 
-	</cffunction> --->
+	</cffunction>
 
 </cfcomponent>

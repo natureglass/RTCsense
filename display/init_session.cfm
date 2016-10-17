@@ -1,3 +1,4 @@
+<cfparam name="url.s" default="0">
 <cfparam name="session.userID" default="1">
 
 <cfquery datasource="#application.datasource.rtcsense#" name="RTCprofile">
@@ -44,6 +45,7 @@
 		OR [commentUserID] = <cfqueryparam cfsqltype="cf_sql_integer" value="#session.userID#">
 </cfquery>
 
+<cfset session.sceneID = url.s>
 <cfset session.colors = RTCprofile.colors>
 <cfset session.theme = RTCprofile.theme>
 <cfset session.avatar = RTCprofile.avatar>

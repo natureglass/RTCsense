@@ -72,8 +72,7 @@
 
 	 $select_scenesDropDown = $(document.getElementById('scenesDropDown')).selectize({
 	     onChange: function(value) {
-			if(!window.selectizeUpdating){
-				window.changingScene = true;
+			if(!window.selectizeUpdating){				
 	 			changeScene(value);
 			}
 	 	}

@@ -592,6 +592,7 @@
 /* Dialog title */
 .elfinder .elfinder-dialog .ui-dialog-titlebar {
   padding: 16px 16px 8px;
+  margin-bottom: 8px;
   box-sizing: border-box;
   font: 500 18px / 28px "Roboto", sans-serif;
 }
@@ -612,7 +613,7 @@
 }
 /* Dialog content */
 .elfinder .elfinder-dialog .ui-dialog-content {
-  padding: 8px 16px;
+  padding: 8px 16px 8px 54px;
   font-size: 13px;
 }
 .elfinder .elfinder-dialog .ui-dialog-content .elfinder-info-tb {

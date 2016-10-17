@@ -288,9 +288,6 @@ altair_tablesorter = {
                         filter_reset : 'button.ts_cf_reset',
                         filter_cssFilter: ['', 'ts_cf_range', 'ts_cf_select_single', 'ts_cf_datepicker']
                     }
-                })
-                .on('apply.daterangepicker', function(){
-                    $table.trigger('search');
                 });
 
             // rangeSlider

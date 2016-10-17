@@ -28,6 +28,7 @@ See a demo: [kylestetz.github.io/CLNDR/](http://kylestetz.github.io/CLNDR/)
     - [Internationalization](https://github.com/kylestetz/CLNDR#internationalization)
     - [Underscore Template Delimiters](https://github.com/kylestetz/CLNDR#underscore-template-delimiters)
     - [Internet Explorer Issues](https://github.com/kylestetz/CLNDR#internet-explorer-issues)
+- [Submitting Issues](https://github.com/kylestetz/CLNDR#submitting-issues)
 
 Download
 --------
@@ -80,7 +81,7 @@ If you're building a rails application you may be interested in this gem by
 [clndr-rails](https://github.com/sedx/clndr-rails).
 
 Introduction: You Write The Markup
-==================================
+----------------------------------
 
 There are wonderful and feature-rich calendar modules out there and they all
 suffer the same problem: they give you markup (and often a good heap of JS)
@@ -92,8 +93,7 @@ that's an aside). Instead, CLNDR asks you to create a template and in return it
 supplies your template with a great set of objects that will get you up and
 running in a few lines.
 
-The 'Days' Array
-----------------
+### The 'Days' Array
 
 Here's a typical CLNDR template. It's got a controller section and a grid
 section.
@@ -134,8 +134,7 @@ This makes quick work of generating a grid. `days.classes` contains extra
 classes depending on the circumstance: if a given day is today, 'today' will
 show up, as well as an 'event' class when an event lands on that day.
 
-Pass In Your Events
--------------------
+### Pass In Your Events
 
 CLNDR accepts events as an array of objects:
 
@@ -154,7 +153,7 @@ you specify otherwise using the `dateParameter` option. In your template the
 See the examples for a demonstration of how events populate the `days` array.
 
 Usage
-=====
+-----
 
 CLNDR leans on the awesome work done in Underscore and moment. These are
 requirements unless you are using a different rendering engine, in which case
@@ -347,7 +346,7 @@ $('.parent-element').clndr({
         days: null,
 
         // This is the amount of months or days that will move forward/back when
-        // paging the calendar. With days=17 and interval=7, you would have a
+        // paging the calendar. With days=14 and interval=7, you would have a
         // 2-week calendar that pages forward and backward 1 week at a time.
         interval: 1
     },
@@ -421,8 +420,7 @@ eventsThisInterval: []
 extras: {}
 ```
 
-Multi-day Events
-----------------
+### Multi-day Events
 
 Clndr accepts events lasting more than one day. You just need to tell it how to
 access the start and end dates of your events:
@@ -485,8 +483,7 @@ $('#calendar').clndr({
 });
 ```
 
-Custom Classes
---------------
+### Custom Classes
 
 The classes that get added to a `day` object automatically can be customized to
 avoid styling conflicts. The `classes` option accepts `today`, `event`, `past`,
@@ -513,8 +510,7 @@ To configure the `day`, `empty`, and next/previous/today/etc. button classes,
 use the `targets` option documented in the
 [usage](https://github.com/kylestetz/CLNDR#usage) section.
 
-Constraints & Datepickers
--------------------------
+### Constraints & Datepickers
 
 If you are making a datepicker or you'd just like to prevent users from
 `next`ing all the way to 2034 in your calendar, you can pass a `constraints`
@@ -566,8 +562,7 @@ myCalendar.render();
 
 Make sure the `startDate` comes before the `endDate`!
 
-Returning the Instance / Public API
------------------------------------
+### Returning the Instance / Public API
 
 It's possible to save the clndr object in order to call it from JS later. There
 are functions to increment or set the month or year. You can also provide a new
@@ -612,7 +607,7 @@ myCalendar.removeEvents(function (event) {
     return event.id == idToRemove;
 });
 
-// Detroy the clndr instance. This will empty the DOM node containing the
+// Destroy the clndr instance. This will empty the DOM node containing the
 // calendar.
 myCalendar.destroy();
 ```
@@ -631,8 +626,7 @@ myCalendar.setMonth("February", { withCallbacks: true });
 myCalendar.next({ withCallbacks: true });
 ```
 
-Template Requirements
----------------------
+### Template Requirements
 
 CLNDR is structured so that you don't really _need_ anything in your template.
 
@@ -647,11 +641,10 @@ it to determine the date when a user clicks on it. Thus, click events will only
 work if `days.classes` is included in your day element's `class` attribute as
 seen above.
 
-Some Configuration
-==================
+Configuration
+-------------
 
-Template Rendering Engine
--------------------------
+### Template Rendering Engine
 
 You can pass in a `render` function as an option, for example:
 
@@ -673,9 +666,11 @@ If you are using your own render method, Underscore is NOT a dependency of
 this plugin.
 
 CLNDR has been tested successfully with [doT.js](http://olado.github.io/doT/),
-[Hogan.js](http://twitter.github.io/hogan.js/), and
-[Handlebars.js](http://handlebarsjs.com/). Please get in touch if you have
-success with other languages and they will be documented here.
+[Hogan.js](http://twitter.github.io/hogan.js/), 
+[Handlebars.js](http://handlebarsjs.com/), 
+[Mustache.js](https://github.com/janl/mustache.js/), and
+[Knockout.js](https://github.com/karl-sjogren/clndr-knockout). Please get in touch
+if you have success with other languages and they will be documented here.
 
 Here's an example using [doT.js](http://olado.github.io/doT/)...
 
@@ -713,8 +708,42 @@ $('#calendar').clndr({
 });
 ```
 
-Internationalization
---------------------
+Here's an example using [Mustache.js](https://github.com/janl/mustache.js/)...
+
+The markup:
+```html
+<script type="x-tmpl-mustache" id="calendar-tmpl">
+    <div class="controls">
+        <span class="clndr-previous-button">prev</span>
+        <span class="month">{{month}}</span>
+        <span class="year">{{year}}</span>
+        <span class="clndr-next-button">next</span>
+    </div>
+    <div class="days-container">
+        <div class="days">
+            <div class="headers">
+                {{#daysOfTheWeek}}
+                    <div class="day-header">{{.}}</div>
+                {{/daysOfTheWeek}}
+            </div>
+            {{#days}}
+                <div class="{{classes}}" id="{{id}}">{{day}}</div>
+            {{/days}}
+        </div>
+    </div>
+</script>
+```
+
+The Javascript:
+```javascript
+$('#calendar').clndr({
+    render: function (data) {
+        return Mustache.render($('#calendar-tmpl').html(), data);
+    },
+});
+```
+
+### Internationalization
 
 Clndr has support for internationalization insofar as Moment.js supports it. By
 configuring your Moment.js instance to a different language, which you can read
@@ -738,8 +767,7 @@ begins on the same day of the week as your current language setting.
 different language settings is _not_ recommended and may cause you headaches.
 
 
-Underscore Template Delimiters
-------------------------------
+### Underscore Template Delimiters
 
 If you're not a fan of `<% %>` and `<%= %>` style delimiters you can provide
 Underscore.js with alternatives in the form of regular expressions. There are
@@ -763,10 +791,17 @@ _.templateSettings = {
 };
 ```
 
-Internet Explorer Issues
-========================
+### Internet Explorer Issues
 
 If you're planning on supporting IE8 and below, you'll have to be careful about
 version dependencies. You'll need the jQuery 1.10.x branch for IE support, and
 if you're taking advantage of the `constraints` feature you'll need to use a
 version of moment.js `<=2.1.0` or `>=2.5.1`.
+
+Submitting Issues
+-----------------
+
+GitHub issues and support tickets are to be submitted only for bugs. We sadly
+don't have the time or manpower to answer implementation questions, debug your
+application code, or anything that isn't directly related to a CLNDR bug :D
+There are many wonderful places to seek help, like Stack Overflow.

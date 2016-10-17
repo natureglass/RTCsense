@@ -15,8 +15,9 @@
 		[scene_code]
 	WHERE
 		[sceneID] = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.sceneID#">
-	AND
-		[userID] = <cfqueryparam cfsqltype="cf_sql_integer" value="#session.userID#">
+		<cfif form.sceneID NEQ 0>
+			AND [userID] = <cfqueryparam cfsqltype="cf_sql_integer" value="#session.userID#">
+		</cfif>
 	AND
 		[preview] = <cfqueryparam cfsqltype="cf_sql_integer" value="#form.isPreview#">
 </cfquery>

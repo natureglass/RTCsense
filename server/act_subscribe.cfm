@@ -1,0 +1,1 @@
+<cfset session.wsClientID = form.clientID>

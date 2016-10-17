@@ -129,15 +129,17 @@
 				<div class="md-card-toolbar">
 					<div class="md-card-toolbar-actions">
 						<i class="md-icon material-icons md-color-red-500" title="Run Code" onClick="runSceneCode();">&#xE038;</i>
-						<i class="md-icon material-icons md-color-light-blue-500" title="Save/Update" id="saveSceneBtn" onClick="saveSceneCode(false, false);">&#xE161;</i>
+						<i class="md-icon material-icons md-color-light-blue-500" title="Save/Update" id="saveSceneBtn" onClick="saveScene();">&#xE161;</i>
 						<i class="md-icon material-icons" title="SandBox On/Off" onClick="showSandBox();">&#xE14C;</i>
 						<div class="md-card-dropdown" data-uk-dropdown="{pos:'bottom-right'}">
 							<i class="md-icon material-icons">&#xE5D4;</i>
 							<div class="uk-dropdown">
-								<ul class="uk-nav">
+								<ul class="uk-nav uk-nav-dropdown">
+									<li><a href="javascript:void(0)" onClick="createNewScene();"><i class="material-icons">&#xE147;</i>&nbsp; New Scene</a></li>
+									<li id="mnu_reloadScene"><a href="javascript:void(0)" onClick="reloadScene();"><i class="material-icons">&#xE5D5;</i>&nbsp; Reload Scene</a></li>
+									<li class="uk-nav-divider"></li>
 									<li><a href="javascript:void(0)" onClick="openExtResources();"><i class="material-icons">&#xE87B;</i>&nbsp; External Resources</a></li>
-									<li><a href="javascript:void(0)" onClick="reloadScene();"><i class="material-icons">&#xE5D5;</i>&nbsp; Reload Scene</a></li>
-									<li><a href="javascript:void(0)"><i class="material-icons md-card-fullscreen-activate">&#xE5D0;</i>&nbsp; Full Screen</a></li>
+									<!--- <li><a href="javascript:void(0)"><i class="material-icons md-card-fullscreen-activate">&#xE5D0;</i>&nbsp; Full Screen</a></li> --->
 								</ul>
 							</div>
 						</div>
@@ -441,6 +443,5 @@
 </script>
 
 <style type="text/css">
-
 
 </style>

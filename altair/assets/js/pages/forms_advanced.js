@@ -76,7 +76,7 @@ altair_form_adv = {
         $('#selec_adv_1').selectize({
             plugins: {
                 'remove_button': {
-                    label     : ''
+                    label: ''
                 }
             },
             options: [
