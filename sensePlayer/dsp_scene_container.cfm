@@ -263,18 +263,21 @@
 		function receiveMessage(objData){
 			wsMSG = {};
 			if(typeof objData.data === 'object'){
+
 				if(objData.data.MESSAGE.EVENT != undefined){
-					wsMSG.event = objData.data.MESSAGE.EVENT;
+					wsMSG.event = "remote";
+					wsMSG.status = objData.data.MESSAGE.EVENT;
 					wsMSG.sceneID = objData.data.INFO.SCENEID;
-					wsMSG.userID = objData.data.INFO.clientid;
-					if(typeof this.onWSupdate === "function"){
-						scope.onWSupdate(wsMSG);
+					wsMSG.userID = objData.data.MESSAGE.SUBSCRIBER.connectioninfo.clientid;
+					if(typeof this.onWSevent === "function"){
+						scope.onWSevent(wsMSG);
 					}
 				} else {
 					if(typeof this.onWSmessage === "function"){
+						//console.log(objData.data);
 						wsMSG = objData.data.MESSAGE.message;
 						wsMSG.sceneID = objData.data.INFO.SCENEID;
-						wsMSG.userID = objData.data.INFO.clientid;
+						wsMSG.userID = objData.publisherid; //objData.data.INFO.clientid; // Not getting the local clientid
 						scope.onWSmessage(wsMSG);
 					}
 				}
@@ -282,9 +285,13 @@
 		}
 
 		function cfWSupdates(status, wsUserID){
+			wsMSG = {};
 			window.wsUserID = wsUserID;
-			if(typeof this.onWSstatus === "function"){
-				scope.onWSstatus(status);
+			wsMSG.event = "local";
+			wsMSG.status = status;
+			wsMSG.userID = wsUserID;
+			if(typeof this.onWSevent === "function"){
+				scope.onWSevent(wsMSG);
 			}
 		}
 

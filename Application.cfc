@@ -7,7 +7,7 @@
 	THIS.sessiontimeout		= CreateTimeSpan(1,0,0,0);
 	THIS.SessionManagement 	= true;
 
-	THIS.wschannels = [{ name="chat", cfclistener="server/myChannelListener"}];
+	THIS.wschannels = [{ name="chat", cfclistener="server/myChannelListener" }];
 
 	if(Find("127.0.0.1",cgi.HTTP_HOST) OR FindNoCase("localhost",cgi.HTTP_HOST) or find('192.168.254' ,cgi.HTTP_HOST)){
 		THIS.environment="development";
