@@ -281,6 +281,12 @@
 			}
 		}
 
+		function cfWSupdates(status){
+			if(typeof this.onWSstatus === "function"){
+				scope.onWSstatus(status);
+			}
+		}
+
 		function debugError(e){
 
 			$( "#error-dialog" ).dialog('option', 'title', 'Error...');

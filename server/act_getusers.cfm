@@ -1,4 +1,7 @@
 <cfset subscribers = WSgetSubscribers("chat")>
+
+<cfdump var="#subscribers#">
+
 <cfset subSize = ArrayLen(subscribers)>
 <cfset i = 0>
 [<cfloop array="#subscribers#" index="myArray">

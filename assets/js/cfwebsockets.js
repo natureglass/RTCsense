@@ -12,6 +12,7 @@ var AdvancedSocket = {
     reconnectCount  : .5 * 1000,
     timerCount      : 0,
     debug           : false,
+    status          : '',
     statusLabel     : document.getElementById('status-message'),
 
     init : function(){
@@ -193,6 +194,8 @@ var AdvancedSocket = {
     },
 
     disconnected : function(){
+        cfWSupdates('disconnected');
+
         AdvancedSocket.log('disconnected');
         // speed up timer to check
         AdvancedSocket.timerCount = AdvancedSocket.offlineCount;
@@ -200,11 +203,16 @@ var AdvancedSocket = {
             //AdvancedSocket.statusLabel.className = 'uk-badge uk-badge-danger text-center';
             AdvancedSocket.statusLabel.innerHTML = 'we are disconnected ..';
         }
+
+        AdvancedSocket.status = 'disconnected';
     },
 
     connecting : function(){
+        cfWSupdates('connecting');
+
         AdvancedSocket.log('connecting');
         if (AdvancedSocket.statusLabel){
+
             //AdvancedSocket.statusLabel.className = 'uk-badge uk-badge-warning text-center';
             AdvancedSocket.statusLabel.innerHTML = 'we are connecting ..';
             // set the username into our Client Info
@@ -213,9 +221,16 @@ var AdvancedSocket = {
             AdvancedSocket.clientInfo.sceneID = window.sceneID;
             ws.authenticate(window.sceneID, globalUserID);
         }
+
+        AdvancedSocket.status = 'connecting';
     },
 
     connected : function (){
+      
+        if(AdvancedSocket.status !== 'connected'){
+          cfWSupdates('connected');
+        }
+
         AdvancedSocket.log('connected');
         // return back to normal
         AdvancedSocket.timerCount = AdvancedSocket.onlineCount;
@@ -223,6 +238,8 @@ var AdvancedSocket = {
             //AdvancedSocket.statusLabel.className = 'uk-badge uk-badge-success text-center';
             AdvancedSocket.statusLabel.innerHTML = 'we are connected ..';
         }
+
+        AdvancedSocket.status = 'connected';
     },
 
     log : function(){
