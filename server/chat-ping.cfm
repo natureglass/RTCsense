@@ -11,6 +11,5 @@
 
 	rtn = { "success" : arrayFind(clientIDs,url.id) ? true : false };
 
-
 	writeOutput( serializeJSON(rtn) );
 </cfscript>

@@ -1,11 +1,15 @@
+<cfparam name="url.id" default="0">
+
 <cfset subscribers = WSgetSubscribers("chat")>
 
-<cfdump var="#subscribers#">
+<cfset users = []>
 
-<cfset subSize = ArrayLen(subscribers)>
-<cfset i = 0>
-[<cfloop array="#subscribers#" index="myArray">
-		<cfset i = i+1>
-		<cfoutput>#myArray.clientID#</cfoutput>
-		<cfif subSize NEQ i>,</cfif>
-</cfloop>]
+<cfloop array="#subscribers#" index="myArray">
+
+	<cfif url.id NEQ myArray.clientID>
+		<cfset ArrayAppend(users, myArray.clientID)>
+	</cfif>
+
+</cfloop>
+
+<cfoutput>#SerializeJSON(users)#</cfoutput>

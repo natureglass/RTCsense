@@ -160,7 +160,7 @@
 				};
 
 				this.wsUsers = function(sendUsers){
-					$.getJSON("?Fa=getUsers", function(result){
+					$.getJSON("?Fa=getUsers", { id: window.wsUserID }, function(result){
 						sendUsers(result);
 					});
 				}
@@ -271,17 +271,18 @@
 						scope.onWSupdate(wsMSG);
 					}
 				} else {
-					if(typeof this.onWSreceive === "function"){
+					if(typeof this.onWSmessage === "function"){
 						wsMSG = objData.data.MESSAGE.message;
 						wsMSG.sceneID = objData.data.INFO.SCENEID;
 						wsMSG.userID = objData.data.INFO.clientid;
-						scope.onWSreceive(wsMSG);
+						scope.onWSmessage(wsMSG);
 					}
 				}
 			}
 		}
 
-		function cfWSupdates(status){
+		function cfWSupdates(status, wsUserID){
+			window.wsUserID = wsUserID;
 			if(typeof this.onWSstatus === "function"){
 				scope.onWSstatus(status);
 			}

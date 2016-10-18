@@ -194,7 +194,7 @@ var AdvancedSocket = {
     },
 
     disconnected : function(){
-        cfWSupdates('disconnected');
+        cfWSupdates('disconnected', AdvancedSocket.clientID);
 
         AdvancedSocket.log('disconnected');
         // speed up timer to check
@@ -208,7 +208,7 @@ var AdvancedSocket = {
     },
 
     connecting : function(){
-        cfWSupdates('connecting');
+        cfWSupdates('connecting', AdvancedSocket.clientID);
 
         AdvancedSocket.log('connecting');
         if (AdvancedSocket.statusLabel){
@@ -226,9 +226,9 @@ var AdvancedSocket = {
     },
 
     connected : function (){
-      
+
         if(AdvancedSocket.status !== 'connected'){
-          cfWSupdates('connected');
+          cfWSupdates('connected', AdvancedSocket.clientID);
         }
 
         AdvancedSocket.log('connected');
