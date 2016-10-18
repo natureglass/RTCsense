@@ -41,7 +41,7 @@
         <cfinclude template="sensePlayer/inc_websockets.cfm">
 	</cfcase>
 
-  	<cfcase value="detectrtc">
+	<cfcase value="detectrtc">
 		<cfinclude template="dsp_detectRTC.cfm">
 	</cfcase>
 
@@ -79,8 +79,12 @@
 
 	<!--- -------- websockets --------------- --->
 
-    <cfcase value="chat-ping">
+  <cfcase value="chat-ping">
 		<cfinclude template="server/chat-ping.cfm">
+	</cfcase>
+
+  <cfcase value="getUsers">
+		<cfinclude template="server/act_getusers.cfm" />
 	</cfcase>
 
     <!--- ----------------------------- --->

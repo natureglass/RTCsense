@@ -159,6 +159,12 @@
 
 				};
 
+				this.wsUsers = function(sendUsers){
+					$.getJSON("?Fa=getUsers", function(result){
+						sendUsers(result);
+					});
+				}
+
 				// this.StereoEffect = new THREE.StereoEffect( this.default_renderer );
 				// this.CardboardEffect = new THREE.CardboardEffect( this.default_renderer );
 				// this.AnaglyphEffect = new THREE.AnaglyphEffect( this.default_renderer );
@@ -194,7 +200,7 @@
 				$( "#sceneAlerts" ).prepend('<div class="ui-widget">' +
 						'<div class="ui-state-highlight ui-corner-all">' +
 							'<p><span class="ui-icon ui-icon-info"></span>' +
-							'<span id="status-message">Boom</span></p>' +
+							'<span id="status-message">Not Connected</span></p>' +
 						'</div>' +
 					'</div>');
 
@@ -261,8 +267,8 @@
 					wsMSG.event = objData.data.MESSAGE.EVENT;
 					wsMSG.sceneID = objData.data.INFO.SCENEID;
 					wsMSG.userID = objData.data.INFO.clientid;
-					if(typeof this.onWSusers === "function"){
-						scope.onWSusers(wsMSG);
+					if(typeof this.onWSupdate === "function"){
+						scope.onWSupdate(wsMSG);
 					}
 				} else {
 					if(typeof this.onWSreceive === "function"){
