@@ -13,7 +13,6 @@ var AdvancedSocket = {
     timerCount      : 0,
     debug           : false,
     status          : '',
-    statusLabel     : document.getElementById('status-message'),
 
     init : function(){
         AdvancedSocket.log('init');
@@ -114,6 +113,7 @@ var AdvancedSocket = {
 
     onMessage : function(obj){
 
+        obj.event = "message";
         AdvancedSocket.log('onMessage',obj.type,obj.reqType,obj);
 
         // let store our clientID
@@ -197,49 +197,42 @@ var AdvancedSocket = {
         cfWSupdates('disconnected', AdvancedSocket.clientID);
 
         AdvancedSocket.log('disconnected');
+        AdvancedSocket.status = 'disconnected';
+
+        infoAlert(AdvancedSocket.status);
+
         // speed up timer to check
         AdvancedSocket.timerCount = AdvancedSocket.offlineCount;
-        if (AdvancedSocket.statusLabel){
-            //AdvancedSocket.statusLabel.className = 'uk-badge uk-badge-danger text-center';
-            AdvancedSocket.statusLabel.innerHTML = 'we are disconnected ..';
-        }
-
-        AdvancedSocket.status = 'disconnected';
     },
 
     connecting : function(){
         cfWSupdates('connecting', AdvancedSocket.clientID);
 
         AdvancedSocket.log('connecting');
-        if (AdvancedSocket.statusLabel){
-
-            //AdvancedSocket.statusLabel.className = 'uk-badge uk-badge-warning text-center';
-            AdvancedSocket.statusLabel.innerHTML = 'we are connecting ..';
-            // set the username into our Client Info
-            // AdvancedSocket.clientInfo.username = globalUserName;
-            AdvancedSocket.clientInfo.userID = globalUserID;
-            AdvancedSocket.clientInfo.sceneID = window.sceneID;
-            ws.authenticate(window.sceneID, globalUserID);
-        }
-
         AdvancedSocket.status = 'connecting';
+
+        infoAlert(AdvancedSocket.status);
+
+        // set the username into our Client Info
+        AdvancedSocket.clientInfo.userID = globalUserID;
+        AdvancedSocket.clientInfo.sceneID = window.sceneID;
+        ws.authenticate(window.sceneID, globalUserID);
     },
 
     connected : function (){
 
         if(AdvancedSocket.status !== 'connected'){
           cfWSupdates('connected', AdvancedSocket.clientID);
+
+          AdvancedSocket.log('connected');
+          AdvancedSocket.status = 'connected';
+
+          infoAlert(AdvancedSocket.status);
         }
 
-        AdvancedSocket.log('connected');
         // return back to normal
         AdvancedSocket.timerCount = AdvancedSocket.onlineCount;
-        if (AdvancedSocket.statusLabel){
-            //AdvancedSocket.statusLabel.className = 'uk-badge uk-badge-success text-center';
-            AdvancedSocket.statusLabel.innerHTML = 'we are connected ..';
-        }
 
-        AdvancedSocket.status = 'connected';
     },
 
     log : function(){

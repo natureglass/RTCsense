@@ -102,6 +102,11 @@
 		ws.publisher = publisherInfo;
 		ws.info = publisherInfo.connectioninfo;
 
+		//ws['message'] = message;
+		//ws['sendtime'] = now();
+		//ws['publisher'] = publisherInfo;
+		//ws['info'] = publisherInfo.connectioninfo;
+
 		return ws;
 	}
 

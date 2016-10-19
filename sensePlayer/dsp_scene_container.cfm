@@ -95,7 +95,7 @@
 	<script src="sensePlayer/js/common.js" type="text/javascript"></script>
 
 	<!-- WebSockets -->
-	<script src="assets/js/cfwebsockets.js" type="text/javascript"></script>
+	<script src="sensePlayer/js/cfwebsockets.js" type="text/javascript"></script>
 
 	<!-- AUDIO/VIDEO -->
 	<!--- <script src="sensePlayer/js/devices/audioVideo/adapter.js" type="text/javascript"></script>
@@ -197,14 +197,12 @@
 				sceneParameters(this);
 				showStickyBar(false);
 
-				$( "#sceneAlerts" ).prepend('<div class="ui-widget">' +
-						'<div class="ui-state-highlight ui-corner-all">' +
-							'<p><span class="ui-icon ui-icon-info"></span>' +
-							'<span id="status-message">Not Connected</span></p>' +
-						'</div>' +
-					'</div>');
-
-				AdvancedSocket.statusLabel = document.getElementById('status-message');
+				// $( "#sceneAlerts" ).prepend('<div class="ui-widget">' +
+				// 		'<div class="ui-state-highlight ui-corner-all">' +
+				// 			'<p><span class="ui-icon ui-icon-info"></span>' +
+				// 			'<span id="status-message">Not Connected</span></p>' +
+				// 		'</div>' +
+				// 	'</div>');
 
 				function animate(request) {
 
@@ -295,6 +293,19 @@
 			}
 		}
 
+		function infoAlert(msg, timeOut){
+			var msgID = Math.floor((Math.random() * 100) + 1);
+			$( "#sceneAlerts" ).prepend('<div class="ui-widget" id="' + msgID +'">' +
+					'<div class="ui-state-highlight ui-corner-all">' +
+						'<p><span class="ui-icon ui-icon-info"></span>' +
+						'<span>' + msg + '</span></p>' +
+					'</div>' +
+				'</div>');
+			setTimeout(function(){
+				$('#' + msgID).fadeOut();
+			}, timeOut || 3000);
+		}
+
 		function debugError(e){
 
 			$( "#error-dialog" ).dialog('option', 'title', 'Error...');
@@ -304,8 +315,6 @@
 			return false;
 		}
 	</script>
-
-	<!--- <script src="assets/js/cfwebsockets.js" type="text/javascript"></script> --->
 
 	</body>
 </html>
