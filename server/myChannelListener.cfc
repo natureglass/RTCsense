@@ -9,8 +9,7 @@
 			ws = StructNew();
 
 			ws['type'] = "subscriber";
-			ws['event'] = "connected";
-			ws['subscriberUserID'] = subscriberInfo.connectioninfo.userid;
+			ws['status'] = "connected";
 			ws['subscriberID'] = subscriberInfo.connectioninfo.clientid;
 			WsPublish("chat", SerializeJSON(ws));
 
@@ -98,18 +97,12 @@
 			message;
 		}
 
-		//ws = JavaCast( "null", 0 );
-		//ws = StructNew();
+		if (!StructKeyExists(message, "type")){
+			message['type'] = 'message';
+		}
 
-		//ws.message = message;
-		//ws.sendtime = now();
-		//ws.publisher = publisherInfo;
-		//ws.info = publisherInfo.connectioninfo;
-
-		//ws['message'] = message;
+		message['event'] = "remote";
 		message['sendtime'] = now();
-		message['publisherID'] = publisherInfo.connectioninfo.clientid;
-		message['publisherUserID'] = publisherInfo.connectioninfo.userid;
 
 		return message;
 	}
@@ -117,10 +110,11 @@
 	public function afterUnsubscribe(struct subscriberInfo){
 		try {
 
-			WsPublish("chat", {
-				event: "disconnected",
-				subscriber: subscriberInfo
-			});
+			ws['type'] = "subscriber";
+			ws['status'] = "disconnected";
+			ws['subscriberID'] = subscriberInfo.connectioninfo.clientid;
+			WsPublish("chat", SerializeJSON(ws));
+
 
 		} catch (any e) {
 			savecontent variable="tmpVariable" { writedump(e); }

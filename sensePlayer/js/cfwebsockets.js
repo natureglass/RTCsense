@@ -113,7 +113,6 @@ var AdvancedSocket = {
 
     onMessage : function(obj){
 
-        obj.event = "message";
         AdvancedSocket.log('onMessage',obj.type,obj.reqType,obj);
 
         // let store our clientID
