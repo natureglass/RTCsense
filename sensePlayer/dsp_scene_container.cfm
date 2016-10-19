@@ -259,9 +259,10 @@
 		var wsMSG = {};
 
 		function receiveMessage(objData){
+			console.log(objData.data);
 			wsMSG = {};
 			if(typeof objData.data === 'object'){
-
+				//console.log(objData.data);
 				if(objData.data.MESSAGE.EVENT != undefined){
 					wsMSG.event = "remote";
 					wsMSG.status = objData.data.MESSAGE.EVENT;

@@ -5,10 +5,14 @@
 	public boolean function allowSubscribe(Struct subscriberInfo) {
 		try {
 
-			WsPublish("chat", {
-				event: "connected",
-				subscriber: subscriberInfo
-			});
+			ws = JavaCast( "null", 0 );
+			ws = StructNew();
+
+			ws['type'] = "subscriber";
+			ws['event'] = "connected";
+			ws['subscriberUserID'] = subscriberInfo.connectioninfo.userid;
+			ws['subscriberID'] = subscriberInfo.connectioninfo.clientid;
+			WsPublish("chat", SerializeJSON(ws));
 
 			return true;
 
@@ -94,20 +98,20 @@
 			message;
 		}
 
-		ws = JavaCast( "null", 0 );
-		ws = StructNew();
+		//ws = JavaCast( "null", 0 );
+		//ws = StructNew();
 
-		ws.message = message;
-		ws.sendtime = now();
-		ws.publisher = publisherInfo;
-		ws.info = publisherInfo.connectioninfo;
+		//ws.message = message;
+		//ws.sendtime = now();
+		//ws.publisher = publisherInfo;
+		//ws.info = publisherInfo.connectioninfo;
 
 		//ws['message'] = message;
-		//ws['sendtime'] = now();
-		//ws['publisher'] = publisherInfo;
-		//ws['info'] = publisherInfo.connectioninfo;
+		message['sendtime'] = now();
+		message['publisherID'] = publisherInfo.connectioninfo.clientid;
+		message['publisherUserID'] = publisherInfo.connectioninfo.userid;
 
-		return ws;
+		return message;
 	}
 
 	public function afterUnsubscribe(struct subscriberInfo){
