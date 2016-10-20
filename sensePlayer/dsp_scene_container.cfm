@@ -1,7 +1,13 @@
-<!--- <cfparam name="url.scenefile" default="temp_scene.js"> --->
+<cfoutput>
+
 <script type="text/javascript">
-	window.sceneID = '<cfoutput>#foo.sceneID#</cfoutput>';
+	window.sceneID = "#foo.sceneID#";
+	globalUserID = "#session.userID#";
+	globalUserName = "#session.username#";
+	globalName = "#session.name#";
 </script>
+
+</cfoutput>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -149,14 +155,10 @@
 				});
 
 				this.webSockets = function(msg){
-
 					var pubMSG = {
-						'message': msg,
-						'sceneID': window.sceneID
+						'message': msg
 					};
-
 					ws.publish("chat", pubMSG);
-
 				};
 
 				this.wsUsers = function(sendUsers){

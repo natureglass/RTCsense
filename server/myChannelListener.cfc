@@ -38,17 +38,10 @@
 
 		try {
 
-			if(StructKeyExists(publisherInfo.connectioninfo, "SCENEID")){
+			if(StructKeyExists(publisherInfo.connectioninfo, "clientid")){
 
-
-				if(subscriberInfo.clientInfo.sceneID == publisherInfo.connectioninfo.SCENEID){
-
-					if(subscriberInfo.connectioninfo.clientid != publisherInfo.connectioninfo.clientid){
-						return true;
-					} else {
-						return false;
-					}
-
+				if(subscriberInfo.connectioninfo.clientid != publisherInfo.connectioninfo.clientid){
+					return true;
 				} else {
 					return false;
 				}

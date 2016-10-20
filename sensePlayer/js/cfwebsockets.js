@@ -198,7 +198,7 @@ var AdvancedSocket = {
         AdvancedSocket.log('disconnected');
         AdvancedSocket.status = 'disconnected';
 
-        infoAlert(AdvancedSocket.status);
+        //infoAlert(AdvancedSocket.status);
 
         // speed up timer to check
         AdvancedSocket.timerCount = AdvancedSocket.offlineCount;
@@ -210,12 +210,12 @@ var AdvancedSocket = {
         AdvancedSocket.log('connecting');
         AdvancedSocket.status = 'connecting';
 
-        infoAlert(AdvancedSocket.status);
+        //infoAlert(AdvancedSocket.status);
 
         // set the username into our Client Info
-        AdvancedSocket.clientInfo.userID = globalUserID;
-        AdvancedSocket.clientInfo.sceneID = window.sceneID;
-        ws.authenticate(window.sceneID, globalUserID);
+        AdvancedSocket.clientInfo.userID = window.userID; //globalUserID;
+        AdvancedSocket.clientInfo.username = window.username;
+        ws.authenticate(window.sceneID, window.username);
     },
 
     connected : function (){
@@ -226,7 +226,7 @@ var AdvancedSocket = {
           AdvancedSocket.log('connected');
           AdvancedSocket.status = 'connected';
 
-          infoAlert(AdvancedSocket.status);
+          //infoAlert(AdvancedSocket.status);
         }
 
         // return back to normal

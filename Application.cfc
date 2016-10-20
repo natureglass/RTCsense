@@ -109,14 +109,14 @@
 	<!--- WebSockets Authantication --->
 	<cffunction name="onWSAuthenticate" output="true">
 		<!--- <cfargument name="username" type="string"> --->
-		<cfargument name="sceneID" type="string">
+		<cfargument name="username" type="string">
 		<cfargument name="userID" type="string">
 
 		<cfargument name="connectionInfo" type="struct">
 
 	    <!--- Put some authentication logic here --->
 		<!--- <cfset connectionInfo.username = arguments.username> --->
-		<cfset connectionInfo.sceneID = arguments.sceneID>
+		<cfset connectionInfo.username = arguments.username>
 		<cfset connectionInfo.userID = arguments.userID>
 
 		<cfset arguments.connectionInfo.authenticated = true>
