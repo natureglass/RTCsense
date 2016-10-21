@@ -265,7 +265,7 @@
 			}
 
 			if(objData.data.type === 'message'){
-				objData.data.userID = objData.publisherid;
+				//objData.data.userID = objData.publisherid;
 				if(typeof scope.onWSmessage === "function"){
 					scope.onWSmessage(objData.data);
 				}
