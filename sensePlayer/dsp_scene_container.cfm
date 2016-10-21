@@ -2,9 +2,8 @@
 
 <script type="text/javascript">
 	window.sceneID = "#foo.sceneID#";
-	globalUserID = "#session.userID#";
-	globalUserName = "#session.username#";
-	globalName = "#session.name#";
+	window.userID  = "#session.userID#";
+	window.username  = "#session.username#";
 </script>
 
 </cfoutput>
@@ -154,11 +153,10 @@
 					canvas: canvasScreen, antialias: true
 				});
 
-				this.webSockets = function(msg){
-					var pubMSG = {
-						'message': msg
-					};
-					ws.publish("chat", pubMSG);
+				this.webSockets = function(sendMSG){
+					ws.publish("chat", {
+						remoteID: window.clientID, msg: sendMSG }
+					);
 				};
 
 				this.wsUsers = function(sendUsers){
@@ -259,7 +257,7 @@
 		});
 
 		function receiveMessage(objData){
-			//console.log(objData.data);
+			//console.log(objData);
 			if(objData.data.type === 'subscriber'){
 				if(typeof this.onWSevent === "function"){
 					scope.onWSevent(objData.data);
@@ -275,18 +273,19 @@
 		}
 
 		function cfWSupdates(status, wsUserID){
+			//console.log(status);
 			var wsMSG = {};
 			window.wsUserID = wsUserID;
 			wsMSG.event = "local";
 			wsMSG.status = status;
-			wsMSG.userID = wsUserID;
+			wsMSG.localID = wsUserID;
 			if(typeof this.onWSevent === "function"){
 				scope.onWSevent(wsMSG);
 			}
 		}
 
 		function infoAlert(msg, timeOut){
-			var msgID = Math.floor((Math.random() * 100) + 1);
+			var msgID = Math.floor((Math.random() * 1000) + 1);
 			$( "#sceneAlerts" ).prepend('<div class="ui-widget" id="' + msgID +'">' +
 					'<div class="ui-state-highlight ui-corner-all">' +
 						'<p><span class="ui-icon ui-icon-info"></span>' +

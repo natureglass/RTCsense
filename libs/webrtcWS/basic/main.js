@@ -32,6 +32,17 @@ function disableSendButton() {
   sendButton.disabled = true;
 }
 
+function receiveMessage(objData){
+
+}
+
+function cfWSupdates(status, wsUserID){
+    if(status === "connected"){
+        console.log(status + " - " + wsUserID);
+        enableStartButton();
+    }
+}
+
 function createConnection() {
   dataChannelSend.placeholder = '';
   var servers = null;
@@ -109,8 +120,11 @@ function gotDescription1(desc) {
   localConnection.setLocalDescription(desc);
   trace('Offer from localConnection \n' + desc.sdp);
   remoteConnection.setRemoteDescription(desc);
-  remoteConnection.createAnswer().then(
-    gotDescription2,
+  remoteConnection.createAnswer().then(function(){
+
+      //ws.publish("chat", JSON.stringify({'sdp': peerConnection.localDescription, 'uuid': uuid}));
+    gotDescription2
+    },
     onCreateSessionDescriptionError
   );
 }

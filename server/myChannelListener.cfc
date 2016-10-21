@@ -10,7 +10,7 @@
 
 			ws['type'] = "subscriber";
 			ws['status'] = "connected";
-			ws['subscriberID'] = subscriberInfo.connectioninfo.clientid;
+			ws['remoteID'] = subscriberInfo.connectioninfo.clientid;
 			WsPublish("chat", SerializeJSON(ws));
 
 			return true;
@@ -38,22 +38,19 @@
 
 		try {
 
-			if(StructKeyExists(publisherInfo.connectioninfo, "clientid")){
-
-				if(subscriberInfo.connectioninfo.clientid != publisherInfo.connectioninfo.clientid){
-					return true;
-				} else {
-					return false;
-				}
-
-			} else {
-
+			if(subscriberInfo.clientInfo.wsUserID != message.remoteID){
 				return true;
-
+			} else {
+				return false;
 			}
 
 		} catch (any e) {
-			savecontent variable="tmpVariable" { writedump(e); }
+			savecontent variable="tmpVariable" {
+				writedump(e);
+				writedump(message);
+				writedump(subscriberInfo);
+				writedump(publisherInfo);
+			}
 	        mail = new mail();
 	        mail.setSubject("wsChannelListener Error" );
 	        mail.setTo( "alexdaskalakis@hotmail.com" );
@@ -94,6 +91,7 @@
 			message['type'] = 'message';
 		}
 
+		message['localID'] = publisherInfo.clientInfo.wsUserID;
 		message['event'] = "remote";
 		message['sendtime'] = now();
 
@@ -101,23 +99,23 @@
 	}
 
 	public function afterUnsubscribe(struct subscriberInfo){
-		try {
+		//try {
 
 			ws['type'] = "subscriber";
 			ws['status'] = "disconnected";
-			ws['subscriberID'] = subscriberInfo.connectioninfo.clientid;
-			WsPublish("chat", SerializeJSON(ws));
+			ws['remoteID'] = subscriberInfo.connectioninfo.clientid;
+			WsPublish('chat', SerializeJSON(ws));
 
 
-		} catch (any e) {
-			savecontent variable="tmpVariable" { writedump(e); }
-	        mail = new mail();
-	        mail.setSubject("wsChannelListener Error" );
-	        mail.setTo( "alexdaskalakis@hotmail.com" );
-	        mail.setFrom( "alexdaskalakis@hotmail.com" );
-	        mail.addPart( type="html", charset="utf-8", body = tmpVariable );
-	        mail.send();
-		}
+		// } catch (any e) {
+		// 	savecontent variable="tmpVariable" { writedump(e); }
+	    //     mail = new mail();
+	    //     mail.setSubject("wsChannelListener Error" );
+	    //     mail.setTo( "alexdaskalakis@hotmail.com" );
+	    //     mail.setFrom( "alexdaskalakis@hotmail.com" );
+	    //     mail.addPart( type="html", charset="utf-8", body = tmpVariable );
+	    //     mail.send();
+		// }
 	}
 
 </cfscript>

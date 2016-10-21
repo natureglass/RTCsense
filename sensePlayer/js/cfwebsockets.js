@@ -9,7 +9,7 @@ var AdvancedSocket = {
     pingURL         : '?fa=chat-ping',
     onlineCount     : 30 * 1000,
     offlineCount    : 5 * 1000,
-    reconnectCount  : .5 * 1000,
+    reconnectCount  : 2 * 1000,
     timerCount      : 0,
     debug           : false,
     status          : '',
@@ -44,11 +44,9 @@ var AdvancedSocket = {
         }, false);
 
 		// set default count
-		AdvancedSocket.timerCount = AdvancedSocket.onlineCount;
-
+		AdvancedSocket.timerCount = AdvancedSocket.reconnectCount;
 		AdvancedSocket.ping(AdvancedSocket.pingURL);
-
-		AdvancedSocket.checkConnection();
+		//AdvancedSocket.checkConnection();
     },
 
     checkConnection : function(){
@@ -90,10 +88,10 @@ var AdvancedSocket = {
                     // fire event
                     AdvancedSocket.fireEvent("requireconnection", {});
                     // force reconnect if our connection is not even open
-
                     if(window[AdvancedSocket.name] != null){
-                    //if (!window[AdvancedSocket.name].isConnected())
-                        AdvancedSocket.forceReconnect();
+                        if (!window[AdvancedSocket.name].isConnected()){
+                            AdvancedSocket.forceReconnect();
+                        }
                     }
                 }
                 clearTimeout(noResponseTimer);
@@ -117,7 +115,7 @@ var AdvancedSocket = {
 
         // let store our clientID
         if (obj.reqType === 'welcome'){
-        	globalWsID = obj.clientid;
+            window.clientID  = obj.clientid;
             AdvancedSocket.clientID = obj.clientid;
             AdvancedSocket.connecting();
         }
@@ -160,6 +158,8 @@ var AdvancedSocket = {
         // if we need to re-authenticate (fired on a force reconnect)
         if(window.AdvancedSocket.clientInfo.username && AdvancedSocket.autoConnect){
             AdvancedSocket.autoConnect = false;
+            console.log(obj)
+            //window[AdvancedSocket.name].authenticate(window.AdvancedSocket.clientInfo.username,'');
             window[AdvancedSocket.name].authenticate(window.AdvancedSocket.clientInfo.username,'');
         }
     },
@@ -213,9 +213,10 @@ var AdvancedSocket = {
         //infoAlert(AdvancedSocket.status);
 
         // set the username into our Client Info
-        AdvancedSocket.clientInfo.userID = window.userID; //globalUserID;
+        AdvancedSocket.clientInfo.userID = window.userID;
         AdvancedSocket.clientInfo.username = window.username;
-        ws.authenticate(window.sceneID, window.username);
+        AdvancedSocket.clientInfo.wsUserID = window.clientID;
+        ws.authenticate(window.userID, window.username);
     },
 
     connected : function (){
@@ -240,6 +241,12 @@ var AdvancedSocket = {
     }
 
 };
+
+window.addEventListener("beforeunload", function (e) {
+  window[AdvancedSocket.name].closeConnection();
+  //e.returnValue = "confirmationMessage";     // Gecko, Trident, Chrome 34+
+  //return confirmationMessage;              // Gecko, WebKit, Chrome <34
+});
 
 // initialize
 AdvancedSocket.init();

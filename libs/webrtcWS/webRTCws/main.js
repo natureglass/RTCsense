@@ -81,8 +81,6 @@ function gotIceCandidate(event) {
 }
 
 function createdDescription(description) {
-    console.log('got description');
-
     peerConnection.setLocalDescription(description).then(function() {
         ws.publish("chat", JSON.stringify({'sdp': peerConnection.localDescription, 'uuid': uuid}));
     }).catch(errorHandler);

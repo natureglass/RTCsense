@@ -108,10 +108,8 @@
 
 	<!--- WebSockets Authantication --->
 	<cffunction name="onWSAuthenticate" output="true">
-		<!--- <cfargument name="username" type="string"> --->
-		<cfargument name="username" type="string">
 		<cfargument name="userID" type="string">
-
+		<cfargument name="username" type="string">
 		<cfargument name="connectionInfo" type="struct">
 
 	    <!--- Put some authentication logic here --->

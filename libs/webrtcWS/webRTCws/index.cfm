@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-        <script src="libs/webRTCws/main.js"></script>
 
         <script type="text/javascript">
-          window.userID = 1;
-          window.username = "natureglass";
+        	var randNum = Math.floor(Math.random() * 600) + 1;
+        	window.userID  = "1";
+        	window.username  = "user_" + randNum;
         </script>
+
+        <script src="sensePlayer/js/cfwebsockets.js"></script>
+
+        <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+        <script src="libs/webrtcWS/webRTCws/main.js"></script>
 
     </head>
 
@@ -18,8 +22,6 @@
         <br />
 
         <input type="button" id="start" onclick="start(true)" value="Start Video"></input>
-
-        <script src="assets/js/cfwebsockets.js"></script>
 
     </body>
 </html>

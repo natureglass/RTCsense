@@ -60,7 +60,7 @@
   <script src="libs/webrtc/js/common.js"></script>
   <script src="libs/webRTC_basic/main.js"></script>
 
-  <script type="text/javascript">
+  <!--- <script type="text/javascript">
     function receiveMessage(objData){
         console.log("ReceiveMessage:");
         console.log(objData.data);
@@ -68,7 +68,7 @@
     function cfWSupdates(status, wsUserID){
         console.log(status + " - " + wsUserID);
     }
-  </script>
-  
+  </script> --->
+
 </body>
 </html>
