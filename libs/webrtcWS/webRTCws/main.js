@@ -2,7 +2,7 @@ var localVideo = document.getElementById('localVideo');
 var remoteVideo = document.getElementById('remoteVideo');
 
 var peerConnection;
-var uuid;
+var uuid = uuid();
 
 var peerConnectionConfig = {
     'iceServers': [
@@ -22,20 +22,21 @@ callButton.onclick = function(){ call(true); }
 hangupButton.onclick = hangup;
 
 function initWebRTC( data ){
-    if(data.status === "connected" & data.event === "local"){
-        console.log(data.event + " - " + data.status + " - " + data.localID);
-        startButton.disabled = false;
-    } else if(data.status === "disconnected" & data.event === "remote"){
-        console.log(data.event + " - " + data.status + " - " + data.localID);
-        if(peerConnection != null){ stopRemoteVideo(); }
+    console.log(data.event + " - " + data.status + " - " + data.localID);
+    if(data.event === "local"){
+        if(data.status === "connected"){
+            startButton.disabled = false;
+        }
+    } else if(data.event === "remote"){
+        if(data.status === "disconnected"){
+            if(peerConnection != null){ stopRemoteVideo(); }
+        }
     }
 }
 
 function initLocalDevice(){
 
     startButton.disabled = true;
-
-    uuid = uuid();
 
     console.log(uuid);
 
@@ -63,7 +64,10 @@ function call(isCaller) {
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
     peerConnection.onicecandidate = gotIceCandidate;
     peerConnection.onaddstream = gotRemoteStream;
-    peerConnection.addStream(localStream);
+
+    if(typeof localStream != "undefined"){
+        peerConnection.addStream(localStream);
+    }
 
     if(isCaller) {
         peerConnection.createOffer().then(createdDescription).catch(errorHandler);
@@ -71,11 +75,36 @@ function call(isCaller) {
 }
 
 function gotMessageFromServer(data) {
+
+    var response = JSON.parse(data.msg);
+
+    switch (response.type) {
+        case 'offer': // Remote User Gave us an Offer
+            processOffer(response);
+            break;
+
+        case 'hangup': // Remote User HangUp
+            stopRemoteVideo();
+            break;
+
+        case 'status':
+
+            if(response.gotVideo){ // Remote User Got Video
+                hangupButton.disabled = false;
+            }
+            break;
+
+        default:
+            console.warn('WHAT WAS THAT?');
+            console.info(response);
+    }
+}
+
+function processOffer(signal){
+
     if(!peerConnection){
         call(false);
     }
-
-    var signal = JSON.parse(data.msg);
 
     // Ignore messages from ourself
     if(signal.uuid == uuid) return;
@@ -89,8 +118,6 @@ function gotMessageFromServer(data) {
         }).catch(errorHandler);
     } else if(signal.ice) {
         peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
-    } else if(signal.status === "hangup"){
-        stopRemoteVideo();
     }
 }
 
@@ -100,18 +127,20 @@ function stopRemoteVideo(){
     peerConnection = null;
     remoteVideo.pause();
     remoteVideo.load();
-    callButton.disabled = false;
+    if(typeof localStream != "undefined"){
+        callButton.disabled = false;
+    }
 }
 
 function gotIceCandidate(event) {
     if(event.candidate != null) {
-        window.webSockets.send(JSON.stringify({'ice': event.candidate, 'uuid': uuid}));
+        window.webSockets.send(JSON.stringify({'type': 'offer', 'ice': event.candidate, 'uuid': uuid}));
     }
 }
 
 function createdDescription(description) {
     peerConnection.setLocalDescription(description).then(function() {
-        window.webSockets.send(JSON.stringify({'sdp': peerConnection.localDescription, 'uuid': uuid}));
+        window.webSockets.send(JSON.stringify({'type': 'offer', 'sdp': peerConnection.localDescription, 'uuid': uuid}));
     }).catch(errorHandler);
 }
 
@@ -119,11 +148,12 @@ function gotRemoteStream(event) {
     console.log('got remote stream');
     remoteVideo.src = window.URL.createObjectURL(event.stream);
     hangupButton.disabled = false;
+    window.webSockets.send(JSON.stringify({'type': 'status', 'gotVideo': true, 'uuid': uuid}));
 }
 
 function hangup() {
   stopRemoteVideo();
-  window.webSockets.send(JSON.stringify({'status': 'hangup', 'uuid': uuid}));
+  window.webSockets.send(JSON.stringify({'type': 'hangup', 'uuid': uuid}));
 }
 
 function errorHandler(error) {

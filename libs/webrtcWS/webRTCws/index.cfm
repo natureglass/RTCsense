@@ -49,8 +49,8 @@
     <video id="remoteVideo" autoplay poster="assets/img/offline.jpg"></video>
 
     <div>
-      <button id="startButton">Start</button>
-      <button id="callButton">Call</button>
+      <button id="startButton">Start Video</button>
+      <button id="callButton">Send Video</button>
       <button id="hangupButton">Hang Up</button>
     </div>
 
