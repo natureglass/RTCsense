@@ -64,7 +64,8 @@
   </div>
 
   <script src="sensePlayer/js/cfwebsockets.js"></script>
-  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <!--- <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> --->
+  <script src="libs/webrtc/js/adapter.js"></script>
   <script src="libs/webrtcWS/webRTCws/main.js"></script>
 
 </body>
