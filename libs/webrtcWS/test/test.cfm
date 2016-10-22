@@ -48,22 +48,16 @@
 
 	<script type="text/javascript">
 
+		function initWebRTC( data ){
+			console.log(data.event + " - " + data.status + " - " + data.localID);
+		}
+
+		function gotMessageFromServer(data) {
+			console.log(data);
+		}
+
 		function sendSomething(){
-			console.log("sending...");
-			ws.publish("chat", {
-				remoteid: window.clientID,
-				msg: {
-					something: "YES!"
-				}
-			});
-		}
-
-		function receiveMessage(objData){
-			console.log(objData);
-		}
-
-		function cfWSupdates(status, wsUserID){
-			console.log(status);
+			window.webSockets.send("Hello!!");
 		}
 
 	</script>

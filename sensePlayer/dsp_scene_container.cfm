@@ -128,7 +128,7 @@
 
 				DetectRTC.isIphone = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
 
-				system = DetectRTC;
+				window.DetectRTC = DetectRTC;
 
 				waitForMouseStop(function(e){
 					showStickyBar(false);
@@ -144,7 +144,6 @@
 				var requestAnimId;
 				var sceneResizer = 0;
 
-
 				var canvasScreen = document.getElementById('canvasScreen');
 
 				this.stats = false;
@@ -152,12 +151,6 @@
 				this.default_renderer = new THREE.WebGLRenderer({
 					canvas: canvasScreen, antialias: true
 				});
-
-				this.webSockets = function(sendMSG){
-					ws.publish("chat", {
-						remoteID: window.clientID, msg: sendMSG }
-					);
-				};
 
 				this.wsUsers = function(sendUsers){
 					$.getJSON("?Fa=getUsers", { id: window.wsUserID }, function(result){
@@ -196,13 +189,6 @@
 				initElements(this);
 				sceneParameters(this);
 				showStickyBar(false);
-
-				// $( "#sceneAlerts" ).prepend('<div class="ui-widget">' +
-				// 		'<div class="ui-state-highlight ui-corner-all">' +
-				// 			'<p><span class="ui-icon ui-icon-info"></span>' +
-				// 			'<span id="status-message">Not Connected</span></p>' +
-				// 		'</div>' +
-				// 	'</div>');
 
 				function animate(request) {
 
@@ -244,10 +230,10 @@
 
 				function showStickyBar(status){
 					if(status){
-						if(system.isMobileDevice){ stickyBar.style.display = "block";
+						if(window.DetectRTC.isMobileDevice){ stickyBar.style.display = "block";
 						} else { stickyBar.style.opacity = "1"; }
 					} else {
-						if(system.isMobileDevice){ stickyBar.style.display = "none";
+						if(window.DetectRTC.isMobileDevice){ stickyBar.style.display = "none";
 						} else { stickyBar.style.opacity = "0"; }
 					}
 				}
@@ -255,34 +241,6 @@
 			});
 
 		});
-
-		function receiveMessage(objData){
-			//console.log(objData);
-			if(objData.data.type === 'subscriber'){
-				if(typeof this.onWSevent === "function"){
-					scope.onWSevent(objData.data);
-				}
-			}
-
-			if(objData.data.type === 'message'){
-				//objData.data.userID = objData.publisherid;
-				if(typeof scope.onWSmessage === "function"){
-					scope.onWSmessage(objData.data);
-				}
-			}
-		}
-
-		function cfWSupdates(status, wsUserID){
-			//console.log(status);
-			var wsMSG = {};
-			window.wsUserID = wsUserID;
-			wsMSG.event = "local";
-			wsMSG.status = status;
-			wsMSG.localID = wsUserID;
-			if(typeof this.onWSevent === "function"){
-				scope.onWSevent(wsMSG);
-			}
-		}
 
 		function infoAlert(msg, timeOut){
 			var msgID = Math.floor((Math.random() * 1000) + 1);

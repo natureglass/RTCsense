@@ -10,22 +10,10 @@ var peerConnectionConfig = {
     ]
 };
 
-function wsSend(sendMSG){
-    ws.publish("chat", {
-        remoteID: window.clientID, msg: sendMSG }
-    );
-};
+function initWebRTC( data ){
+    if(data.status === "connected" & data.event === "local"){
 
-function receiveMessage(objData){
-    if(objData.data.type === 'message'){        
-        gotMessageFromServer(objData.data.msg);
-    }
-}
-
-function cfWSupdates(status, wsUserID){
-    if(status === "connected"){
-
-        console.log(status + " - " + wsUserID);
+        console.log(data.status + " - " + data.localID);
 
         uuid = uuid();
 
@@ -42,7 +30,6 @@ function cfWSupdates(status, wsUserID){
         } else {
             alert('Your browser does not support getUserMedia API');
         }
-
     }
 }
 
@@ -62,10 +49,10 @@ function start(isCaller) {
     }
 }
 
-function gotMessageFromServer(message) {
+function gotMessageFromServer(data) {
     if(!peerConnection) start(false);
 
-    var signal = JSON.parse(message);
+    var signal = JSON.parse(data.msg);
 
     // Ignore messages from ourself
     if(signal.uuid == uuid) return;
@@ -84,15 +71,13 @@ function gotMessageFromServer(message) {
 
 function gotIceCandidate(event) {
     if(event.candidate != null) {
-        //ws.publish("chat", JSON.stringify({'ice': event.candidate, 'uuid': uuid}));
-        wsSend(JSON.stringify({'ice': event.candidate, 'uuid': uuid}));
+        window.webSockets.send(JSON.stringify({'ice': event.candidate, 'uuid': uuid}));
     }
 }
 
 function createdDescription(description) {
     peerConnection.setLocalDescription(description).then(function() {
-        wsSend(JSON.stringify({'sdp': peerConnection.localDescription, 'uuid': uuid}));
-        //ws.publish("chat", JSON.stringify({'sdp': peerConnection.localDescription, 'uuid': uuid}));
+        window.webSockets.send(JSON.stringify({'sdp': peerConnection.localDescription, 'uuid': uuid}));
     }).catch(errorHandler);
 }
 

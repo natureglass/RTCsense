@@ -116,6 +116,7 @@ var AdvancedSocket = {
         // let store our clientID
         if (obj.reqType === 'welcome'){
             window.clientID  = obj.clientid;
+            window.wsUserID = obj.clientid;
             AdvancedSocket.clientID = obj.clientid;
             AdvancedSocket.connecting();
         }
@@ -158,8 +159,6 @@ var AdvancedSocket = {
         // if we need to re-authenticate (fired on a force reconnect)
         if(window.AdvancedSocket.clientInfo.username && AdvancedSocket.autoConnect){
             AdvancedSocket.autoConnect = false;
-            console.log(obj)
-            //window[AdvancedSocket.name].authenticate(window.AdvancedSocket.clientInfo.username,'');
             window[AdvancedSocket.name].authenticate(window.AdvancedSocket.clientInfo.username,'');
         }
     },
@@ -193,24 +192,20 @@ var AdvancedSocket = {
     },
 
     disconnected : function(){
-        cfWSupdates('disconnected', AdvancedSocket.clientID);
+        wsEvent({event: 'local', status: 'disconnected', localID: AdvancedSocket.clientID });
 
         AdvancedSocket.log('disconnected');
         AdvancedSocket.status = 'disconnected';
-
-        //infoAlert(AdvancedSocket.status);
 
         // speed up timer to check
         AdvancedSocket.timerCount = AdvancedSocket.offlineCount;
     },
 
     connecting : function(){
-        cfWSupdates('connecting', AdvancedSocket.clientID);
+        wsEvent({event: 'local', status: 'connecting', localID: AdvancedSocket.clientID });
 
         AdvancedSocket.log('connecting');
         AdvancedSocket.status = 'connecting';
-
-        //infoAlert(AdvancedSocket.status);
 
         // set the username into our Client Info
         AdvancedSocket.clientInfo.userID = window.userID;
@@ -222,12 +217,11 @@ var AdvancedSocket = {
     connected : function (){
 
         if(AdvancedSocket.status !== 'connected'){
-          cfWSupdates('connected', AdvancedSocket.clientID);
+          wsEvent({event: 'local', status: 'connected', localID: AdvancedSocket.clientID });
 
           AdvancedSocket.log('connected');
           AdvancedSocket.status = 'connected';
 
-          //infoAlert(AdvancedSocket.status);
         }
 
         // return back to normal
@@ -244,9 +238,43 @@ var AdvancedSocket = {
 
 window.addEventListener("beforeunload", function (e) {
   window[AdvancedSocket.name].closeConnection();
-  //e.returnValue = "confirmationMessage";     // Gecko, Trident, Chrome 34+
-  //return confirmationMessage;              // Gecko, WebKit, Chrome <34
 });
+
+// FrontEnd Editor events
+window.webSockets = {
+    onEvent: '',
+    onMessage: '',
+    send: function(sendMSG){
+        ws.publish("chat", {
+            remoteID: window.clientID, msg: sendMSG }
+        );
+    }
+}
+
+function receiveMessage(objData){
+    if(objData.data.type === 'subscriber'){ wsEvent(objData.data);
+    } else if(objData.data.type === 'message'){ wsMessage(objData.data); }
+}
+
+function wsMessage( data ){
+
+    // webRTC Samples
+    if(typeof gotMessageFromServer === "function"){ gotMessageFromServer(data); }
+
+    // FrontEnd Editor event
+    if(typeof window.webSockets.onMessage === "function"){ window.webSockets.onMessage(data); }
+
+}
+
+function wsEvent( data ){
+
+    // webRTC Samples
+    if(typeof initWebRTC === "function"){ initWebRTC(data); }
+
+    // FrontEnd Editor event
+    if(typeof window.webSockets.onEvent === "function"){ window.webSockets.onEvent(data); }
+
+}
 
 // initialize
 AdvancedSocket.init();
