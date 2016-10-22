@@ -27,6 +27,12 @@
   <link rel="stylesheet" href="libs/webrtc/css/main.css" />
   <link rel="stylesheet" href="libs/webrtcWS/pc1/main.css" />
 
+  <script type="text/javascript">
+      var randNum = Math.floor(Math.random() * 600) + 1;
+      window.userID  = "1";
+      window.username  = "user_" + randNum;
+  </script>
+
 </head>
 
 <body>
@@ -39,8 +45,8 @@
 
     <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>Peer connection</span></h1>
 
-    <video id="localVideo" autoplay muted></video>
-    <video id="remoteVideo" autoplay></video>
+    <video id="localVideo" autoplay muted poster="assets/img/offline.jpg"></video>
+    <video id="remoteVideo" autoplay poster="assets/img/offline.jpg"></video>
 
     <div>
       <button id="startButton">Start</button>
@@ -57,12 +63,9 @@
 
   </div>
 
-  <!--- <script src="libs/webrtc/js/adapter.js"></script> --->
+  <script src="sensePlayer/js/cfwebsockets.js"></script>
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-  <script src="libs/webrtc/js/common.js"></script>
-  <script src="libs/webrtcWS/pc1/main.js"></script>
-
-  <script src="assets/js/cfwebsockets.js"></script>
+  <script src="libs/webrtcWS/webRTCws/main.js"></script>
 
 </body>
 </html>

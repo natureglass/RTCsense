@@ -1,5 +1,6 @@
-var localVideo;
-var remoteVideo;
+var localVideo = document.getElementById('localVideo');
+var remoteVideo = document.getElementById('remoteVideo');
+
 var peerConnection;
 var uuid;
 
@@ -10,35 +11,55 @@ var peerConnectionConfig = {
     ]
 };
 
+var startButton = document.getElementById('startButton');
+var callButton = document.getElementById('callButton');
+var hangupButton = document.getElementById('hangupButton');
+callButton.disabled = true;
+hangupButton.disabled = true;
+startButton.disabled = true;
+startButton.onclick = initLocalDevice;
+callButton.onclick = function(){ call(true); }
+hangupButton.onclick = hangup;
+
 function initWebRTC( data ){
     if(data.status === "connected" & data.event === "local"){
-
-        console.log(data.status + " - " + data.localID);
-
-        uuid = uuid();
-
-        localVideo = document.getElementById('localVideo');
-        remoteVideo = document.getElementById('remoteVideo');
-
-        var constraints = {
-            video: true,
-            audio: true,
-        };
-
-        if(navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
-        } else {
-            alert('Your browser does not support getUserMedia API');
-        }
+        console.log(data.event + " - " + data.status + " - " + data.localID);
+        startButton.disabled = false;
+    } else if(data.status === "disconnected" & data.event === "remote"){
+        console.log(data.event + " - " + data.status + " - " + data.localID);
+        if(peerConnection != null){ stopRemoteVideo(); }
     }
+}
+
+function initLocalDevice(){
+
+    startButton.disabled = true;
+
+    uuid = uuid();
+
+    console.log(uuid);
+
+    var constraints = {
+        video: true,
+        audio: true,
+    };
+
+    if(navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia(constraints).then(getUserMediaSuccess).catch(errorHandler);
+    } else {
+        alert('Your browser does not support getUserMedia API');
+    }
+
 }
 
 function getUserMediaSuccess(stream) {
     localStream = stream;
     localVideo.src = window.URL.createObjectURL(stream);
+    callButton.disabled = false;
 }
 
-function start(isCaller) {
+function call(isCaller) {
+    callButton.disabled = true;
     peerConnection = new RTCPeerConnection(peerConnectionConfig);
     peerConnection.onicecandidate = gotIceCandidate;
     peerConnection.onaddstream = gotRemoteStream;
@@ -50,7 +71,9 @@ function start(isCaller) {
 }
 
 function gotMessageFromServer(data) {
-    if(!peerConnection) start(false);
+    if(!peerConnection){
+        call(false);
+    }
 
     var signal = JSON.parse(data.msg);
 
@@ -66,7 +89,18 @@ function gotMessageFromServer(data) {
         }).catch(errorHandler);
     } else if(signal.ice) {
         peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(errorHandler);
+    } else if(signal.status === "hangup"){
+        stopRemoteVideo();
     }
+}
+
+function stopRemoteVideo(){
+    hangupButton.disabled = true;
+    peerConnection.close();
+    peerConnection = null;
+    remoteVideo.pause();
+    remoteVideo.load();
+    callButton.disabled = false;
 }
 
 function gotIceCandidate(event) {
@@ -84,6 +118,12 @@ function createdDescription(description) {
 function gotRemoteStream(event) {
     console.log('got remote stream');
     remoteVideo.src = window.URL.createObjectURL(event.stream);
+    hangupButton.disabled = false;
+}
+
+function hangup() {
+  stopRemoteVideo();
+  window.webSockets.send(JSON.stringify({'status': 'hangup', 'uuid': uuid}));
 }
 
 function errorHandler(error) {
