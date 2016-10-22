@@ -17,7 +17,7 @@ var hangupButton = document.getElementById('hangupButton');
 callButton.disabled = true;
 hangupButton.disabled = true;
 startButton.disabled = true;
-startButton.onclick = initLocalDevice;
+startButton.onclick = initLocalUser;
 callButton.onclick = function(){ call(true); }
 hangupButton.onclick = hangup;
 
@@ -34,7 +34,7 @@ function initWebRTC( data ){
     }
 }
 
-function initLocalDevice(){
+function initLocalUser(){
 
     startButton.disabled = true;
 
