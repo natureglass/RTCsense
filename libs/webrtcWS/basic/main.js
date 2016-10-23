@@ -5,22 +5,20 @@ var startButton = document.querySelector('button#startButton');
 var sendButton = document.querySelector('button#sendButton');
 var closeButton = document.querySelector('button#closeButton');
 
-startButton.disabled = true;
-
 window.UI = {
 
     // --- On Open Connection --- //
     openConnection: function(){
         startButton.disabled = true;
-        closeButton.disabled = false;
     },
 
     // --- On Close Connection --- //
     closeConnection: function(){
+
         dataChannelSend.value = '';
         dataChannelReceive.value = '';
         dataChannelSend.disabled = true;
-        startButton.disabled = false;
+
         sendButton.disabled = true;
         closeButton.disabled = true;
     },
@@ -47,34 +45,44 @@ window.UI = {
                 window.WebRTC.processOffer(response);
                 break;
 
-            case 'close': // Remote User HangUp
-                window.WebRTC.closeConnection();
-                break;
-
             default:
                 console.warn('WHAT WAS THAT?');
                 console.info(response);
         }
     }
+
 };
 
 // ------------------------ WebRTC CallBacks ----------------------------- //
 
-window.WebRTC.dataChannelOpen = function(){
-    dataChannelSend.disabled = false;
-    dataChannelSend.focus();
-    sendButton.disabled = false;
-    closeButton.disabled = false;
-};
-
-window.WebRTC.dataChannelClosed = function(){
-    dataChannelSend.disabled = true;
-    sendButton.disabled = true;
-    closeButton.disabled = true;
-};
-
+// --- on WebSockets Message --- //
 window.WebRTC.onMessage = function(msg){
     dataChannelReceive.value = msg;
+}
+
+// --- on WebSockets DataChannel State --- //
+window.WebRTC.onDataChannelState = function(data){
+    if (data.state === 'open') {
+
+        dataChannelSend.disabled = false;
+        dataChannelSend.focus();
+
+        window.UI.openConnection();
+        sendButton.disabled = false;
+        closeButton.disabled = false;
+
+    } else {
+
+        dataChannelSend.disabled = true;
+        startButton.disabled = false;
+
+        window.UI.closeConnection();
+        window.WebRTC.closeConnection();
+
+    }
+
+
+    trace(data.type + ' channel state is: ' + data.state);
 }
 
 // ------------------------ UI Actions ----------------------------- //

@@ -28,31 +28,6 @@ window.WebRTC = {
         trace('Received Message');
         if(typeof window.WebRTC.onMessage === "function"){
             window.WebRTC.onMessage(event.data);
-        }        
-    },
-
-    // ---- DataChannel State ---- /
-    onDataChannelState: function(data){
-        if(data.type === "send"){
-
-            var readyState = window.WebRTC.sendChannel.readyState;
-            trace('Send channel state is: ' + readyState);
-
-            if (readyState === 'open') {
-                if(typeof window.WebRTC.dataChannelOpen === "function"){
-                    window.WebRTC.dataChannelOpen();
-                }
-            } else {
-                if(typeof window.WebRTC.dataChannelClosed === "function"){
-                    window.WebRTC.dataChannelClosed();
-                }
-            }
-
-        } else if(data.type === "recieve"){
-
-            var readyState = window.WebRTC.receiveChannel.readyState;
-            trace('Receive channel state is: ' + readyState);
-
         }
     },
 
@@ -73,7 +48,6 @@ window.WebRTC = {
         window.WebRTC.peerConnection = new RTCPeerConnection(window.WebRTC.peerConnectionConfig);
         window.WebRTC.peerConnection.onicecandidate = window.WebRTC.gotIceCandidate;
 
-        window.WebRTC.dataConstraint = null;
         window.WebRTC.sendChannel = window.WebRTC.peerConnection.createDataChannel('sendDataChannel', window.WebRTC.dataConstraint);
         window.WebRTC.sendChannel.onopen = window.WebRTC.onSendChannelStateChange;
         window.WebRTC.sendChannel.onclose = window.WebRTC.onSendChannelStateChange;
@@ -82,37 +56,54 @@ window.WebRTC = {
 
         if(isCaller) {
             window.WebRTC.peerConnection.createOffer().then(window.WebRTC.createdDescription).catch(window.WebRTC.errorHandler);
+        } else {
+            console.warn("isCaller: " + isCaller);
         }
 
     },
 
     // ---- On Send DataChannel State Changed ---- /
     onSendChannelStateChange: function(){
-        window.WebRTC.onDataChannelState({ 'type': 'send' });
+        var readyState = window.WebRTC.sendChannel.readyState;
+        if(typeof window.WebRTC.onDataChannelState === "function"){
+            window.WebRTC.onDataChannelState({ 'type': 'send', 'state': readyState });
+        }
     },
 
     // ---- On Receive DataChannel State Changed ---- /
     onReceiveChannelStateChange: function(){
-        window.WebRTC.onDataChannelState({ 'type': 'recieve' });
+        var readyState = window.WebRTC.receiveChannel.readyState;
+        if(typeof window.WebRTC.onDataChannelState === "function"){
+            window.WebRTC.onDataChannelState({ 'type': 'recieve', 'state': readyState });
+        }
     },
 
     // ---- Closing Connection ---- /
     closeConnection: function(){
-        trace('Closing data channels');
-        window.WebRTC.sendChannel.close();
-        trace('Closed data channel with label: ' + window.WebRTC.sendChannel.label);
-        window.WebRTC.receiveChannel.close();
-        trace('Closed data channel with label: ' + window.WebRTC.receiveChannel.label);
-        window.WebRTC.peerConnection.close();
-        window.WebRTC.peerConnection = null;
-        trace('Closed peer connections');
+        if(window.WebRTC.peerConnection != null){
+            trace('Closing data channels');
+            window.WebRTC.sendChannel.close();
+            trace('Closed data channel with label: ' + window.WebRTC.sendChannel.label);
+            window.WebRTC.receiveChannel.close();
+            trace('Closed data channel with label: ' + window.WebRTC.receiveChannel.label);
+            window.WebRTC.peerConnection.close();
+            window.WebRTC.peerConnection = null;
+            trace('Closed peer connections');
+        }
     },
 
     // --------------------- Processing SDP offer Respone ------------------------- //
 
     processOffer: function(signal){
 
-        if(!window.WebRTC.peerConnection){ window.WebRTC.openConnection(false); }
+        // console.info(signal);
+        // console.log(window.WebRTC.peerConnection);
+
+        if(!window.WebRTC.peerConnection){
+            window.WebRTC.openConnection(false);
+        } else {
+            console.warn("peerConnection is: " + window.WebRTC.peerConnection);
+        }
 
         // Ignore messages from ourself
         if(signal.uuid == window.WebRTC.uuid) return;
