@@ -1,5 +1,11 @@
 <!DOCTYPE html>
-
+<!--
+ *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+-->
 <html>
 <head>
 
@@ -7,6 +13,7 @@
   <meta name="description" content="WebRTC code samples">
   <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
   <meta itemprop="description" content="Client-side WebRTC code samples">
+  <meta itemprop="image" content="../../../images/webrtc-icon-192x192.png">
   <meta itemprop="name" content="WebRTC code samples">
   <meta name="mobile-web-app-capable" content="yes">
   <meta id="theme-color" name="theme-color" content="#ffffff">
@@ -15,11 +22,15 @@
 
   <title>Transmit text</title>
 
-  <link rel="stylesheet" href="libs/webrtc/content/datachannel/basic/css/main.css" />
+  <link rel="icon" sizes="192x192" href="libs/webrtc/images/webrtc-icon-192x192.png">
+  <link href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="libs/webrtc/css/main.css">
+  <link rel="stylesheet" href="libs/webrtcWS/basic/main.css" />
 
   <script type="text/javascript">
-    window.userID = 1;
-    window.username = "natureglass";
+      var randNum = Math.floor(Math.random() * 600) + 1;
+      window.userID  = "1";
+      window.username  = "user_" + randNum;
   </script>
 
 </head>
@@ -27,6 +38,8 @@
 <body>
 
   <div id="container">
+
+    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>Transmit text</span></h1>
 
     <div id="buttons">
       <button id="startButton">Start</button>
@@ -54,21 +67,13 @@
     <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/datachannel/basic" title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
   </div>
 
-  <script src="assets/js/cfwebsockets.js"></script>
-
+  <script src="sensePlayer/js/cfwebsockets.js"></script>
   <script src="libs/webrtc/js/adapter.js"></script>
   <script src="libs/webrtc/js/common.js"></script>
-  <script src="libs/webRTC_basic/main.js"></script>
 
-  <!--- <script type="text/javascript">
-    function receiveMessage(objData){
-        console.log("ReceiveMessage:");
-        console.log(objData.data);
-    }
-    function cfWSupdates(status, wsUserID){
-        console.log(status + " - " + wsUserID);
-    }
-  </script> --->
+  <script src="sensePlayer/js/cfwebrtc.js"></script>
+  <script src="libs/webrtcWS/basic/main.js"></script>
+
 
 </body>
 </html>

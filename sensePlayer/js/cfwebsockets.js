@@ -259,7 +259,7 @@ function receiveMessage(objData){
 function wsMessage( data ){
 
     // webRTC Samples
-    if(typeof gotMessageFromServer === "function"){ gotMessageFromServer(data); }
+    if(typeof window.UI.onWebSocketsMsg === "function"){ window.UI.onWebSocketsMsg(data); }
 
     // FrontEnd Editor event
     if(typeof window.webSockets.onMessage === "function"){ window.webSockets.onMessage(data); }
@@ -269,7 +269,7 @@ function wsMessage( data ){
 function wsEvent( data ){
 
     // webRTC Samples
-    if(typeof initWebRTC === "function"){ initWebRTC(data); }
+    if(typeof window.UI.onWebSocketsEvent === "function"){ window.UI.onWebSocketsEvent(data); }
 
     // FrontEnd Editor event
     if(typeof window.webSockets.onEvent === "function"){ window.webSockets.onEvent(data); }

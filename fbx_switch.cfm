@@ -1,7 +1,7 @@
 <cfswitch expression = "#fusebox.fuseaction#">
 
-    <cfcase value="test">
-        <cfinclude template="libs/webrtcWS/test/test.cfm">
+    <cfcase value="basic">
+        <cfinclude template="libs/webrtcWS/basic/index.cfm">
         <cfinclude template="sensePlayer/inc_websockets.cfm">
     </cfcase>
 
@@ -12,6 +12,11 @@
 
     <cfcase value="webrtc">
         <cfinclude template="libs/webrtcWS/webRTCws/index.cfm">
+        <cfinclude template="sensePlayer/inc_websockets.cfm">
+    </cfcase>
+
+    <cfcase value="test">
+        <cfinclude template="libs/webrtcWS/test/test.cfm">
         <cfinclude template="sensePlayer/inc_websockets.cfm">
     </cfcase>
 
