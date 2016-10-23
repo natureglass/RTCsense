@@ -56,8 +56,6 @@ window.WebRTC = {
 
         if(isCaller) {
             window.WebRTC.peerConnection.createOffer().then(window.WebRTC.createdDescription).catch(window.WebRTC.errorHandler);
-        } else {
-            console.warn("isCaller: " + isCaller);
         }
 
     },
@@ -96,13 +94,8 @@ window.WebRTC = {
 
     processOffer: function(signal){
 
-        // console.info(signal);
-        // console.log(window.WebRTC.peerConnection);
-
         if(!window.WebRTC.peerConnection){
             window.WebRTC.openConnection(false);
-        } else {
-            console.warn("peerConnection is: " + window.WebRTC.peerConnection);
         }
 
         // Ignore messages from ourself

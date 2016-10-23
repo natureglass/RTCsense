@@ -62,27 +62,31 @@ window.WebRTC.onMessage = function(msg){
 
 // --- on WebSockets DataChannel State --- //
 window.WebRTC.onDataChannelState = function(data){
-    if (data.state === 'open') {
+    if(data.type === 'send'){
 
-        dataChannelSend.disabled = false;
-        dataChannelSend.focus();
+        if (data.state === 'open') {
 
-        window.UI.openConnection();
-        sendButton.disabled = false;
-        closeButton.disabled = false;
+            dataChannelSend.disabled = false;
+            dataChannelSend.focus();
 
-    } else {
+            window.UI.openConnection();
+            sendButton.disabled = false;
+            closeButton.disabled = false;
 
-        dataChannelSend.disabled = true;
-        startButton.disabled = false;
+        } else {
 
-        window.UI.closeConnection();
-        window.WebRTC.closeConnection();
+            dataChannelSend.disabled = true;
+            startButton.disabled = false;
 
+            window.UI.closeConnection();
+            window.WebRTC.closeConnection();
+
+        }
+        
     }
 
+    trace(data.state + ' channel state is: ' + data.state);
 
-    trace(data.type + ' channel state is: ' + data.state);
 }
 
 // ------------------------ UI Actions ----------------------------- //
