@@ -1,3 +1,5 @@
+//RTCPeerConnection = function(rtcstudio){}
+
 window.WebRTC = {
 
     uuid: null,
@@ -5,6 +7,8 @@ window.WebRTC = {
     dataConstraint: null,
     receiveChannel: null,
     sendChannel: null,
+
+    localDescription: null,
 
     init: function(){
         window.WebRTC.uuid = window.WebRTC.createUUID();
@@ -15,6 +19,13 @@ window.WebRTC = {
             {'urls': 'stun:stun.services.mozilla.com'},
             {'urls': 'stun:stun.l.google.com:19302'},
         ]
+    },
+
+    // ---- WebRTC Options ---- /
+    options: {
+        video: false,
+        audio: false,
+        datachannel: true
     },
 
     // ---- Sending Message ---- /
@@ -41,20 +52,19 @@ window.WebRTC = {
     },
 
     // ---- Opening Connection ---- /
-    openConnection: function(isCaller){
-
-        dataChannelSend.placeholder = '';
+    openConnection: function(){
 
         window.WebRTC.peerConnection = new RTCPeerConnection(window.WebRTC.peerConnectionConfig);
         window.WebRTC.peerConnection.onicecandidate = window.WebRTC.gotIceCandidate;
 
-        window.WebRTC.sendChannel = window.WebRTC.peerConnection.createDataChannel('sendDataChannel', window.WebRTC.dataConstraint);
-        window.WebRTC.sendChannel.onopen = window.WebRTC.onSendChannelStateChange;
-        window.WebRTC.sendChannel.onclose = window.WebRTC.onSendChannelStateChange;
+        if(window.WebRTC.options.datachannel){
+            window.WebRTC.sendChannel = window.WebRTC.peerConnection.createDataChannel('sendDataChannel', window.WebRTC.dataConstraint);
+            window.WebRTC.sendChannel.onopen = window.WebRTC.onSendChannelStateChange;
+            window.WebRTC.sendChannel.onclose = window.WebRTC.onSendChannelStateChange;
+            window.WebRTC.peerConnection.ondatachannel = window.WebRTC.receiveChannelCallback;
+        }
 
-        window.WebRTC.peerConnection.ondatachannel = window.WebRTC.receiveChannelCallback; // receiveChannelCallback;
-
-        if(isCaller) {
+        if(!window.WebRTC.localDescription) {
             window.WebRTC.peerConnection.createOffer().then(window.WebRTC.createdDescription).catch(window.WebRTC.errorHandler);
         }
 
@@ -79,6 +89,7 @@ window.WebRTC = {
     // ---- Closing Connection ---- /
     closeConnection: function(){
         if(window.WebRTC.peerConnection != null){
+            window.WebRTC.localDescription = null;
             trace('Closing data channels');
             window.WebRTC.sendChannel.close();
             trace('Closed data channel with label: ' + window.WebRTC.sendChannel.label);
@@ -120,6 +131,7 @@ window.WebRTC = {
     },
 
     createdDescription: function(description) {
+        window.WebRTC.localDescription = description;
         window.WebRTC.peerConnection.setLocalDescription(description).then(function() {
             window.webSockets.send(JSON.stringify({'type': 'offer', 'sdp': window.WebRTC.peerConnection.localDescription, 'uuid': window.WebRTC.uuid}));
         }).catch(window.WebRTC.errorHandler);

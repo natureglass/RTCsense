@@ -49,9 +49,10 @@
     <video id="remoteVideo" autoplay poster="assets/img/offline.jpg"></video>
 
     <div>
-      <button id="startButton">Start Video</button>
-      <button id="callButton">Send Video</button>
-      <button id="hangupButton">Hang Up</button>
+        <button id="startVideoButton">Start Video</button>
+        <button id="connectButton" disabled>Connect</button>
+        <button id="sendButton" disabled>Send</button>
+        <button id="closeButton" disabled>Disconnect</button>
     </div>
 
     <p>View the console to see logging. The <code>MediaStream</code> object <code>localStream</code>, and the <code>RTCPeerConnection</code> objects <code>pc1</code> and <code>pc2</code> are in global scope, so you can inspect them in the console as well.</p>
@@ -64,9 +65,11 @@
   </div>
 
   <script src="sensePlayer/js/cfwebsockets.js"></script>
-  <!--- <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> --->
   <script src="libs/webrtc/js/adapter.js"></script>
-  <script src="libs/webrtcWS/webRTCws/main.js"></script>
+  <script src="libs/webrtc/js/common.js"></script>
+
+  <script src="sensePlayer/js/cfwebrtc.js"></script>
+  <script src="libs/webrtcWS/pc1/main.js"></script>
 
 </body>
 </html>

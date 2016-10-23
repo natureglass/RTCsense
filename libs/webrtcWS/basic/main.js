@@ -10,6 +10,7 @@ window.UI = {
     // --- On Open Connection --- //
     openConnection: function(){
         startButton.disabled = true;
+        dataChannelSend.placeholder = '';
     },
 
     // --- On Close Connection --- //
@@ -55,6 +56,19 @@ window.UI = {
 
 // ------------------------ WebRTC CallBacks ----------------------------- //
 
+document.addEventListener('DOMContentLoaded', function(){
+
+    // var options = {
+    //      video: false,
+    //      audio: false,
+    //      datachannel: true
+    // }
+    //
+    // var rtcPeerConnection = new RTCPeerConnection(options);
+    // console.log(RTCPeerConnection);
+
+});
+
 // --- on WebSockets Message --- //
 window.WebRTC.onMessage = function(msg){
     dataChannelReceive.value = msg;
@@ -82,7 +96,7 @@ window.WebRTC.onDataChannelState = function(data){
             window.WebRTC.closeConnection();
 
         }
-        
+
     }
 
     trace(data.state + ' channel state is: ' + data.state);
@@ -93,7 +107,7 @@ window.WebRTC.onDataChannelState = function(data){
 
 // --- Open Connection --- //
 startButton.onclick = function(){
-    window.WebRTC.openConnection(true);
+    window.WebRTC.openConnection();
     window.UI.openConnection();
 }
 
