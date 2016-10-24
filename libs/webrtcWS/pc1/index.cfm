@@ -51,7 +51,6 @@
     <div>
         <button id="startVideoButton">Start Video</button>
         <button id="connectButton" disabled>Connect</button>
-        <button id="sendButton" disabled>Send</button>
         <button id="closeButton" disabled>Disconnect</button>
     </div>
 

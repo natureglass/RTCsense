@@ -258,11 +258,22 @@ function receiveMessage(objData){
 
 function wsMessage( data ){
 
-    // webRTC Samples
-    if(typeof window.UI != "undefined"){
-        if(typeof window.UI.onWebSocketsMsg === "function"){
-            window.UI.onWebSocketsMsg(data);
-        }
+    var response = JSON.parse(data.msg);
+
+    switch (response.type) {
+        case 'offer': // Remote User Gave us an Offer
+            if(typeof window.UI.onOffer === "function"){
+                window.UI.onOffer(response);
+            } break;
+
+        case 'stream': // Stream Status
+            if(typeof window.UI.onStatus === "function"){
+                window.UI.onStatus(response);
+            } break;
+
+        default:
+            console.warn('WHAT WAS THAT?');
+            console.info(response);
     }
 
     // FrontEnd Editor event
@@ -276,8 +287,14 @@ function wsEvent( data ){
 
     // webRTC Samples
     if(typeof window.UI != "undefined"){
-        if(typeof window.UI.onWebSocketsEvent === "function"){
-            window.UI.onWebSocketsEvent(data);
+        if(data.event === "local" & data.status === "connected"){
+            if(typeof window.UI.onLoad === "function"){
+                window.UI.onLoad(data);
+            }
+        } else if(data.event === "remote" & data.status === "disconnected"){
+            if(typeof window.UI.onUnload === "function"){
+                window.UI.onUnload(data);
+            }
         }
     }
 
