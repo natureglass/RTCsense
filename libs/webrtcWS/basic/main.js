@@ -1,3 +1,4 @@
+var rtcPeerConnection;
 
 var dataChannelSend = document.querySelector('textarea#dataChannelSend');
 var dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
@@ -31,8 +32,8 @@ window.UI = {
             trace('WebSockets Ready!');
             startButton.disabled = false;
         } else if(data.event === "remote" & data.status === "disconnected"){
-            if(window.WebRTC.peerConnection != null){
-                window.WebRTC.closeConnection();
+            if(rtcPeerConnection.peerConnection != null){
+                rtcPeerConnection.closeConnection();
             }
         }
     },
@@ -43,7 +44,7 @@ window.UI = {
 
         switch (response.type) {
             case 'offer': // Remote User Gave us an Offer
-                window.WebRTC.processOffer(response);
+                rtcPeerConnection.processOffer(response);
                 break;
 
             default:
@@ -58,66 +59,65 @@ window.UI = {
 
 document.addEventListener('DOMContentLoaded', function(){
 
-    // var options = {
-    //      video: false,
-    //      audio: false,
-    //      datachannel: true
-    // }
-    //
-    // var rtcPeerConnection = new RTCPeerConnection(options);
-    // console.log(RTCPeerConnection);
+    var options = {
+         video: false,
+         audio: false,
+         datachannel: true
+    }
 
-});
+    rtcPeerConnection = new PeersRTC(options);
 
-// --- on WebSockets Message --- //
-window.WebRTC.onMessage = function(msg){
-    dataChannelReceive.value = msg;
-}
+    // --- on WebSockets Message --- //
+    rtcPeerConnection.onMessage = function(msg){
+        dataChannelReceive.value = msg;
+    }
 
-// --- on WebSockets DataChannel State --- //
-window.WebRTC.onDataChannelState = function(data){
-    if(data.type === 'send'){
+    // --- on WebSockets DataChannel State --- //
+    rtcPeerConnection.onDataChannelState = function(data){
+        if(data.type === 'send'){
 
-        if (data.state === 'open') {
+            if (data.state === 'open') {
 
-            dataChannelSend.disabled = false;
-            dataChannelSend.focus();
+                dataChannelSend.disabled = false;
+                dataChannelSend.focus();
 
-            window.UI.openConnection();
-            sendButton.disabled = false;
-            closeButton.disabled = false;
+                window.UI.openConnection();
+                sendButton.disabled = false;
+                closeButton.disabled = false;
 
-        } else {
+            } else {
 
-            dataChannelSend.disabled = true;
-            startButton.disabled = false;
+                dataChannelSend.disabled = true;
+                startButton.disabled = false;
 
-            window.UI.closeConnection();
-            window.WebRTC.closeConnection();
+                window.UI.closeConnection();
+                rtcPeerConnection.closeConnection();
+
+            }
 
         }
 
+        trace(data.state + ' channel state is: ' + data.state);
+
     }
 
-    trace(data.state + ' channel state is: ' + data.state);
-
-}
+});
 
 // ------------------------ UI Actions ----------------------------- //
 
 // --- Open Connection --- //
 startButton.onclick = function(){
-    window.WebRTC.openConnection();
+    rtcPeerConnection.openConnection();
     window.UI.openConnection();
 }
 
 // --- Close Connection --- //
 closeButton.onclick = function(){
-    window.WebRTC.closeConnection();
+    rtcPeerConnection.closeConnection();
     window.UI.closeConnection();
 }
 
 // --- Send Message --- //
 sendButton.onclick = function(){
-    window.WebRTC.sendData(dataChannelSend.value);
+    rtcPeerConnection.sendData(dataChannelSend.value);
 }

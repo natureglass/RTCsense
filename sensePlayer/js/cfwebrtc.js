@@ -1,156 +1,163 @@
-//RTCPeerConnection = function(rtcstudio){}
+PeersRTC = function(rtcOptions){
 
-window.WebRTC = {
+    this.WebRTC = {
 
-    uuid: null,
-    peerConnection: null,
-    dataConstraint: null,
-    receiveChannel: null,
-    sendChannel: null,
+        uuid: null,
+        peerConnection: null,
+        dataConstraint: null,
+        receiveChannel: null,
+        sendChannel: null,
 
-    localDescription: null,
+        localDescription: null,
 
-    init: function(){
-        window.WebRTC.uuid = window.WebRTC.createUUID();
-    },
+        init: function(){
+            $this.uuid = $this.createUUID();
 
-    peerConnectionConfig : {
-        'iceServers': [
-            {'urls': 'stun:stun.services.mozilla.com'},
-            {'urls': 'stun:stun.l.google.com:19302'},
-        ]
-    },
+            if(rtcOptions != null){
+                $this.options = rtcOptions;
+            }
+        },
 
-    // ---- WebRTC Options ---- /
-    options: {
-        video: false,
-        audio: false,
-        datachannel: true
-    },
+        peerConnectionConfig : {
+            'iceServers': [
+                {'urls': 'stun:stun.services.mozilla.com'},
+                {'urls': 'stun:stun.l.google.com:19302'},
+            ]
+        },
 
-    // ---- Sending Message ---- /
-    sendData: function(msg){
-        trace('Sent Data: ' + msg);
-        window.WebRTC.sendChannel.send(msg);
-    },
+        // ---- WebRTC Options ---- /
+        options: {
+            video: false,
+            audio: false,
+            datachannel: true
+        },
 
-    // ---- Recieving Message ---- /
-    onReceiveMessageCallback: function(event){
-        trace('Received Message');
-        if(typeof window.WebRTC.onMessage === "function"){
-            window.WebRTC.onMessage(event.data);
+        // ---- Sending Message ---- /
+        sendData: function(msg){
+            trace('Sent Data: ' + msg);
+            $this.sendChannel.send(msg);
+        },
+
+        // ---- Recieving Message ---- /
+        onReceiveMessageCallback: function(event){
+            trace('Received Message');
+            if(typeof $this.onMessage === "function"){
+                $this.onMessage(event.data);
+            }
+        },
+
+        // ---- DataChannel CallBack ---- /
+        receiveChannelCallback: function(event){
+            trace('Receive Channel Callback');
+            $this.receiveChannel = event.channel;
+            $this.receiveChannel.onmessage = $this.onReceiveMessageCallback;
+            $this.receiveChannel.onopen = $this.onReceiveChannelStateChange;
+            $this.receiveChannel.onclose = $this.onReceiveChannelStateChange;
+        },
+
+        // ---- Opening Connection ---- /
+        openConnection: function(){
+
+            $this.peerConnection = new RTCPeerConnection($this.peerConnectionConfig);
+            $this.peerConnection.onicecandidate = $this.gotIceCandidate;
+
+            if($this.options.datachannel){
+                $this.sendChannel = $this.peerConnection.createDataChannel('sendDataChannel', $this.dataConstraint);
+                $this.sendChannel.onopen = $this.onSendChannelStateChange;
+                $this.sendChannel.onclose = $this.onSendChannelStateChange;
+                $this.peerConnection.ondatachannel = $this.receiveChannelCallback;
+            }
+
+            if(!$this.localDescription) {
+                $this.peerConnection.createOffer().then($this.createdDescription).catch($this.errorHandler);
+            }
+
+        },
+
+        // ---- On Send DataChannel State Changed ---- /
+        onSendChannelStateChange: function(){
+            var readyState = $this.sendChannel.readyState;
+            if(typeof $this.onDataChannelState === "function"){
+                $this.onDataChannelState({ 'type': 'send', 'state': readyState });
+            }
+        },
+
+        // ---- On Receive DataChannel State Changed ---- /
+        onReceiveChannelStateChange: function(){
+            var readyState = $this.receiveChannel.readyState;
+            if(typeof $this.onDataChannelState === "function"){
+                $this.onDataChannelState({ 'type': 'recieve', 'state': readyState });
+            }
+        },
+
+        // ---- Closing Connection ---- /
+        closeConnection: function(){
+            if($this.peerConnection != null){
+                $this.localDescription = null;
+                trace('Closing data channels');
+                $this.sendChannel.close();
+                trace('Closed data channel with label: ' + $this.sendChannel.label);
+                $this.receiveChannel.close();
+                trace('Closed data channel with label: ' + $this.receiveChannel.label);
+                $this.peerConnection.close();
+                $this.peerConnection = null;
+                trace('Closed peer connections');
+            }
+        },
+
+        // --------------------- Processing SDP offer Respone ------------------------- //
+
+        processOffer: function(signal){
+
+            if(!$this.peerConnection){
+                $this.openConnection(false);
+            }
+
+            // Ignore messages from ourself
+            if(signal.uuid == $this.uuid) return;
+
+            if(signal.sdp) {
+                $this.peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
+                    // Only create answers in response to offers
+                    if(signal.sdp.type == 'offer') {
+                        $this.peerConnection.createAnswer().then($this.createdDescription).catch($this.errorHandler);
+                    }
+                }).catch($this.errorHandler);
+            } else if(signal.ice) {
+                $this.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch($this.errorHandler);
+            }
+        },
+
+        gotIceCandidate: function(event) {
+            if(event.candidate != null) {
+                window.webSockets.send(JSON.stringify({'type': 'offer', 'ice': event.candidate, 'uuid': $this.uuid}));
+            }
+        },
+
+        createdDescription: function(description) {
+            $this.localDescription = description;
+            $this.peerConnection.setLocalDescription(description).then(function() {
+                window.webSockets.send(JSON.stringify({'type': 'offer', 'sdp': $this.peerConnection.localDescription, 'uuid': $this.uuid}));
+            }).catch($this.errorHandler);
+        },
+
+        errorHandler: function(error) {
+            console.log(error);
+        },
+
+        // Taken from http://stackoverflow.com/a/105074/515584
+        // Strictly speaking, it's not a real UUID, but it gets the job done here
+        createUUID: function() {
+          function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+          }
+
+          return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
         }
-    },
 
-    // ---- DataChannel CallBack ---- /
-    receiveChannelCallback: function(event){
-        trace('Receive Channel Callback');
-        window.WebRTC.receiveChannel = event.channel;
-        window.WebRTC.receiveChannel.onmessage = window.WebRTC.onReceiveMessageCallback;
-        window.WebRTC.receiveChannel.onopen = window.WebRTC.onReceiveChannelStateChange;
-        window.WebRTC.receiveChannel.onclose = window.WebRTC.onReceiveChannelStateChange;
-    },
+    }; $this = this.WebRTC;
 
-    // ---- Opening Connection ---- /
-    openConnection: function(){
+    $this.init();
 
-        window.WebRTC.peerConnection = new RTCPeerConnection(window.WebRTC.peerConnectionConfig);
-        window.WebRTC.peerConnection.onicecandidate = window.WebRTC.gotIceCandidate;
-
-        if(window.WebRTC.options.datachannel){
-            window.WebRTC.sendChannel = window.WebRTC.peerConnection.createDataChannel('sendDataChannel', window.WebRTC.dataConstraint);
-            window.WebRTC.sendChannel.onopen = window.WebRTC.onSendChannelStateChange;
-            window.WebRTC.sendChannel.onclose = window.WebRTC.onSendChannelStateChange;
-            window.WebRTC.peerConnection.ondatachannel = window.WebRTC.receiveChannelCallback;
-        }
-
-        if(!window.WebRTC.localDescription) {
-            window.WebRTC.peerConnection.createOffer().then(window.WebRTC.createdDescription).catch(window.WebRTC.errorHandler);
-        }
-
-    },
-
-    // ---- On Send DataChannel State Changed ---- /
-    onSendChannelStateChange: function(){
-        var readyState = window.WebRTC.sendChannel.readyState;
-        if(typeof window.WebRTC.onDataChannelState === "function"){
-            window.WebRTC.onDataChannelState({ 'type': 'send', 'state': readyState });
-        }
-    },
-
-    // ---- On Receive DataChannel State Changed ---- /
-    onReceiveChannelStateChange: function(){
-        var readyState = window.WebRTC.receiveChannel.readyState;
-        if(typeof window.WebRTC.onDataChannelState === "function"){
-            window.WebRTC.onDataChannelState({ 'type': 'recieve', 'state': readyState });
-        }
-    },
-
-    // ---- Closing Connection ---- /
-    closeConnection: function(){
-        if(window.WebRTC.peerConnection != null){
-            window.WebRTC.localDescription = null;
-            trace('Closing data channels');
-            window.WebRTC.sendChannel.close();
-            trace('Closed data channel with label: ' + window.WebRTC.sendChannel.label);
-            window.WebRTC.receiveChannel.close();
-            trace('Closed data channel with label: ' + window.WebRTC.receiveChannel.label);
-            window.WebRTC.peerConnection.close();
-            window.WebRTC.peerConnection = null;
-            trace('Closed peer connections');
-        }
-    },
-
-    // --------------------- Processing SDP offer Respone ------------------------- //
-
-    processOffer: function(signal){
-
-        if(!window.WebRTC.peerConnection){
-            window.WebRTC.openConnection(false);
-        }
-
-        // Ignore messages from ourself
-        if(signal.uuid == window.WebRTC.uuid) return;
-
-        if(signal.sdp) {
-            window.WebRTC.peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
-                // Only create answers in response to offers
-                if(signal.sdp.type == 'offer') {
-                    window.WebRTC.peerConnection.createAnswer().then(window.WebRTC.createdDescription).catch(window.WebRTC.errorHandler);
-                }
-            }).catch(window.WebRTC.errorHandler);
-        } else if(signal.ice) {
-            window.WebRTC.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(window.WebRTC.errorHandler);
-        }
-    },
-
-    gotIceCandidate: function(event) {
-        if(event.candidate != null) {
-            window.webSockets.send(JSON.stringify({'type': 'offer', 'ice': event.candidate, 'uuid': window.WebRTC.uuid}));
-        }
-    },
-
-    createdDescription: function(description) {
-        window.WebRTC.localDescription = description;
-        window.WebRTC.peerConnection.setLocalDescription(description).then(function() {
-            window.webSockets.send(JSON.stringify({'type': 'offer', 'sdp': window.WebRTC.peerConnection.localDescription, 'uuid': window.WebRTC.uuid}));
-        }).catch(window.WebRTC.errorHandler);
-    },
-
-    errorHandler: function(error) {
-        console.log(error);
-    },
-
-    // Taken from http://stackoverflow.com/a/105074/515584
-    // Strictly speaking, it's not a real UUID, but it gets the job done here
-    createUUID: function() {
-      function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-      }
-
-      return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-    }
-
+    return $this;
 };
-
-window.WebRTC.init();

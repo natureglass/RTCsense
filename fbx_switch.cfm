@@ -1,5 +1,10 @@
 <cfswitch expression = "#fusebox.fuseaction#">
 
+    <cfcase value="object">
+        <cfinclude template="libs/webrtcWS/object/index.cfm">
+        <cfinclude template="sensePlayer/inc_websockets.cfm">
+    </cfcase>
+
     <cfcase value="basic">
         <cfinclude template="libs/webrtcWS/basic/index.cfm">
         <cfinclude template="sensePlayer/inc_websockets.cfm">
