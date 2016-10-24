@@ -23,22 +23,6 @@ window.UI = {
         }
     },
 
-    onOffer: function(data){
-        peer.processOffer(data);
-    },
-
-    onStatus: function(status){
-        if(status.type === 'stream'){
-            if(status.event === 'close'){
-                peer.closeConnection();
-                closeButton.disabled = true;
-                connectButton.disabled = false;
-            }
-            console.warn('Remote Stream Status: ' + status.event);
-            console.log('uuid: ' + status.uuid);
-        }
-    },
-
     openConnection: function(){
         connectButton.disabled = true;
     },
@@ -48,15 +32,15 @@ window.UI = {
         connectButton.disabled = false;
     },
 
-    onLocalStream: function(event){
+    onLocalStream: function(stream){
         connectButton.disabled = false;
-        localVideo.src = window.URL.createObjectURL(event.stream);
+        localVideo.src = window.URL.createObjectURL(stream);
     },
 
-    onRemoteStream: function(event){
+    onRemoteStream: function(stream){
         closeButton.disabled = false;
         connectButton.disabled = true;
-        remoteVideo.src = window.URL.createObjectURL(event.stream);
+        remoteVideo.src = window.URL.createObjectURL(stream);
     }
 
 };
@@ -99,12 +83,24 @@ document.addEventListener('DOMContentLoaded', function(){
     peer.on('stream', function(data){
         if(data.event === "local"){ // Local Video Received
             if(localVideo){
-                window.UI.onLocalStream(data);
+                window.UI.onLocalStream(data.stream);
             }
         } else { // Remote Video Received
             if(remoteVideo){
-                window.UI.onRemoteStream(data);
+                window.UI.onRemoteStream(data.stream);
             }
+        }
+    });
+
+    peer.on('status', function(status){
+        if(status.event === 'stream'){
+            if(status.state === 'close'){
+                peer.closeConnection();
+                closeButton.disabled = true;
+                connectButton.disabled = false;
+            }
+            console.warn('Remote Stream Status: ' + status.event);
+            console.log('uuid: ' + status.uuid);
         }
     });
 

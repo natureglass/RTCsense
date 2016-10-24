@@ -42,10 +42,9 @@ PeersRTC = function(rtcOptions){
         // ---- Recieving Message ---- /
         onReceiveMessageCallback: function(event){
             trace('Received Message');
-            //if(typeof $this.onMessage === "function"){
-                //$this.onMessage(event.data);
+            if($this.on.message){
                 $this.on.message.emit(event.data);
-            //}
+            }
         },
 
         // ---- DataChannel CallBack ---- /
@@ -80,7 +79,7 @@ PeersRTC = function(rtcOptions){
             if(isCaller == null) {
                 $this.peerConnection.createOffer().then($this.createdDescription).catch($this.errorHandler);
             } else {
-                window.webSockets.send(JSON.stringify({'type': 'stream', 'event': 'open', 'uuid': $this.uuid}));
+                window.webSockets.send(JSON.stringify({'event': 'stream', 'state': 'open', 'uuid': $this.uuid}));
             }
 
         },
@@ -88,23 +87,21 @@ PeersRTC = function(rtcOptions){
         // ---- On Send DataChannel State Changed ---- /
         onSendChannelStateChange: function(){
             var readyState = $this.sendChannel.readyState;
-            var sendDetails = { 'type': 'send', 'state': readyState };
-            //if(typeof $this.onDataChannelState === "function"){
-            //    $this.onDataChannelState(sendDetails);
-            //}
-            console.log("Sending State!");
-            $this.on.datachannel.emit(sendDetails);
+            var sendDetails = { 'event': 'datachannel', 'type': 'send', 'state': readyState };
+            if($this.on.status){
+                $this.on.status.emit(sendDetails);
+            }
+
         },
 
         // ---- On Receive DataChannel State Changed ---- /
         onReceiveChannelStateChange: function(){
             var readyState = $this.receiveChannel.readyState;
-            var sendDetails = { 'type': 'recieve', 'state': readyState };
-            //if(typeof $this.onDataChannelState === "function"){
-            //    $this.onDataChannelState({ 'type': 'recieve', 'state': readyState });
-            //}
-            console.log("Receiving State!");
-            $this.on.datachannel.emit(sendDetails);
+            var sendDetails = { 'event': 'datachannel', 'type': 'recieve', 'state': readyState };
+            if($this.on.status){
+                $this.on.status.emit(sendDetails);
+            }
+
         },
 
         // ---- Closing Connection ---- /
@@ -123,7 +120,7 @@ PeersRTC = function(rtcOptions){
                 $this.peerConnection = null;
                 trace('Closed peer connections');
 
-                window.webSockets.send(JSON.stringify({'type': 'stream', 'event': 'close', 'uuid': $this.uuid}));
+                window.webSockets.send(JSON.stringify({'event': 'stream', 'state': 'close', 'uuid': $this.uuid}));
 
             }
         },
@@ -153,20 +150,18 @@ PeersRTC = function(rtcOptions){
 
         gotIceCandidate: function(event) {
             if(event.candidate != null) {
-                console.log("Sending Canditate Offer!");
-                window.webSockets.send(JSON.stringify({'type': 'offer', 'ice': event.candidate, 'uuid': $this.uuid}));
+                window.webSockets.send(JSON.stringify({'event': 'offer', 'ice': event.candidate, 'uuid': $this.uuid}));
             }
         },
 
         createdDescription: function(description) {
             $this.peerConnection.setLocalDescription(description).then(function() {
-                console.log("Sending Offer!");
-                window.webSockets.send(JSON.stringify({'type': 'offer', 'sdp': $this.peerConnection.localDescription, 'uuid': $this.uuid}));
+                window.webSockets.send(JSON.stringify({'event': 'offer', 'sdp': $this.peerConnection.localDescription, 'uuid': $this.uuid}));
             }).catch($this.errorHandler);
         },
 
         errorHandler: function(error) {
-            console.log(error);
+            console.warn(error);
         },
 
         createUUID: function() {
@@ -189,11 +184,11 @@ PeersRTC = function(rtcOptions){
       startUserMedia: function(constraints){
           if(navigator.mediaDevices.getUserMedia) {
               navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
-                  //if(typeof $this.onStream === "function"){
+                  if($this.on.stream){
                       $this.localStream = stream;
                       var streamDetails = {'event': 'local', 'stream': stream};
                       $this.on.stream.emit(streamDetails);
-                  //}
+                  }
               }).catch($this.errorHandler);
 
           } else {
@@ -202,15 +197,24 @@ PeersRTC = function(rtcOptions){
       },
 
       gotRemoteStream: function(event){
-          console.warn("got Remote Stream!");
-          //if(typeof $this.onStream === "function"){
+          if($this.on.stream){
               var streamDetails = {'event': 'remote', 'stream': event.stream};
               $this.on.stream.emit(streamDetails);
-              //window.webSockets.send(JSON.stringify({'type': 'stream', 'gotVideo': true, 'uuid': $this.uuid}));
-          //}
+          }
       }
 
     }; $this = this.WebRTC;
+
+    window.PeersRTC = {
+        processOffer: function(signal){
+            $this.processOffer(signal);
+        },
+        onStatus: function(status){
+            if($this.on.status){
+                $this.on.status.emit(status);
+            }
+        }
+    }
 
     $this.init();
 

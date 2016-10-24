@@ -23,10 +23,6 @@ window.UI = {
         }
     },
 
-    onOffer: function(data){
-        peer.processOffer(data);
-    },
-
     onMessage: function(msg){
         dataChannelReceive.value = msg;
     },
@@ -90,16 +86,18 @@ document.addEventListener('DOMContentLoaded', function(){
         window.UI.onMessage(msg);
     });
 
-    peer.on('datachannel', function(data){
-        if(data.type === 'send'){
-            if (data.state === 'open') {
-                window.UI.openConnection();
-            } else {
-                window.UI.closeConnection();
-                peer.closeConnection();
+    peer.on('status', function(status){
+        if(status.event === 'datachannel'){
+            if(status.type === 'send'){
+                if (status.state === 'open') {
+                    window.UI.openConnection();
+                } else {
+                    window.UI.closeConnection();
+                    peer.closeConnection();
+                }
             }
+            trace('Channel state is: ' + status.state);
         }
-        trace(data.state + ' channel state is: ' + data.state);
     });
 
 // ----------------------------------------------------------------- //

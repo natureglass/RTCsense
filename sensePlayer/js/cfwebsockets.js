@@ -260,16 +260,14 @@ function wsMessage( data ){
 
     var response = JSON.parse(data.msg);
 
-    switch (response.type) {
+    switch (response.event) {
         case 'offer': // Remote User Gave us an Offer
-            if(typeof window.UI.onOffer === "function"){
-                window.UI.onOffer(response);
-            } break;
+            window.PeersRTC.processOffer(response);
+            break;
 
         case 'stream': // Stream Status
-            if(typeof window.UI.onStatus === "function"){
-                window.UI.onStatus(response);
-            } break;
+            window.PeersRTC.onStatus(response);
+            break;
 
         default:
             console.warn('WHAT WAS THAT?');
