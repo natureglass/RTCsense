@@ -31,16 +31,6 @@ window.UI = {
         dataChannelReceive.value = msg;
     },
 
-    // --- Status --- //
-    onStatus: function(status){
-        if(status.type === 'stream'){
-            console.log('Stream Status: ' + status.event);
-        } else {
-            console.log('DataChannel Status');
-            console.log(status);
-        }
-    },
-
     // --- On Open Connection --- //
     openConnection: function(){
         dataChannelSend.placeholder = '';
@@ -93,20 +83,6 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     peer = new PeersRTC(options);
-
-// ------------------------- STREAMS ------------------------------- //
-
-    peer.on('stream', function(data){
-        if(data.event === "local"){ // Local Video Received
-            if(localVideo){
-                localVideo.src = window.URL.createObjectURL(data.stream);
-            }
-        } else { // Remote Video Received
-            if(remoteVideo){
-                remoteVideo.src = window.URL.createObjectURL(data.stream);
-            }
-        }
-    });
 
 // ---------------------- DATA CHANNELS ---------------------------- //
 

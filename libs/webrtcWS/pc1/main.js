@@ -27,10 +27,6 @@ window.UI = {
         peer.processOffer(data);
     },
 
-    onMessage: function(msg){
-        //dataChannelReceive.value = msg;
-    },
-
     onStatus: function(status){
         if(status.type === 'stream'){
             if(status.event === 'close'){
@@ -110,24 +106,6 @@ document.addEventListener('DOMContentLoaded', function(){
                 window.UI.onRemoteStream(data);
             }
         }
-    });
-
-// ---------------------- DATA CHANNELS ---------------------------- //
-
-    peer.on('message', function(msg){
-        window.UI.onMessage(msg);
-    });
-
-    peer.on('datachannel', function(data){
-        if(data.type === 'send'){
-            if (data.state === 'open') {
-                window.UI.openConnection();
-            } else {
-                window.UI.closeConnection();
-                peer.closeConnection();
-            }
-        }
-        trace(data.state + ' channel state is: ' + data.state);
     });
 
 // ----------------------------------------------------------------- //
