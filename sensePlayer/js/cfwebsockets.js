@@ -270,15 +270,17 @@ function wsMessage( data ){
             break;
 
         case 'stream': // Stream Status
-            if(window.PeersRTC){
-                window.PeersRTC.onStatus(response);
+            if(response.type === 'state'){
+                if(window.PeersRTC){ window.PeersRTC.onStatus(response); }
+            } else if(response.type === 'info'){
+                if(window.PeersRTC){ window.PeersRTC.onStream(response); }
             }
             break;
+
         case 'error': // Stream Status
-            if(window.PeersRTC){
-                window.PeersRTC.onError(response);
-            }
+            if(window.PeersRTC){ window.PeersRTC.onError(response); }
             break;
+
         default:
             console.warn('WHAT WAS THAT?');
             console.info(response);

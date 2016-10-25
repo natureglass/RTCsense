@@ -34,7 +34,7 @@ window.UI = {
         closeButton.disabled = false;
         connectButton.disabled = true;
         remoteVideo.src = window.URL.createObjectURL(event.stream);
-        console.info('remoteID: ?');
+        console.info('remoteID: ' + event.remoteID);
     }
 
 };
@@ -89,12 +89,14 @@ document.addEventListener('DOMContentLoaded', function(){
     peer.on('status', function(status){
         //console.log(status);
         if(status.event === 'stream'){
-            if(status.state === 'close'){
-                peer.closeConnection();
-                closeButton.disabled = true;
-                connectButton.disabled = false;
+            if(status.type === 'state'){
+                console.info('Remote Stream status: ' + status.state);
+                if(status.state === 'close'){
+                  peer.closeConnection();
+                  closeButton.disabled = true;
+                  connectButton.disabled = false;
+                }
             }
-            console.info('Remote Stream status: ' + status.state);
 
         } else if(status.event === 'websockets'){
 
@@ -109,11 +111,11 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     peer.on('error', function(report){
-      if(report.type === 'local'){
-          console.warn("LOCAL Error / LocalID: " + report.localID + " / " + report.error);
-      } else {
-          console.warn("REMOTE Error / RemoteID: " + report.remoteID + " / " + report.error);
-      }
+        if(report.type === 'local'){
+            console.warn("LOCAL Error / LocalID: " + report.localID + " / " + report.error);
+        } else {
+            console.warn("REMOTE Error / RemoteID: " + report.remoteID + " / " + report.error);
+        }
     });
 
 // ----------------------------------------------------------------- //

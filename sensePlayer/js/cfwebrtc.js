@@ -11,6 +11,8 @@ PeersRTC = function(rtcOptions){
         localStream: null,
         remoteStream: null,
 
+        users: [{}],
+
         init: function(){
             $this.uuid = $this.createUUID();
 
@@ -66,6 +68,8 @@ PeersRTC = function(rtcOptions){
             if($this.options.video === true){
                 if($this.localStream != null){
                     $this.peerConnection.addStream($this.localStream);
+                    var localStreamID = $this.localStream.id;
+                    window.webSockets.send(JSON.stringify({'event': 'stream', 'type': 'info', 'remoteID': window.clientID, 'streamID': localStreamID }));
                 }
             }
 
@@ -79,7 +83,7 @@ PeersRTC = function(rtcOptions){
             if(isCaller == null) {
                 $this.peerConnection.createOffer().then($this.createdDescription).catch($this.errorHandler);
             } else {
-                window.webSockets.send(JSON.stringify({'event': 'stream', 'state': 'open', 'uuid': $this.uuid}));
+                window.webSockets.send(JSON.stringify({'event': 'stream', 'type': 'state', 'state': 'open', 'uuid': $this.uuid}));
             }
 
         },
@@ -120,7 +124,7 @@ PeersRTC = function(rtcOptions){
                 $this.peerConnection = null;
                 trace('Closed peer connections');
 
-                window.webSockets.send(JSON.stringify({'event': 'stream', 'state': 'close', 'uuid': $this.uuid}));
+                window.webSockets.send(JSON.stringify({'event': 'stream', 'type': 'state', 'state': 'close', 'uuid': $this.uuid}));
 
             }
         },
@@ -202,9 +206,31 @@ PeersRTC = function(rtcOptions){
         },
 
         gotRemoteStream: function(event){
-            if($this.on.stream){
-                var streamDetails = {'event': 'remote', 'stream': event.stream };
-                $this.on.stream.emit(streamDetails);
+            $this.sortStream2user({ 'type': 'stream', 'streamID': event.stream.id, 'stream': event.stream });
+        },
+
+        sortStream2user: function(data){
+            var userExist = false;
+            for (i = 0; i < $this.users.length; i++) {
+                if($this.users[i].streamID === data.streamID){
+                    if(data.type === 'stream'){
+                        $this.users[i].stream = data.stream;
+                    } else {
+                        $this.users[i].streamID = data.streamID;
+                    } userExist = true;
+
+                    if($this.on.stream){
+                        //var streamDetails = {'event': 'remote', 'stream': event.stream };
+                        $this.on.stream.emit($this.users[i]);
+                    }
+
+                    break;
+                }
+            }
+
+            if(!userExist){
+                if(data.type === 'stream'){ $this.users.push(data);
+                } else { $this.users.push(data); }
             }
         }
 
@@ -218,6 +244,9 @@ PeersRTC = function(rtcOptions){
             if($this.on.status){
                 $this.on.status.emit(status);
             }
+        },
+        onStream: function(data){
+            $this.sortStream2user({ 'type': 'id', 'streamID': data.streamID, 'remoteID': data.remoteID });
         },
         onError: function(error){
             if($this.on.error){
