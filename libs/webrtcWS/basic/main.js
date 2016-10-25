@@ -28,7 +28,7 @@ window.UI = {
         startButton.disabled = false;
         sendButton.disabled = true;
         closeButton.disabled = true;
-    }
+    },
 
     // --- On WebRTC Message --- //
     onMessage: function(msg){
