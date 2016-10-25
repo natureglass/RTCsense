@@ -90,17 +90,21 @@ document.addEventListener('DOMContentLoaded', function(){
 
             if(status.type === 'local' & status.status === 'connected'){
                 startButton.disabled = false;
-                console.info(status.type + " WebSockets: " + status.status + " with LocalID: " + status.localID);
+                console.info("LOCAL user / LocalID: " + status.localID + " / " + status.status);
             } else if(status.type === 'remote'){
                 if(peer.peerConnection != null){ peer.closeConnection(); }
-                console.info(status.type + " WebSockets: " + status.status + " with remoteID: " + status.remoteID);
+                console.info("REMOTE user / RemoteID: " + status.remoteID + " / " + status.status);
             }
 
         }
     });
 
     peer.on('error', function(report){
-      console.warn(report.type + " / " + report.error);
+      if(report.type === 'local'){
+          console.warn("LOCAL Error / LocalID: " + report.localID + " / " + report.error);
+      } else {
+          console.warn("REMOTE Error / RemoteID: " + report.remoteID + " / " + report.error);
+      }
     });
 
 // ----------------------------------------------------------------- //

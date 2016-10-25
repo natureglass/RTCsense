@@ -163,10 +163,10 @@ PeersRTC = function(rtcOptions){
         errorHandler: function(error) {
             var msg = error.toString()
             if($this.on.error){
-                var sendDetails = {'event': 'error', 'type': 'local', 'error': msg };
+                var sendDetails = {'event': 'error', 'type': 'local', 'localID': window.clientID, 'error': msg };
                 $this.on.error.emit(sendDetails);
             }
-            window.webSockets.send(JSON.stringify({'event': 'error', 'type': 'remote', 'error': msg, 'uuid': $this.uuid}));
+            window.webSockets.send(JSON.stringify({'event': 'error', 'type': 'remote', 'remoteID': window.clientID, 'error': msg }));
         },
 
         createUUID: function() {
@@ -191,7 +191,7 @@ PeersRTC = function(rtcOptions){
                 navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
                     if($this.on.stream){
                         $this.localStream = stream;
-                        var streamDetails = {'event': 'local', 'stream': stream};
+                        var streamDetails = {'event': 'local', 'localID': window.clientID, 'stream': stream};
                         $this.on.stream.emit(streamDetails);
                     }
                 }).catch($this.errorHandler);
@@ -203,7 +203,7 @@ PeersRTC = function(rtcOptions){
 
         gotRemoteStream: function(event){
             if($this.on.stream){
-                var streamDetails = {'event': 'remote', 'stream': event.stream};
+                var streamDetails = {'event': 'remote', 'stream': event.stream };
                 $this.on.stream.emit(streamDetails);
             }
         }

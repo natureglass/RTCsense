@@ -115,8 +115,7 @@ var AdvancedSocket = {
 
         // let store our clientID
         if (obj.reqType === 'welcome'){
-            window.clientID  = obj.clientid;
-            window.wsUserID = obj.clientid;
+            window.clientID = obj.clientid;
             AdvancedSocket.clientID = obj.clientid;
             AdvancedSocket.connecting();
         }

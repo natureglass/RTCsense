@@ -23,16 +23,18 @@ window.UI = {
     },
 
     // --- On Local Stream --- //
-    onLocalStream: function(stream){
+    onLocalStream: function(event){
         connectButton.disabled = false;
-        localVideo.src = window.URL.createObjectURL(stream);
+        localVideo.src = window.URL.createObjectURL(event.stream);
+        console.info('LocaID: ' + event.localID);
     },
 
     // --- On Remote Stream --- //
-    onRemoteStream: function(stream){
+    onRemoteStream: function(event){
         closeButton.disabled = false;
         connectButton.disabled = true;
-        remoteVideo.src = window.URL.createObjectURL(stream);
+        remoteVideo.src = window.URL.createObjectURL(event.stream);
+        console.info('remoteID: ?');
     }
 
 };
@@ -75,39 +77,43 @@ document.addEventListener('DOMContentLoaded', function(){
     peer.on('stream', function(data){
         if(data.event === "local"){ // Local Video Received
             if(localVideo){
-                window.UI.onLocalStream(data.stream);
+                window.UI.onLocalStream(data);
             }
         } else { // Remote Video Received
             if(remoteVideo){
-                window.UI.onRemoteStream(data.stream);
+                window.UI.onRemoteStream(data);
             }
         }
     });
 
     peer.on('status', function(status){
+        //console.log(status);
         if(status.event === 'stream'){
             if(status.state === 'close'){
                 peer.closeConnection();
                 closeButton.disabled = true;
                 connectButton.disabled = false;
             }
-            console.warn('Remote Stream Status: ' + status.event);
-            console.log('uuid: ' + status.uuid);
+            console.info('Remote Stream status: ' + status.state);
 
         } else if(status.event === 'websockets'){
 
             if(status.type === 'local' & status.status === 'connected'){
-                console.info(status.type + " WebSockets: " + status.status + " with LocalID: " + status.localID);
-            } else if(status.type === 'remote' & status.status === 'connected'){
+                console.info("LOCAL user / LocalID: " + status.localID + " / " + status.status);
+            } else if(status.type === 'remote'){
                 if(peer.peerConnection != null){ peer.closeConnection(); }
-                console.info(status.type + " WebSockets: " + status.status + " with remoteID: " + status.remoteID);
+                console.info("REMOTE user / RemoteID: " + status.remoteID + " / " + status.status);
             }
 
         }
     });
 
     peer.on('error', function(report){
-      console.warn(report.type + " / " + report.error);
+      if(report.type === 'local'){
+          console.warn("LOCAL Error / LocalID: " + report.localID + " / " + report.error);
+      } else {
+          console.warn("REMOTE Error / RemoteID: " + report.remoteID + " / " + report.error);
+      }
     });
 
 // ----------------------------------------------------------------- //
