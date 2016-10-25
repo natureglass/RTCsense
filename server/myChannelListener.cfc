@@ -8,7 +8,7 @@
 			ws = JavaCast( "null", 0 );
 			ws = StructNew();
 
-			ws['type'] = "subscriber";
+			ws['type'] = "remote";
 			ws['status'] = "connected";
 			ws['remoteID'] = subscriberInfo.connectioninfo.clientid;
 			WsPublish("chat", SerializeJSON(ws));
@@ -92,7 +92,7 @@
 		}
 
 		message['localID'] = publisherInfo.clientInfo.wsUserID;
-		message['event'] = "remote";
+		message['event'] = "websockets";
 		message['sendtime'] = now();
 
 		return message;
@@ -101,7 +101,7 @@
 	public function afterUnsubscribe(struct subscriberInfo){
 		//try {
 
-			ws['type'] = "subscriber";
+			ws['type'] = "remote";
 			ws['status'] = "disconnected";
 			ws['remoteID'] = subscriberInfo.connectioninfo.clientid;
 			WsPublish('chat', SerializeJSON(ws));

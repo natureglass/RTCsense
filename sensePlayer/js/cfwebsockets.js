@@ -192,7 +192,7 @@ var AdvancedSocket = {
     },
 
     disconnected : function(){
-        wsEvent({event: 'local', status: 'disconnected', localID: AdvancedSocket.clientID });
+        wsEvent({event: 'websockets', type: 'local', status: 'disconnected', localID: AdvancedSocket.clientID });
 
         AdvancedSocket.log('disconnected');
         AdvancedSocket.status = 'disconnected';
@@ -202,7 +202,7 @@ var AdvancedSocket = {
     },
 
     connecting : function(){
-        wsEvent({event: 'local', status: 'connecting', localID: AdvancedSocket.clientID });
+        wsEvent({event: 'websockets', type: 'local', status: 'connecting', localID: AdvancedSocket.clientID });
 
         AdvancedSocket.log('connecting');
         AdvancedSocket.status = 'connecting';
@@ -217,7 +217,7 @@ var AdvancedSocket = {
     connected : function (){
 
         if(AdvancedSocket.status !== 'connected'){
-          wsEvent({event: 'local', status: 'connected', localID: AdvancedSocket.clientID });
+          wsEvent({event: 'websockets', type: 'local', status: 'connected', localID: AdvancedSocket.clientID });
 
           AdvancedSocket.log('connected');
           AdvancedSocket.status = 'connected';
@@ -252,8 +252,11 @@ window.webSockets = {
 }
 
 function receiveMessage(objData){
-    if(objData.data.type === 'subscriber'){ wsEvent(objData.data);
-    } else if(objData.data.type === 'message'){ wsMessage(objData.data); }
+    if(objData.data.type === 'remote'){
+        wsEvent(objData.data);
+    } else if(objData.data.type === 'message'){
+        wsMessage(objData.data);
+    }
 }
 
 function wsMessage( data ){
@@ -262,11 +265,15 @@ function wsMessage( data ){
 
     switch (response.event) {
         case 'offer': // Remote User Gave us an Offer
-            window.PeersRTC.processOffer(response);
+            if(window.PeersRTC){
+                window.PeersRTC.processOffer(response);
+            }
             break;
 
         case 'stream': // Stream Status
-            window.PeersRTC.onStatus(response);
+            if(window.PeersRTC){
+                window.PeersRTC.onStatus(response);
+            }
             break;
 
         default:
@@ -283,17 +290,8 @@ function wsMessage( data ){
 
 function wsEvent( data ){
 
-    // webRTC Samples
-    if(typeof window.UI != "undefined"){
-        if(data.event === "local" & data.status === "connected"){
-            if(typeof window.UI.onLoad === "function"){
-                window.UI.onLoad(data);
-            }
-        } else if(data.event === "remote" & data.status === "disconnected"){
-            if(typeof window.UI.onUnload === "function"){
-                window.UI.onUnload(data);
-            }
-        }
+    if(window.PeersRTC){
+        window.PeersRTC.onStatus(data);
     }
 
     // FrontEnd Editor event

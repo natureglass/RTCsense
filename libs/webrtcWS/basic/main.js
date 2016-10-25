@@ -10,23 +10,6 @@ var closeButton = document.querySelector('button#closeButton');
 
 window.UI = {
 
-    // --- DOM & WebSockets Ready --- //
-    onLoad: function(){
-        trace('WebSockets Ready!');
-        startButton.disabled = false;
-    },
-
-    onUnload: function(){
-        trace('Unloaded!');
-        if(peer.peerConnection != null){
-            peer.closeConnection();
-        }
-    },
-
-    onMessage: function(msg){
-        dataChannelReceive.value = msg;
-    },
-
     // --- On Open Connection --- //
     openConnection: function(){
         dataChannelSend.placeholder = '';
@@ -45,6 +28,11 @@ window.UI = {
         startButton.disabled = false;
         sendButton.disabled = true;
         closeButton.disabled = true;
+    }
+
+    // --- On WebRTC Message --- //
+    onMessage: function(msg){
+        dataChannelReceive.value = msg;
     }
 
 };
@@ -97,6 +85,17 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             }
             trace('Channel state is: ' + status.state);
+
+        } else if(status.event === 'websockets'){
+
+            if(status.type === 'local' & status.status === 'connected'){
+                startButton.disabled = false;
+                console.warn(status.type + " WebSockets: " + status.status + " with LocalID: " + status.localID);
+            } else if(status.type === 'remote' & status.status === 'connected'){
+                if(peer.peerConnection != null){ peer.closeConnection(); }
+                console.warn(status.type + " WebSockets: " + status.status + " with remoteID: " + status.remoteID);
+            }
+
         }
     });
 

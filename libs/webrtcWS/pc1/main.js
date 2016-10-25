@@ -11,32 +11,24 @@ var closeButton = document.querySelector('button#closeButton');
 
 window.UI = {
 
-    // --- DOM & WebSockets Ready --- //
-    onLoad: function(){
-        trace('WebSockets Ready!');
-    },
-
-    onUnload: function(){
-        trace('Unloaded!');
-        if(peer.peerConnection != null){
-            peer.closeConnection();
-        }
-    },
-
+    // --- On Open Connection --- //
     openConnection: function(){
         connectButton.disabled = true;
     },
 
+    // --- On Close Connection --- //
     closeConnection: function(){
         closeButton.disabled = true;
         connectButton.disabled = false;
     },
 
+    // --- On Local Stream --- //
     onLocalStream: function(stream){
         connectButton.disabled = false;
         localVideo.src = window.URL.createObjectURL(stream);
     },
 
+    // --- On Remote Stream --- //
     onRemoteStream: function(stream){
         closeButton.disabled = false;
         connectButton.disabled = true;
@@ -101,6 +93,16 @@ document.addEventListener('DOMContentLoaded', function(){
             }
             console.warn('Remote Stream Status: ' + status.event);
             console.log('uuid: ' + status.uuid);
+
+        } else if(status.event === 'websockets'){
+
+            if(status.type === 'local' & status.status === 'connected'){
+                console.warn(status.type + " WebSockets: " + status.status + " with LocalID: " + status.localID);
+            } else if(status.type === 'remote' & status.status === 'connected'){
+                if(peer.peerConnection != null){ peer.closeConnection(); }
+                console.warn(status.type + " WebSockets: " + status.status + " with remoteID: " + status.remoteID);
+            }
+
         }
     });
 
