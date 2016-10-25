@@ -275,7 +275,11 @@ function wsMessage( data ){
                 window.PeersRTC.onStatus(response);
             }
             break;
-
+        case 'error': // Stream Status
+            if(window.PeersRTC){
+                window.PeersRTC.onError(response);
+            }
+            break;
         default:
             console.warn('WHAT WAS THAT?');
             console.info(response);

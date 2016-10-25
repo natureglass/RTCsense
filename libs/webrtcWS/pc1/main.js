@@ -97,13 +97,17 @@ document.addEventListener('DOMContentLoaded', function(){
         } else if(status.event === 'websockets'){
 
             if(status.type === 'local' & status.status === 'connected'){
-                console.warn(status.type + " WebSockets: " + status.status + " with LocalID: " + status.localID);
+                console.info(status.type + " WebSockets: " + status.status + " with LocalID: " + status.localID);
             } else if(status.type === 'remote' & status.status === 'connected'){
                 if(peer.peerConnection != null){ peer.closeConnection(); }
-                console.warn(status.type + " WebSockets: " + status.status + " with remoteID: " + status.remoteID);
+                console.info(status.type + " WebSockets: " + status.status + " with remoteID: " + status.remoteID);
             }
 
         }
+    });
+
+    peer.on('error', function(report){
+      console.warn(report.type + " / " + report.error);
     });
 
 // ----------------------------------------------------------------- //

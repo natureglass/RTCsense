@@ -161,7 +161,12 @@ PeersRTC = function(rtcOptions){
         },
 
         errorHandler: function(error) {
-            console.warn(error);
+            var msg = error.toString()
+            if($this.on.error){
+                var sendDetails = {'event': 'error', 'type': 'local', 'error': msg };
+                $this.on.error.emit(sendDetails);
+            }
+            window.webSockets.send(JSON.stringify({'event': 'error', 'type': 'remote', 'error': msg, 'uuid': $this.uuid}));
         },
 
         createUUID: function() {
@@ -171,37 +176,37 @@ PeersRTC = function(rtcOptions){
                 return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
             }
             return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-      },
+        },
 
-      on: function(param, callback){
-          $this.on[param] = {
-              emit: function(data){
-                  callback(data);
-              }
-          };
-      },
+        on: function(param, callback){
+            $this.on[param] = {
+                emit: function(data){
+                    callback(data);
+                }
+            };
+        },
 
-      startUserMedia: function(constraints){
-          if(navigator.mediaDevices.getUserMedia) {
-              navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
-                  if($this.on.stream){
-                      $this.localStream = stream;
-                      var streamDetails = {'event': 'local', 'stream': stream};
-                      $this.on.stream.emit(streamDetails);
-                  }
-              }).catch($this.errorHandler);
+        startUserMedia: function(constraints){
+            if(navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+                    if($this.on.stream){
+                        $this.localStream = stream;
+                        var streamDetails = {'event': 'local', 'stream': stream};
+                        $this.on.stream.emit(streamDetails);
+                    }
+                }).catch($this.errorHandler);
 
-          } else {
-              errorHandler('Your browser does not support getUserMedia API');
-          }
-      },
+            } else {
+                errorHandler('Your browser does not support getUserMedia API');
+            }
+        },
 
-      gotRemoteStream: function(event){
-          if($this.on.stream){
-              var streamDetails = {'event': 'remote', 'stream': event.stream};
-              $this.on.stream.emit(streamDetails);
-          }
-      }
+        gotRemoteStream: function(event){
+            if($this.on.stream){
+                var streamDetails = {'event': 'remote', 'stream': event.stream};
+                $this.on.stream.emit(streamDetails);
+            }
+        }
 
     }; $this = this.WebRTC;
 
@@ -212,6 +217,11 @@ PeersRTC = function(rtcOptions){
         onStatus: function(status){
             if($this.on.status){
                 $this.on.status.emit(status);
+            }
+        },
+        onError: function(error){
+            if($this.on.error){
+                $this.on.error.emit(error);
             }
         }
     }
