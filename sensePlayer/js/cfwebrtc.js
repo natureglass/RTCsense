@@ -119,7 +119,6 @@ PeersRTC = function(rtcOptions){
                     trace('Closed data channel with label: ' + $this.sendChannel.label);
                     if($this.receiveChannel != null) { $this.receiveChannel.close(); }
                     trace('Closed data channel with label: ' + $this.receiveChannel.label);
-                    //window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'datachannel', 'state': 'close', 'order': 'remote', 'remoteID': window.clientID }));
                 }
 
                 if($this.peerConnection != null) {
