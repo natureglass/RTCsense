@@ -45,7 +45,10 @@ window.UI = {
 // --- Open Connection --- //
 connectButton.onclick = function(){
     closeButton.disabled = false;
-    peer.openConnection();
+
+    var options = { video: true, audio: true, datachannel: false }
+    peer.connect(options);
+
     window.UI.openConnection();
 }
 

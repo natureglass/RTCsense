@@ -43,7 +43,14 @@ window.UI = {
 
 // --- Open Connection --- //
 startButton.onclick = function(){
-    peer.openConnection();
+
+    peer.getUsers(function(users){
+        console.log(users);
+    });
+
+    var options = { video: false, audio: false, datachannel: true }
+    peer.connect(options);
+
     window.UI.openConnection();
 }
 
@@ -64,13 +71,7 @@ sendButton.onclick = function(){
 
 document.addEventListener('DOMContentLoaded', function(){
 
-    var options = {
-         video: false,
-         audio: false,
-         datachannel: true
-    }
-
-    peer = new PeersRTC(options);
+    peer = new PeersRTC();
 
 // ------------------------------------ DATA CHANNELS -------------------------------------- //
 
@@ -82,9 +83,9 @@ document.addEventListener('DOMContentLoaded', function(){
 
     peer.on('status', function(status){
         if(status.type === 'datachannel'){
-            if (status.state === 'open' & status.order === 'recieve') {
+            if (status.state === 'open') {
                 window.UI.openConnection();
-            } else if (status.state === 'close') {
+            } else if (status.state === 'closed') {
                 window.UI.closeConnection();
             }
         }

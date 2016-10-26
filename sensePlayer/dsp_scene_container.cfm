@@ -153,7 +153,7 @@
 				});
 
 				this.wsUsers = function(sendUsers){
-					$.getJSON("?Fa=getUsers", { id: window.wsUserID }, function(result){
+					$.getJSON("?Fa=getUsers", { id: window.clientID }, function(result){
 						sendUsers(result);
 					});
 				}

@@ -13,14 +13,6 @@ PeersRTC = function(rtcOptions){
 
         users: [{}],
 
-        init: function(){
-            $this.uuid = $this.createUUID();
-
-            if(rtcOptions != null){
-                $this.options = rtcOptions;
-            }
-        },
-
         peerConnectionConfig : {
             'iceServers': [
                 {'urls': 'stun:stun.services.mozilla.com'},
@@ -57,6 +49,21 @@ PeersRTC = function(rtcOptions){
             $this.receiveChannel.onopen = $this.onReceiveChannelStateChange;
             $this.receiveChannel.onclose = $this.onReceiveChannelStateChange;
             $this.onReceiveChannelStateChange();
+        },
+
+        getUsers: function(callback){
+            $this.getJSON('?fa=getUsers', { id: window.clientID }).then(function(data) {
+                callback(data);
+            }, function(status) {
+                trace('Error on getting Users..');
+            });
+        },
+
+        connect: function(rtcOptions){
+            $this.uuid = $this.createUUID();
+
+            if(rtcOptions != null){ $this.options = rtcOptions; }
+            $this.openConnection();
         },
 
         // ---- Opening Connection ---- /
@@ -233,6 +240,33 @@ PeersRTC = function(rtcOptions){
                 if(data.type === 'stream'){ $this.users.push(data);
                 } else { $this.users.push(data); }
             }
+        },
+
+        getJSON: function(url, attr) {
+            return new Promise(function(resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('get', url + $this.obj_to_query(attr), true);
+                xhr.responseType = 'json';
+                xhr.onload = function() {
+                    var status = xhr.status;
+                    if (status == 200) {
+                        resolve(xhr.response);
+                    } else {
+                        reject(status);
+                    }
+                };
+                xhr.send();
+            });
+        },
+
+        obj_to_query: function(obj) {
+            var parts = [];
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]));
+                }
+            }
+            return "&" + parts.join('&');
         }
 
     }; $this = this.WebRTC;
@@ -257,8 +291,6 @@ PeersRTC = function(rtcOptions){
             }
         }
     }
-
-    $this.init();
 
     return $this;
 };
