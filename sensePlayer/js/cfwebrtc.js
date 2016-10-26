@@ -38,7 +38,7 @@ PeersRTC = function(rtcOptions){
         // ---- Sending Message ---- /
         sendData: function(msg){
             trace('Sent Data: ' + msg);
-            var msgData = '{"msg": "' + msg.replace(/"/g, "'") + '", "remoteID": ' + window.clientID + '}';
+            var msgData = '{"msg": "' + msg + '", "remoteID": ' + window.clientID + '}';
             $this.sendChannel.send(msgData);
         },
 

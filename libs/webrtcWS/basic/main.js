@@ -54,7 +54,9 @@ closeButton.onclick = function(){
 
 // --- Send Message --- //
 sendButton.onclick = function(){
-    peer.sendData(dataChannelSend.value);
+    var msg = dataChannelSend.value;
+    var sendData = msg.replace(/"/g, "'")
+    peer.sendData(sendData);
 }
 
 // --------------------- WebRTC CallBacks -------------------------- //
