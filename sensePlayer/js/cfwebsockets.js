@@ -269,7 +269,7 @@ function wsMessage( data ){
             }
             break;
 
-        case 'info': // Stream Status
+        case 'status': // Stream Status
             if(window.PeersRTC){ window.PeersRTC.onStatus(response); }
             break;
 
@@ -292,7 +292,7 @@ function wsMessage( data ){
 function wsEvent( data ){
 
     if(window.PeersRTC){
-        window.PeersRTC.onStatus(data);
+        window.PeersRTC.onSystem(data);
     }
 
     // FrontEnd Editor event

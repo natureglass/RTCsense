@@ -87,26 +87,22 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     peer.on('status', function(status){
-        if(status.event === 'info'){
-
-            if(status.type === 'stream'){
-                console.info('Remote Stream status: ' + status.state);
-                if (status.state === 'close') {
-                  peer.closeConnection();
-                  closeButton.disabled = true;
-                  connectButton.disabled = false;
-                }
+        if(status.type === 'stream'){
+            console.info('Remote Stream status: ' + status.state);
+            if (status.state === 'close') {
+              peer.closeConnection();
+              closeButton.disabled = true;
+              connectButton.disabled = false;
             }
+        }
+    });
 
-        } else if(status.event === 'system'){
-
-            if(status.type === 'local' & status.status === 'connected'){
-                console.info("LOCAL user / LocalID: " + status.localID + " / " + status.status);
-            } else if(status.type === 'remote'){
-                if(peer.peerConnection != null){ peer.closeConnection(); }
-                console.info("REMOTE user / RemoteID: " + status.remoteID + " / " + status.status);
-            }
-
+    peer.on('system', function(system){
+        if(system.type === 'local' & system.status === 'connected'){
+            console.info("LOCAL user / LocalID: " + system.localID + " / " + system.status);
+        } else if(system.type === 'remote'){
+            if(peer.peerConnection != null){ peer.closeConnection(); }
+            console.info("REMOTE user / RemoteID: " + system.remoteID + " / " + system.status);
         }
     });
 

@@ -78,38 +78,33 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     peer.on('status', function(status){
-
-        if(status.event === 'info'){
-
-            if(status.type === 'datachannel'){
-                if (status.state === 'open' & status.order === 'recieve') {
-                    window.UI.openConnection();
-                } else if (status.state === 'close') {
-                    window.UI.closeConnection();
-                    peer.closeConnection();
-                }
-                trace('Channel state is: ' + status.state + " Order: " + status.order);
+        if(status.type === 'datachannel'){
+            if (status.state === 'open' & status.order === 'recieve') {
+                window.UI.openConnection();
+            } else if (status.state === 'close') {
+                window.UI.closeConnection();
+                peer.closeConnection();
             }
+        }
+        trace('Channel state is: ' + status.state + " Order: " + status.order);
+    });
 
-        } else if(status.event === 'system'){
-
-            if(status.type === 'local' & status.status === 'connected'){
-                startButton.disabled = false;
-                console.info("LOCAL user / LocalID: " + status.localID + " / " + status.status);
-            } else if(status.type === 'remote'){
-                if(peer.peerConnection != null){ peer.closeConnection(); }
-                console.info("REMOTE user / RemoteID: " + status.remoteID + " / " + status.status);
-            }
-
+    peer.on('system', function(system){
+        if(system.type === 'local' & system.status === 'connected'){
+            startButton.disabled = false;
+            console.info("LOCAL user / LocalID: " + system.localID + " / " + system.status);
+        } else if(system.type === 'remote'){
+            if(peer.peerConnection != null){ peer.closeConnection(); }
+            console.info("REMOTE user / RemoteID: " + system.remoteID + " / " + system.status);
         }
     });
 
     peer.on('error', function(report){
-      if(report.type === 'local'){
-          console.warn("LOCAL Error / LocalID: " + report.localID + " / " + report.error);
-      } else {
-          console.warn("REMOTE Error / RemoteID: " + report.remoteID + " / " + report.error);
-      }
+        if(report.type === 'local'){
+            console.warn("LOCAL Error / LocalID: " + report.localID + " / " + report.error);
+        } else {
+            console.warn("REMOTE Error / RemoteID: " + report.remoteID + " / " + report.error);
+        }
     });
 
 // ----------------------------------------------------------------- //

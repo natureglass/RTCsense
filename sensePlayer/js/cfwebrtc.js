@@ -71,7 +71,7 @@ PeersRTC = function(rtcOptions){
                 if($this.localStream != null){
                     $this.peerConnection.addStream($this.localStream);
                     var localStreamID = $this.localStream.id;
-                    window.webSockets.send(JSON.stringify({'event': 'info', 'type': 'stream', 'state': 'open', 'remoteID': window.clientID, 'streamID': localStreamID }));
+                    window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'stream', 'state': 'open', 'remoteID': window.clientID, 'streamID': localStreamID }));
                 }
             }
 
@@ -80,7 +80,7 @@ PeersRTC = function(rtcOptions){
                 $this.sendChannel.onopen = $this.onSendChannelStateChange();
                 $this.sendChannel.onclose = $this.onSendChannelStateChange();
                 $this.peerConnection.ondatachannel = $this.receiveChannelCallback;
-                window.webSockets.send(JSON.stringify({'event': 'info', 'type': 'datachannel', 'order': 'send', 'state': 'open', 'remoteID': window.clientID }));
+                window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': 'open', 'remoteID': window.clientID }));
             }
 
             if(isCaller == null) {
@@ -94,7 +94,7 @@ PeersRTC = function(rtcOptions){
         // ---- On Send DataChannel State Changed ---- /
         onSendChannelStateChange: function(){
             var readyState = $this.sendChannel.readyState;
-            var sendDetails = { 'event': 'info', 'type': 'datachannel', 'order': 'send', 'state': readyState };
+            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': readyState };
             if($this.on.status){
                 $this.on.status.emit(sendDetails);
             }
@@ -104,7 +104,7 @@ PeersRTC = function(rtcOptions){
         // ---- On Receive DataChannel State Changed ---- /
         onReceiveChannelStateChange: function(){
             var readyState = $this.receiveChannel.readyState;
-            var sendDetails = { 'event': 'info', 'type': 'datachannel', 'order': 'recieve', 'state': readyState };
+            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'recieve', 'state': readyState };
             if($this.on.status){
                 $this.on.status.emit(sendDetails);
             }
@@ -120,7 +120,7 @@ PeersRTC = function(rtcOptions){
                     trace('Closed data channel with label: ' + $this.sendChannel.label);
                     if($this.receiveChannel != null) { $this.receiveChannel.close(); }
                     trace('Closed data channel with label: ' + $this.receiveChannel.label);
-                    window.webSockets.send(JSON.stringify({'event': 'info', 'type': 'datachannel', 'state': 'close', 'remoteID': window.clientID }));
+                    window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'datachannel', 'state': 'close', 'remoteID': window.clientID }));
                 }
 
                 if($this.peerConnection != null) {
@@ -224,7 +224,6 @@ PeersRTC = function(rtcOptions){
                     } userExist = true;
 
                     if($this.on.stream){
-                        //var streamDetails = {'event': 'remote', 'stream': event.stream };
                         $this.on.stream.emit($this.users[i]);
                     }
 
@@ -250,6 +249,9 @@ PeersRTC = function(rtcOptions){
             } else {
                 if($this.on.status){ $this.on.status.emit(status); }
             }
+        },
+        onSystem: function(data){
+            if($this.on.system){ $this.on.system.emit(data); }
         },
         onError: function(error){
             if($this.on.error){
