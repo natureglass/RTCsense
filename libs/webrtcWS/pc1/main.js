@@ -7,7 +7,7 @@ var startVideoButton = document.querySelector('button#startVideoButton');
 var connectButton = document.querySelector('button#connectButton');
 var closeButton = document.querySelector('button#closeButton');
 
-// ---------------------------- UI --------------------------------- //
+// -------------------------------------- UI ACTIONS --------------------------------------- //
 
 window.UI = {
 
@@ -20,6 +20,7 @@ window.UI = {
     closeConnection: function(){
         closeButton.disabled = true;
         connectButton.disabled = false;
+        peer.closeConnection();
     },
 
     // --- On Local Stream --- //
@@ -39,7 +40,7 @@ window.UI = {
 
 };
 
-// ------------------------ UI Actions ----------------------------- //
+// --------------------------------------- UI CLICKS --------------------------------------- //
 
 // --- Open Connection --- //
 connectButton.onclick = function(){
@@ -60,7 +61,7 @@ startVideoButton.onclick = function(){
     peer.startUserMedia({ video: true, audio: true });
 }
 
-// --------------------- WebRTC CallBacks -------------------------- //
+// --------------------------------------- WEBRTC ------------------------------------ //
 
 document.addEventListener('DOMContentLoaded', function(){
 
@@ -72,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     peer = new PeersRTC(options);
 
-// ------------------------- STREAMS ------------------------------- //
+// -------------------------------------- STREAMS ------------------------------------ //
 
     peer.on('stream', function(data){
         if(data.event === "local"){ // Local Video Received
@@ -86,13 +87,13 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
+// ------------------------------------- COMMON CALLS -------------------------------------  //
+
     peer.on('status', function(status){
         if(status.type === 'stream'){
             console.info('Remote Stream status: ' + status.state);
             if (status.state === 'close') {
-              peer.closeConnection();
-              closeButton.disabled = true;
-              connectButton.disabled = false;
+                window.UI.closeConnection();
             }
         }
     });
@@ -101,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function(){
         if(system.type === 'local' & system.status === 'connected'){
             console.info("LOCAL user / LocalID: " + system.localID + " / " + system.status);
         } else if(system.type === 'remote'){
-            if(peer.peerConnection != null){ peer.closeConnection(); }
+            if(peer.peerConnection != null){ window.UI.closeConnection(); }
             console.info("REMOTE user / RemoteID: " + system.remoteID + " / " + system.status);
         }
     });
@@ -114,6 +115,6 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
-// ----------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 });

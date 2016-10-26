@@ -6,7 +6,7 @@ var startButton = document.querySelector('button#startButton');
 var sendButton = document.querySelector('button#sendButton');
 var closeButton = document.querySelector('button#closeButton');
 
-// ------------------------ UI Actions ----------------------------- //
+// -------------------------------------- UI ACTIONS --------------------------------------- //
 
 window.UI = {
 
@@ -28,6 +28,7 @@ window.UI = {
         startButton.disabled = false;
         sendButton.disabled = true;
         closeButton.disabled = true;
+        peer.closeConnection();
     },
 
     // --- On WebRTC Message --- //
@@ -38,7 +39,7 @@ window.UI = {
 
 };
 
-// ------------------------ UI Actions ----------------------------- //
+// --------------------------------------- UI CLICKS --------------------------------------- //
 
 // --- Open Connection --- //
 startButton.onclick = function(){
@@ -48,7 +49,7 @@ startButton.onclick = function(){
 
 // --- Close Connection --- //
 closeButton.onclick = function(){
-    peer.closeConnection();
+    //peer.closeConnection();
     window.UI.closeConnection();
 }
 
@@ -59,7 +60,7 @@ sendButton.onclick = function(){
     peer.sendData(sendData);
 }
 
-// --------------------- WebRTC CallBacks -------------------------- //
+// --------------------------------------- WEBRTC ------------------------------------ //
 
 document.addEventListener('DOMContentLoaded', function(){
 
@@ -71,11 +72,13 @@ document.addEventListener('DOMContentLoaded', function(){
 
     peer = new PeersRTC(options);
 
-// ---------------------- DATA CHANNELS ---------------------------- //
+// ------------------------------------ DATA CHANNELS -------------------------------------- //
 
     peer.on('message', function(msg){
         window.UI.onMessage(msg);
     });
+
+// ------------------------------------- COMMON CALLS -------------------------------------  //
 
     peer.on('status', function(status){
         if(status.type === 'datachannel'){
@@ -83,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function(){
                 window.UI.openConnection();
             } else if (status.state === 'close') {
                 window.UI.closeConnection();
-                peer.closeConnection();
             }
         }
         trace('Channel state is: ' + status.state + " Order: " + status.order);
@@ -94,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function(){
             startButton.disabled = false;
             console.info("LOCAL user / LocalID: " + system.localID + " / " + system.status);
         } else if(system.type === 'remote'){
-            if(peer.peerConnection != null){ peer.closeConnection(); }
+            if(peer.peerConnection != null){ window.UI.closeConnection(); }
             console.info("REMOTE user / RemoteID: " + system.remoteID + " / " + system.status);
         }
     });
@@ -107,6 +109,6 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
-// ----------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 });
