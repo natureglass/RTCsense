@@ -92,7 +92,7 @@
 		}
 
 		message['localID'] = publisherInfo.clientInfo.wsUserID;
-		message['event'] = "websockets";
+		message['event'] = "system";
 		message['sendtime'] = now();
 
 		return message;

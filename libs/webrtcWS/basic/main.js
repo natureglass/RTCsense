@@ -78,18 +78,20 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     peer.on('status', function(status){
-        if(status.event === 'datachannel'){
-            if(status.type === 'send'){
-                if (status.state === 'open') {
+
+        if(status.event === 'info'){
+
+            if(status.type === 'datachannel'){
+                if (status.state === 'open' & status.order === 'recieve') {
                     window.UI.openConnection();
-                } else {
+                } else if (status.state === 'close') {
                     window.UI.closeConnection();
                     peer.closeConnection();
                 }
+                trace('Channel state is: ' + status.state + " Order: " + status.order);
             }
-            trace('Channel state is: ' + status.state);
 
-        } else if(status.event === 'websockets'){
+        } else if(status.event === 'system'){
 
             if(status.type === 'local' & status.status === 'connected'){
                 startButton.disabled = false;

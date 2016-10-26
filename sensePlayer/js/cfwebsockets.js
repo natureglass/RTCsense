@@ -191,7 +191,7 @@ var AdvancedSocket = {
     },
 
     disconnected : function(){
-        wsEvent({event: 'websockets', type: 'local', status: 'disconnected', localID: AdvancedSocket.clientID });
+        wsEvent({event: 'system', type: 'local', status: 'disconnected', localID: AdvancedSocket.clientID });
 
         AdvancedSocket.log('disconnected');
         AdvancedSocket.status = 'disconnected';
@@ -201,7 +201,7 @@ var AdvancedSocket = {
     },
 
     connecting : function(){
-        wsEvent({event: 'websockets', type: 'local', status: 'connecting', localID: AdvancedSocket.clientID });
+        wsEvent({event: 'system', type: 'local', status: 'connecting', localID: AdvancedSocket.clientID });
 
         AdvancedSocket.log('connecting');
         AdvancedSocket.status = 'connecting';
@@ -216,7 +216,7 @@ var AdvancedSocket = {
     connected : function (){
 
         if(AdvancedSocket.status !== 'connected'){
-          wsEvent({event: 'websockets', type: 'local', status: 'connected', localID: AdvancedSocket.clientID });
+          wsEvent({event: 'system', type: 'local', status: 'connected', localID: AdvancedSocket.clientID });
 
           AdvancedSocket.log('connected');
           AdvancedSocket.status = 'connected';
@@ -269,12 +269,8 @@ function wsMessage( data ){
             }
             break;
 
-        case 'stream': // Stream Status
-            if(response.type === 'state'){
-                if(window.PeersRTC){ window.PeersRTC.onStatus(response); }
-            } else if(response.type === 'info'){
-                if(window.PeersRTC){ window.PeersRTC.onStream(response); }
-            }
+        case 'info': // Stream Status
+            if(window.PeersRTC){ window.PeersRTC.onStatus(response); }
             break;
 
         case 'error': // Stream Status

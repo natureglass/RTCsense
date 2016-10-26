@@ -87,18 +87,18 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     peer.on('status', function(status){
-        //console.log(status);
-        if(status.event === 'stream'){
-            if(status.type === 'state'){
+        if(status.event === 'info'){
+
+            if(status.type === 'stream'){
                 console.info('Remote Stream status: ' + status.state);
-                if(status.state === 'close'){
+                if (status.state === 'close') {
                   peer.closeConnection();
                   closeButton.disabled = true;
                   connectButton.disabled = false;
                 }
             }
 
-        } else if(status.event === 'websockets'){
+        } else if(status.event === 'system'){
 
             if(status.type === 'local' & status.status === 'connected'){
                 console.info("LOCAL user / LocalID: " + status.localID + " / " + status.status);
