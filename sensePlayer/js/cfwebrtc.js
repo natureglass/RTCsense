@@ -226,6 +226,7 @@ PeersRTC = function(rtcOptions){
                         $this.users[i].stream = data.stream;
                     } else {
                         $this.users[i].streamID = data.streamID;
+                        $this.users[i].remoteID = data.remoteID;                        
                     } userExist = true;
 
                     if($this.on.stream){
