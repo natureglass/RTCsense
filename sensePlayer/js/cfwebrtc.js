@@ -38,15 +38,14 @@ PeersRTC = function(rtcOptions){
         // ---- Sending Message ---- /
         sendData: function(msg){
             trace('Sent Data: ' + msg);
-            var msgData = '{"msg": "' + msg + '", "remoteID": ' + window.clientID + '}';
-            $this.sendChannel.send(msgData);
+            $this.sendChannel.send(msg);
         },
 
         // ---- Recieving Message ---- /
         onReceiveMessageCallback: function(event){
             trace('Received Message');
             if($this.on.message){
-                $this.on.message.emit(JSON.parse(event.data));
+                $this.on.message.emit({msg: event.data, remoteID: event.target.label});
             }
         },
 
@@ -76,7 +75,7 @@ PeersRTC = function(rtcOptions){
             }
 
             if($this.options.datachannel === true){
-                $this.sendChannel = $this.peerConnection.createDataChannel('sendDataChannel', $this.dataConstraint);
+                $this.sendChannel = $this.peerConnection.createDataChannel(window.clientID, $this.dataConstraint);
                 $this.sendChannel.onopen = $this.onSendChannelStateChange();
                 $this.sendChannel.onclose = $this.onSendChannelStateChange();
                 $this.peerConnection.ondatachannel = $this.receiveChannelCallback;
@@ -120,14 +119,14 @@ PeersRTC = function(rtcOptions){
                     trace('Closed data channel with label: ' + $this.sendChannel.label);
                     if($this.receiveChannel != null) { $this.receiveChannel.close(); }
                     trace('Closed data channel with label: ' + $this.receiveChannel.label);
-                    window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'datachannel', 'state': 'close', 'remoteID': window.clientID }));
+                    //window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'datachannel', 'state': 'close', 'order': 'remote', 'remoteID': window.clientID }));
                 }
 
                 if($this.peerConnection != null) {
                     $this.peerConnection.close();
                     $this.peerConnection = null;
                     trace('Closed peer connections');
-                    //window.webSockets.send(JSON.stringify({'event': 'stream', 'type': 'state', 'state': 'close', 'uuid': $this.uuid}));
+                    //window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'stream', 'state': 'close', 'order': 'remote', 'remoteID': window.clientID }));
                 }
 
             }

@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 window.UI.closeConnection();
             }
         }
-        trace('Channel state is: ' + status.state + " Order: " + status.order);
+        console.info('Channel state is: ' + status.state + " / Order: " + status.order);
     });
 
     peer.on('system', function(system){
