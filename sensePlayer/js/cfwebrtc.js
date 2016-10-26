@@ -38,14 +38,15 @@ PeersRTC = function(rtcOptions){
         // ---- Sending Message ---- /
         sendData: function(msg){
             trace('Sent Data: ' + msg);
-            $this.sendChannel.send(msg);
+            var msgData = '{"msg": "' + msg.replace(/"/g, "'") + '", "remoteID": ' + window.clientID + '}';
+            $this.sendChannel.send(msgData);
         },
 
         // ---- Recieving Message ---- /
         onReceiveMessageCallback: function(event){
             trace('Received Message');
             if($this.on.message){
-                $this.on.message.emit(event.data);
+                $this.on.message.emit(JSON.parse(event.data));
             }
         },
 

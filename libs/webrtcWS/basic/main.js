@@ -31,8 +31,9 @@ window.UI = {
     },
 
     // --- On WebRTC Message --- //
-    onMessage: function(msg){
-        dataChannelReceive.value = msg;
+    onMessage: function(data){
+        dataChannelReceive.value = data.msg;
+        console.info('MSG from RemoteID: ' + data.remoteID);
     }
 
 };
