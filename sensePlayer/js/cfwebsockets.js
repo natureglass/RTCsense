@@ -278,12 +278,8 @@ function wsMessage( data ){
             if(window.PeersRTC){ window.PeersRTC.onStatus(response); }
             break;
 
-        case 'info': // Stream Status
-            if(window.PeersRTC){ window.PeersRTC.onInfo(data); }
-            break;
-
         case 'usersInfo': // Users info
-            if(window.PeersRTC){ window.PeersRTC.onUsersInfo(response); }
+            if(window.PeersRTC){ window.PeersRTC.addUserInfo(response); }
             break;
 
         case 'error': // Stream Status

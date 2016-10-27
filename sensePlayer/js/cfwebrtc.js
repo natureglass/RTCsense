@@ -12,6 +12,7 @@ PeersRTC = function(rtcOptions){
         remoteStream: null,
 
         users: [{}],
+        streams: [{}],
 
         peerConnectionConfig : {
             'iceServers': [
@@ -224,17 +225,17 @@ PeersRTC = function(rtcOptions){
 
         sortStream2user: function(data){
             var userExist = false;
-            for (i = 0; i < $this.users.length; i++) {
-                if($this.users[i].streamID === data.streamID){
+            for (i = 0; i < $this.streams.length; i++) {
+                if($this.streams[i].streamID === data.streamID){
                     if(data.type === 'stream'){
-                        $this.users[i].stream = data.stream;
+                        $this.streams[i].stream = data.stream;
                     } else {
-                        $this.users[i].streamID = data.streamID;
-                        $this.users[i].remoteID = data.remoteID;
+                        $this.streams[i].streamID = data.streamID;
+                        $this.streams[i].remoteID = data.remoteID;
                     } userExist = true;
 
                     if($this.on.stream){
-                        $this.on.stream.emit($this.users[i]);
+                        $this.on.stream.emit($this.streams[i]);
                     }
 
                     break;
@@ -242,9 +243,38 @@ PeersRTC = function(rtcOptions){
             }
 
             if(!userExist){
-                if(data.type === 'stream'){ $this.users.push(data);
-                } else { $this.users.push(data); }
+                if(data.type === 'stream'){ $this.streams.push(data);
+                } else { $this.streams.push(data); }
             }
+        },
+
+        addUserInfo: function(data){
+            console.log(data); // Remote Users Stream Options !!! //
+            var userExist = false;
+            for (i = 0; i < $this.users.length; i++) {
+                if($this.users[i].remoteID === data.remoteID){
+                    $this.users[i].options = data.options;
+                    userExist = true;
+                    break;
+                }
+            }
+
+            if(!userExist){
+                $this.users.push({
+                    remoteID: data.remoteID,
+                    options: data.options
+                });
+            }
+            //console.log($this.users);
+
+        },
+        removeUserInfo: function(remoteID){
+            for (i = 0; i < $this.users.length; i++) {
+                if($this.users[i].remoteID === remoteID){
+                    $this.users.splice(i, 1);
+                }
+            }
+            //console.log($this.users);
         },
 
         getJSON: function(url, attr) {
@@ -287,17 +317,18 @@ PeersRTC = function(rtcOptions){
                 if($this.on.status){ $this.on.status.emit(status); }
             }
         },
-        onInfo: function(data){
-            var sendMsg = {'event': 'usersInfo', 'forUserID': data.remoteID, 'remoteID': window.clientID, 'options': $this.options};
-            window.webSockets.sendTo(JSON.stringify(sendMsg));
-        },
-        onUsersInfo: function(data){
-
-            console.log(data); // Remote Users Stream Options !!! //
-
+        addUserInfo: function(data){
+            $this.addUserInfo(data);
         },
         onSystem: function(data){
-            if(data.type === 'local' & data.status === 'connected'){ $this.getUsersInfo(); }
+            if(data.type === 'remote'){
+                if(data.status === 'connected'){
+                    var sendMsg = {'event': 'usersInfo', 'forUserID': data.remoteID, 'remoteID': window.clientID, 'options': $this.options};
+                    window.webSockets.sendTo(JSON.stringify(sendMsg));
+                } else if(data.status === 'disconnected'){
+                    $this.removeUserInfo(data.remoteID);
+                }
+            }
             if($this.on.system){ $this.on.system.emit(data); }
         },
         onError: function(error){
