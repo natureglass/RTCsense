@@ -247,6 +247,11 @@ window.webSockets = {
         ws.publish("chat", {
             remoteID: window.clientID, msg: sendMSG }
         );
+    },
+    sendTo: function(sendMSG){
+        ws.publish("chat", {
+            remoteID: window.clientID, info: true, msg: sendMSG }
+        );
     }
 }
 
@@ -273,13 +278,21 @@ function wsMessage( data ){
             if(window.PeersRTC){ window.PeersRTC.onStatus(response); }
             break;
 
+        case 'info': // Stream Status
+            if(window.PeersRTC){ window.PeersRTC.onInfo(data); }
+            break;
+
+        case 'usersInfo': // Users info
+            if(window.PeersRTC){ window.PeersRTC.onUsersInfo(response); }
+            break;
+
         case 'error': // Stream Status
             if(window.PeersRTC){ window.PeersRTC.onError(response); }
             break;
 
         default:
             console.warn('WHAT WAS THAT?');
-            console.info(response);
+            console.info(data);
     }
 
     // FrontEnd Editor event

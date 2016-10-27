@@ -44,10 +44,6 @@ window.UI = {
 // --- Open Connection --- //
 startButton.onclick = function(){
 
-    peer.getUsers(function(users){
-        console.log(users);
-    });
-
     var options = { video: false, audio: false, datachannel: true }
     peer.connect(options);
 

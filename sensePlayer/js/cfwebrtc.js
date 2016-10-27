@@ -51,9 +51,13 @@ PeersRTC = function(rtcOptions){
             $this.onReceiveChannelStateChange();
         },
 
+        getUsersInfo: function(){
+            window.webSockets.send(JSON.stringify({'event': 'info'}));
+        },
+
         getUsers: function(callback){
-            $this.getJSON('?fa=getUsers', { id: window.clientID }).then(function(data) {
-                callback(data);
+            $this.getJSON('?fa=getUsers', { id: window.clientID }).then(function(users) {
+                callback(users);
             }, function(status) {
                 trace('Error on getting Users..');
             });
@@ -226,7 +230,7 @@ PeersRTC = function(rtcOptions){
                         $this.users[i].stream = data.stream;
                     } else {
                         $this.users[i].streamID = data.streamID;
-                        $this.users[i].remoteID = data.remoteID;                        
+                        $this.users[i].remoteID = data.remoteID;
                     } userExist = true;
 
                     if($this.on.stream){
@@ -283,7 +287,17 @@ PeersRTC = function(rtcOptions){
                 if($this.on.status){ $this.on.status.emit(status); }
             }
         },
+        onInfo: function(data){
+            var sendMsg = {'event': 'usersInfo', 'forUserID': data.remoteID, 'remoteID': window.clientID, 'options': $this.options};
+            window.webSockets.sendTo(JSON.stringify(sendMsg));
+        },
+        onUsersInfo: function(data){
+
+            console.log(data); // Remote Users Stream Options !!! //
+
+        },
         onSystem: function(data){
+            if(data.type === 'local' & data.status === 'connected'){ $this.getUsersInfo(); }
             if($this.on.system){ $this.on.system.emit(data); }
         },
         onError: function(error){

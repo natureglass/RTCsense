@@ -38,6 +38,16 @@
 
 		try {
 
+			if(StructKeyExists(message, "info")){
+				msg = DeserializeJSON(message.msg);
+				if(subscriberInfo.clientInfo.wsUserID = msg.forUserID){
+				 	return true;
+				} else {
+					return false;
+				}
+				abort;
+			}
+
 			if(subscriberInfo.clientInfo.wsUserID != message.remoteID){
 				return true;
 			} else {
