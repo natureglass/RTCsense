@@ -40,7 +40,7 @@
 
 			if(StructKeyExists(message, "info")){
 				msg = DeserializeJSON(message.msg);
-				if(subscriberInfo.clientInfo.wsUserID = msg.forUserID){
+				if(subscriberInfo.clientInfo.wsUserID == msg.forUserID){
 				 	return true;
 				} else {
 					return false;
