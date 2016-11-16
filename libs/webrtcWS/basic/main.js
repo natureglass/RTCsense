@@ -3,10 +3,18 @@ var peers;
 var dataChannelSend = document.querySelector('textarea#dataChannelSend');
 var dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 
-var usersButton = document.querySelector('button#usersButton');
-var startButton = document.querySelector('button#startButton');
+var connectToAll = document.querySelector('button#connectToAll');
+var showUsers = document.querySelector('button#showUsers');
 var sendButton = document.querySelector('button#sendButton');
 var closeButton = document.querySelector('button#closeButton');
+
+
+// ----------------------------------------------------------------------------------------- //
+
+// querySelector, jQuery style
+var $ = function (selector) {
+  return document.querySelector(selector);
+};
 
 // -------------------------------------- UI ACTIONS --------------------------------------- //
 
@@ -17,7 +25,7 @@ window.UI = {
         dataChannelSend.placeholder = '';
         dataChannelSend.disabled = false;
         dataChannelSend.focus();
-        startButton.disabled = true;
+        //startButton.disabled = true;
         sendButton.disabled = false;
         closeButton.disabled = false;
     },
@@ -27,7 +35,7 @@ window.UI = {
         dataChannelSend.value = '';
         dataChannelReceive.value = '';
         dataChannelSend.disabled = true;
-        startButton.disabled = false;
+        //startButton.disabled = false;
         sendButton.disabled = true;
         closeButton.disabled = true;
         peers.closeConnection();
@@ -43,25 +51,23 @@ window.UI = {
 
 // --------------------------------------- UI CLICKS --------------------------------------- //
 
+//     //var options = { video: false, audio: false, datachannel: true }
+//     //peers.connect(options);
+
 // --- Get WS Users --- //
-usersButton.onclick = function(){
+connectToAll.onclick = function(){
     for (i = 0; i < $this.users.length; i++) {
         peers.connect(peers.users[i].remoteID);
-        //peers.connect(peers.users[0].remoteID);
     }
 
     window.UI.openConnection();
 }
 
-// --- Open Connection --- //
-startButton.onclick = function(){
-
-
-    //var options = { video: false, audio: false, datachannel: true }
-    //peers.connect(options);
-    peers.connect(0);
-
-    window.UI.openConnection();
+// --- Show Users Array --- //
+showUsers.onclick = function(){
+  console.log(peers.users);
+  console.log(peers.streams);
+  console.log(peers.peerConnections);
 }
 
 // --- Close Connection --- //
@@ -92,24 +98,58 @@ document.addEventListener('DOMContentLoaded', function(){
 // ------------------------------------- COMMON CALLS -------------------------------------  //
 
     peers.on('status', function(status){
+
         if(status.type === 'datachannel'){
             if (status.state === 'open') {
                 window.UI.openConnection();
+
+                document.getElementById("user_" + status.remoteID).innerHTML += " -> " + status.order;
+
             } else if (status.state === 'closed') {
-                window.UI.closeConnection();
+
+                console.warn(status);
+
+                // Close Connection?
+                //window.UI.closeConnection();
             }
         }
+
         console.info('Channel state is: ' + status.state + " / Order: " + status.order);
     });
 
     peers.on('system', function(system){
         if(system.type === 'local' & system.status === 'connected'){
-            startButton.disabled = false;
+
+            document.getElementById("myClientID").innerHTML = system.localID;
+
+            //startButton.disabled = false;
+
             console.info("LOCAL user / LocalID: " + system.localID + " / " + system.status);
+
         } else if(system.type === 'remote'){
-            if(peers.peerConnection != null){ window.UI.closeConnection(); }
+
+            if(peers.peerConnection != null){
+              // Close Connection?
+              //window.UI.closeConnection();
+            }
+
+            if(system.status === "connected") {
+
+                document.getElementById("connectedUsersLog").innerHTML += "<li class='connectToUser' userID='" + system.remoteID + "' id='user_" + system.remoteID + "'>" + system.remoteID + "</li>";
+
+                // This is a nice trick for Dynamic Element Binding!
+                var links = $('#connectedUsersLog').getElementsByTagName('li');
+          			for (var i = 0; i < links.length; i++) {
+          				var link = links[i]; link.onclick = onUserClick;
+          			}
+
+            } else {
+                document.getElementById("user_" + system.remoteID).remove();
+            }
+
             console.info("REMOTE user / RemoteID: " + system.remoteID + " / " + system.status);
         }
+
     });
 
     peers.on('error', function(report){
@@ -121,5 +161,18 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
 // ----------------------------------------------------------------------------------------- //
+  function onUserClick(){
+      var userID = parseInt(this.getAttribute('userID'));
+
+      console.info("Connecting to: " + userID);
+
+      var options = {
+          data: { send: true, receive : true },
+          video: { send: false, receive : false },
+          audio: { send: false, receive : false },
+      }
+
+      peers.connect(userID, options);
+  }
 
 });

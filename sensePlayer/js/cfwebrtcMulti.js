@@ -46,7 +46,7 @@ PeersRTC = function(rtcOptions){
             $peer.receiveChannel.onmessage = $this.onReceiveMessageCallback;
             $peer.receiveChannel.onopen = function(){ $this.onReceiveChannelStateChange($peer); }
             $peer.receiveChannel.onclose = function(){ $this.onReceiveChannelStateChange($peer); }
-            $this.onReceiveChannelStateChange($peer);
+            //$this.onReceiveChannelStateChange($peer);
         },
 
         getUsersInfo: function(){
@@ -68,26 +68,38 @@ PeersRTC = function(rtcOptions){
                 dataConstraint: null,
                 receiveChannel: null,
                 sendChannel: null,
+                options : {
+                    send : { video: false, audio: false, data: false },
+                    receive: { video: false, audio: false, data: false }
+                }
             });
 
             var $peer = $this.peerConnections[$this.peerConnections.length - 1];
 
             $peer.peerConnection.onicecandidate = function(event){ $this.gotIceCandidate(event, forUserID); }
 
-            $peer.sendChannel = $peer.peerConnection.createDataChannel(window.clientID, $peer.dataConstraint);
+            $peer.sendChannel = $peer.peerConnection.createDataChannel("main_SendReceive", $peer.dataConstraint);
             $peer.sendChannel.onopen = $this.onSendChannelStateChange($peer);
             $peer.sendChannel.onclose = $this.onSendChannelStateChange($peer);
 
-            $peer.peerConnection.ondatachannel = function(event){ $this.receiveChannelCallback(event, $peer); }
+            $peer.peerConnection.ondatachannel = function(event){
+                $this.updatePeerOptions({'readyState': $peer.sendChannel.readyState, 'order': 'send', 'remoteID': forUserID});
+                $this.receiveChannelCallback(event, $peer);
+            }
 
             window.webSockets.sendTo(JSON.stringify({'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': 'open', 'remoteID': window.clientID, 'forUserID': forUserID}));
 
             return $peer;
         },
 
-        connect: function(forUserID){
-            var $peer = $this.createConnection(forUserID);
-            $this.openConnection($peer, true);
+        connect: function(forUserID, options){
+            var isConnected = $this.checkPeerConnection(forUserID);
+            if(!isConnected){
+                var $peer = $this.createConnection(forUserID);
+                $this.openConnection($peer, true);
+            } else {
+                $this.errorHandler('already Connected!');
+            }
         },
 
         // ---- Opening Connection ---- /
@@ -109,7 +121,7 @@ PeersRTC = function(rtcOptions){
                     $peer = $this.createConnection($peerUser.remoteID);
                 }
 
-                console.log("NOT Caller: " + $peer.remoteID);
+                //console.log("NOT Caller: " + $peer.remoteID);
                 return $peer;
             }
 
@@ -118,7 +130,7 @@ PeersRTC = function(rtcOptions){
         // ---- On Send DataChannel State Changed ---- /
         onSendChannelStateChange: function($peer){
             var readyState = $peer.sendChannel.readyState;
-            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': readyState };
+            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': readyState, 'remoteID': $peer.remoteID, 'localID': window.clientID };
             if($this.on.status){
                 $this.on.status.emit(sendDetails);
             }
@@ -127,8 +139,9 @@ PeersRTC = function(rtcOptions){
 
         // ---- On Receive DataChannel State Changed ---- /
         onReceiveChannelStateChange: function($peer){
+            $this.updatePeerOptions({'readyState': $peer.receiveChannel.readyState, 'order': 'receive', 'remoteID': $peer.remoteID});
             var readyState = $peer.receiveChannel.readyState;
-            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'recieve', 'state': readyState };
+            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'receive', 'state': readyState, 'remoteID': $peer.remoteID, 'localID': window.clientID };
             if($this.on.status){
                 $this.on.status.emit(sendDetails);
             }
@@ -159,7 +172,7 @@ PeersRTC = function(rtcOptions){
         getPeerByID: function(peerID){
             var $peer = null;
             for (i = 0; i < $this.peerConnections.length; i++) {
-                console.warn($this.peerConnections[i].remoteID + " - " + peerID);
+                //console.warn($this.peerConnections[i].remoteID + " - " + peerID);
                 if($this.peerConnections[i].remoteID === peerID){
                     $peer = $this.peerConnections[i];
                     break;
@@ -208,6 +221,26 @@ PeersRTC = function(rtcOptions){
                 $this.on.error.emit(sendDetails);
             }
             window.webSockets.send(JSON.stringify({'event': 'error', 'type': 'remote', 'remoteID': window.clientID, 'error': msg }));
+        },
+
+        checkPeerConnection: function(userID){
+            var isConnected = false;
+            for (i = 0; i < $this.peerConnections.length; i++) {
+                if($this.peerConnections[i].remoteID === userID){
+                    isConnected = true; break;
+                }
+            }
+            return isConnected;
+        },
+
+        updatePeerOptions: function(options){
+            for (i = 0; i < $this.peerConnections.length; i++) {
+                if($this.peerConnections[i].remoteID === options.remoteID){
+                    if(options.order === 'send') { $this.peerConnections[i].options.send.data = true; }
+                    else { $this.peerConnections[i].options.receive.data = true; }
+                    break;
+                }
+            }
         },
 
         createUUID: function() {
@@ -272,11 +305,16 @@ PeersRTC = function(rtcOptions){
         },
 
         addUserInfo: function(data){
-            console.log(data); // Remote Users Stream Options !!! //
+
+            var initOptions = {
+                send : { video: false, audio: false, data: false },
+                receive: { video: false, audio: false, data: false }
+            }
+
             var userExist = false;
             for (i = 0; i < $this.users.length; i++) {
                 if($this.users[i].remoteID === data.remoteID){
-                    $this.users[i].options = data.options;
+                    $this.users[i].options = initOptions;
                     userExist = true;
                     break;
                 }
@@ -285,10 +323,11 @@ PeersRTC = function(rtcOptions){
             if(!userExist){
                 $this.users.push({
                     remoteID: data.remoteID,
-                    options: data.options
+                    options: initOptions
                 });
             }
-            //console.log($this.users);
+
+
         },
         removeUserInfo: function(remoteID){
             for (i = 0; i < $this.users.length; i++) {
@@ -296,7 +335,6 @@ PeersRTC = function(rtcOptions){
                     $this.users.splice(i, 1);
                 }
             }
-            //console.log($this.users);
         },
 
         getJSON: function(url, attr) {
@@ -340,6 +378,10 @@ PeersRTC = function(rtcOptions){
             }
         },
         addUserInfo: function(data){
+            if(data.forUserID){
+                var sendMsg = {'event': 'system', type : "remote", status: "connected", 'localID':  window.clientID, 'remoteID': data.remoteID};
+                if($this.on.system){ $this.on.system.emit(sendMsg); }
+            }
             $this.addUserInfo(data);
         },
         onSystem: function(data){

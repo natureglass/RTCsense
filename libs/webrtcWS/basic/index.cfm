@@ -39,15 +39,18 @@
 
   <div id="container">
 
-    <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>Transmit text</span></h1>
+    <h1><span>ClientID: </span><span style="color: red;" id="myClientID"></div></h1>
 
     <div id="buttons">
-      <button id="usersButton">Start ALL</button>
-      <button id="startButton" disabled>Start</button>
+      <button id="connectToAll">Conn ALL</button>
+      <button id="showUsers">Users</button>
       <button id="sendButton" disabled>Send</button>
       <button id="closeButton" disabled>Stop</button>
     </div>
 
+    <ul id="connectedUsersLog"></ul>
+
+    <br>
     <div id="sendReceive">
       <div id="send">
         <h2>Send</h2>
@@ -59,13 +62,6 @@
       </div>
     </div>
 
-    <p>View the console to see logging.</p>
-
-    <p>The <code>RTCPeerConnection</code> objects <code>localConnection</code> and <code>remoteConnection</code> are in global scope, so you can inspect them in the console as well.</p>
-
-    <p>For more information about RTCDataChannel, see <a href="http://www.html5rocks.com/en/tutorials/webrtc/basics/#toc-rtcdatachannel" title="RTCDataChannel section of HTML5 Rocks article about WebRTC">Getting Started With WebRTC</a>.</p>
-
-    <a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/datachannel/basic" title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
   </div>
 
   <script src="sensePlayer/js/cfwebsockets.js"></script>
@@ -75,6 +71,12 @@
   <script src="sensePlayer/js/cfwebrtc.js"></script>
   <script src="libs/webrtcWS/basic/main.js"></script>
 
+  <style>
+    .connectToUser {
+      cursor: pointer;
+      color: green;
+    }
+  </style>
 
 </body>
 </html>
