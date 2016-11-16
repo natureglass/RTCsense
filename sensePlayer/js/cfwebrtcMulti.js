@@ -130,20 +130,66 @@ PeersRTC = function(rtcOptions){
         // ---- On Send DataChannel State Changed ---- /
         onSendChannelStateChange: function($peer){
             var readyState = $peer.sendChannel.readyState;
+            if(readyState === 'closed') {
+                console.warn(readyState);
+                $this.disconnect($peer.remoteID);
+            }
             var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': readyState, 'remoteID': $peer.remoteID, 'localID': window.clientID };
+            if($this.on.status){
+                $this.on.status.emit(sendDetails);
+            }
+        },
+
+        // ---- On Receive DataChannel State Changed ---- /
+        onReceiveChannelStateChange: function($peer){
+            var readyState = $peer.receiveChannel.readyState;
+            if(readyState === 'open'){
+                $this.updatePeerOptions({'readyState': readyState, 'order': 'receive', 'remoteID': $peer.remoteID});
+            } else if(readyState === 'closed') {
+                console.warn(readyState);
+                $this.disconnect($peer.remoteID, function(){});
+            }
+
+            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'receive', 'state': readyState, 'remoteID': $peer.remoteID, 'localID': window.clientID };
             if($this.on.status){
                 $this.on.status.emit(sendDetails);
             }
 
         },
 
-        // ---- On Receive DataChannel State Changed ---- /
-        onReceiveChannelStateChange: function($peer){
-            $this.updatePeerOptions({'readyState': $peer.receiveChannel.readyState, 'order': 'receive', 'remoteID': $peer.remoteID});
-            var readyState = $peer.receiveChannel.readyState;
-            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'receive', 'state': readyState, 'remoteID': $peer.remoteID, 'localID': window.clientID };
-            if($this.on.status){
-                $this.on.status.emit(sendDetails);
+        disconnect: function(remoteID, callback){
+            
+            for (i = 0; i < $this.users.length; i++) {
+                if($this.users[i].remoteID === remoteID){
+                    $this.users[i].options = {
+                        send : { video: false, audio: false, data: false },
+                        receive: { video: false, audio: false, data: false }
+                    };
+                }
+            }
+
+            for (i = 0; i < $this.peerConnections.length; i++) {
+                if($this.peerConnections[i].remoteID === remoteID){
+                    var $peer = $this.peerConnections[i];
+                    if($peer.sendChannel){
+                        trace('Closing data channels');
+                        if($peer.sendChannel != null) { $peer.sendChannel.close(); }
+                        trace('Closed data channel with label: ' + $peer.sendChannel.label);
+                        if($peer.receiveChannel != null) { $peer.receiveChannel.close(); }
+                        trace('Closed data channel with label: ' + $peer.receiveChannel.label);
+                    }
+
+                    if($peer.peerConnection != null) {
+                        $peer.peerConnection.close();
+                        $peer.peerConnection = null;
+                        trace('Closed peer connections');
+                    }
+
+                    $this.peerConnections.splice(i, 1);
+
+                    callback(remoteID);
+
+                } break;
             }
         },
 
@@ -236,8 +282,8 @@ PeersRTC = function(rtcOptions){
         updatePeerOptions: function(options){
             for (i = 0; i < $this.peerConnections.length; i++) {
                 if($this.peerConnections[i].remoteID === options.remoteID){
-                    if(options.order === 'send') { $this.peerConnections[i].options.send.data = true; }
-                    else { $this.peerConnections[i].options.receive.data = true; }
+                    if(options.order === 'send') { $this.users[i].options.send.data = true; }
+                    else { $this.users[i].options.receive.data = true; }
                     break;
                 }
             }

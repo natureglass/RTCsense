@@ -6,7 +6,6 @@ var dataChannelReceive = document.querySelector('textarea#dataChannelReceive');
 var connectToAll = document.querySelector('button#connectToAll');
 var showUsers = document.querySelector('button#showUsers');
 var sendButton = document.querySelector('button#sendButton');
-var closeButton = document.querySelector('button#closeButton');
 
 
 // ----------------------------------------------------------------------------------------- //
@@ -27,7 +26,6 @@ window.UI = {
         dataChannelSend.focus();
         //startButton.disabled = true;
         sendButton.disabled = false;
-        closeButton.disabled = false;
     },
 
     // --- On Close Connection --- //
@@ -37,8 +35,15 @@ window.UI = {
         dataChannelSend.disabled = true;
         //startButton.disabled = false;
         sendButton.disabled = true;
-        closeButton.disabled = true;
-        peers.closeConnection();
+        //peers.closeConnection();
+    },
+
+    disconnectPeer: function(remoteID){
+        peers.disconnect(remoteID, function(){
+            var userElem = document.getElementById("user_" + remoteID);
+            userElem.innerHTML = remoteID;
+            console.log(remoteID + " removed!");
+        });
     },
 
     // --- On WebRTC Message --- //
@@ -65,15 +70,9 @@ connectToAll.onclick = function(){
 
 // --- Show Users Array --- //
 showUsers.onclick = function(){
-  console.log(peers.users);
-  console.log(peers.streams);
-  console.log(peers.peerConnections);
-}
-
-// --- Close Connection --- //
-closeButton.onclick = function(){
-    //peers.closeConnection();
-    window.UI.closeConnection();
+    console.log(peers.streams);
+    console.log(peers.users);
+    console.log(peers.peerConnections);
 }
 
 // --- Send Message --- //
@@ -107,9 +106,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
             } else if (status.state === 'closed') {
 
+                var thisElem = document.getElementById("user_" + status.remoteID);
+                if(thisElem){ thisElem.innerHTML = status.remoteID; }
+
                 console.warn(status);
 
-                // Close Connection?
                 //window.UI.closeConnection();
             }
         }
@@ -135,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
             if(system.status === "connected") {
 
-                document.getElementById("connectedUsersLog").innerHTML += "<li class='connectToUser' userID='" + system.remoteID + "' id='user_" + system.remoteID + "'>" + system.remoteID + "</li>";
+                document.getElementById("connectedUsersLog").innerHTML += "<li class='connectToUser' userID='" + system.remoteID + "' id='user_" + system.remoteID + "'> " + system.remoteID + "</li><a href='javascript:void(0)' onclick='window.UI.disconnectPeer(" + system.remoteID + "); return false;'>X</a>";
 
                 // This is a nice trick for Dynamic Element Binding!
                 var links = $('#connectedUsersLog').getElementsByTagName('li');
@@ -143,8 +144,11 @@ document.addEventListener('DOMContentLoaded', function(){
           				var link = links[i]; link.onclick = onUserClick;
           			}
 
-            } else {
-                document.getElementById("user_" + system.remoteID).remove();
+            } else if(system.status === "disconnected") {
+                console.log("diskkk");
+                var userElem = document.getElementById("user_" + system.remoteID);
+                var nextElem = userElem.nextSibling;
+                nextElem.remove(); userElem.remove();
             }
 
             console.info("REMOTE user / RemoteID: " + system.remoteID + " / " + system.status);

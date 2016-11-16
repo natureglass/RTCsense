@@ -44,8 +44,7 @@
     <div id="buttons">
       <button id="connectToAll">Conn ALL</button>
       <button id="showUsers">Users</button>
-      <button id="sendButton" disabled>Send</button>
-      <button id="closeButton" disabled>Stop</button>
+      <button id="sendButton">Send</button>
     </div>
 
     <ul id="connectedUsersLog"></ul>
@@ -75,6 +74,12 @@
     .connectToUser {
       cursor: pointer;
       color: green;
+    }
+    .connectToUser + a {
+        font-weight: bold;
+        position: relative;
+        top: -15pt;
+        left: -27pt;
     }
   </style>
 
