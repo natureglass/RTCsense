@@ -283,8 +283,9 @@ function sceneParameters(scope){
 
 	function toggleFullScreen() {
 
+
 		// iOS iframe auto-resize workaround
-		if(scope.system.isIphone){
+		if(scope.DetectRTC.isIphone){
 
 			if(isActiveFullScreen){
 				isActiveFullScreen = false;
@@ -314,7 +315,7 @@ function sceneParameters(scope){
 	}
 
 	function initCameras(options){
-		if(scope.system.isIphone){
+		if(scope.DetectRTC.isIphone){
 			$( "#error-dialog" ).dialog('option', 'title', 'Sorry...');
 			$( "#error-dialog" ).html("Camera is not supported on this iOS device! The app may not work as expected...");
 			$( "#error-dialog" ).dialog( "open" );
@@ -332,7 +333,7 @@ function sceneParameters(scope){
 	}
 
 	function initMidi(options){
-		if(scope.system.isIphone || navigator.requestMIDIAccess === undefined){
+		if(scope.DetectRTC.isIphone || navigator.requestMIDIAccess === undefined){
 			$( "#error-dialog" ).dialog('option', 'title', 'Sorry...');
 			$( "#error-dialog" ).html("WebMIDI API is not supported on this Browser, please try with Chrome! The app may not work as expected...");
 			$( "#error-dialog" ).dialog( "open" );
@@ -422,7 +423,7 @@ function initElements(scope){
 	            	   closeVRdialog();
 	                   e.preventDefault();
 	               });
-		}		
+		}
 		// ,buttons: [
 		// 	{
 		// 		text: "Close",

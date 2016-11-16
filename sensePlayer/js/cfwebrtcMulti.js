@@ -2,16 +2,9 @@ PeersRTC = function(rtcOptions){
 
     this.WebRTC = {
 
-        peerConnection: null,
-        dataConstraint: null,
-        receiveChannel: null,
-        sendChannel: null,
-
-        localStream: null,
-        remoteStream: null,
-
         users: [],
         streams: [{}],
+        peerConnections: [],
 
         peerConnectionConfig : {
             'iceServers': [
@@ -30,7 +23,12 @@ PeersRTC = function(rtcOptions){
         // ---- Sending Message ---- /
         sendData: function(msg){
             trace('Sent Data: ' + msg);
-            $this.sendChannel.send(msg);
+            // send to all peers?
+            //$this.sendChannel.send(msg);
+
+            for (i = 0; i < $this.peerConnections.length; i++) {
+                $this.peerConnections[i].sendChannel.send(msg);
+            }
         },
 
         // ---- Recieving Message ---- /
@@ -42,13 +40,13 @@ PeersRTC = function(rtcOptions){
         },
 
         // ---- DataChannel CallBack ---- /
-        receiveChannelCallback: function(event){
+        receiveChannelCallback: function(event, $peer){
             trace('Receive Channel Callback');
-            $this.receiveChannel = event.channel;
-            $this.receiveChannel.onmessage = $this.onReceiveMessageCallback;
-            $this.receiveChannel.onopen = $this.onReceiveChannelStateChange;
-            $this.receiveChannel.onclose = $this.onReceiveChannelStateChange;
-            $this.onReceiveChannelStateChange();
+            $peer.receiveChannel = event.channel;
+            $peer.receiveChannel.onmessage = $this.onReceiveMessageCallback;
+            $peer.receiveChannel.onopen = function(){ $this.onReceiveChannelStateChange($peer); }
+            $peer.receiveChannel.onclose = function(){ $this.onReceiveChannelStateChange($peer); }
+            $this.onReceiveChannelStateChange($peer);
         },
 
         getUsersInfo: function(){
@@ -63,53 +61,63 @@ PeersRTC = function(rtcOptions){
             });
         },
 
+        createConnection(forUserID){
+            $this.peerConnections.push({
+                remoteID: forUserID,
+                peerConnection: new RTCPeerConnection($this.peerConnectionConfig),
+                dataConstraint: null,
+                receiveChannel: null,
+                sendChannel: null,
+            });
+
+            var $peer = $this.peerConnections[$this.peerConnections.length - 1];
+
+            $peer.peerConnection.onicecandidate = function(event){ $this.gotIceCandidate(event, forUserID); }
+
+            $peer.sendChannel = $peer.peerConnection.createDataChannel(window.clientID, $peer.dataConstraint);
+            $peer.sendChannel.onopen = $this.onSendChannelStateChange($peer);
+            $peer.sendChannel.onclose = $this.onSendChannelStateChange($peer);
+
+            $peer.peerConnection.ondatachannel = function(event){ $this.receiveChannelCallback(event, $peer); }
+
+            window.webSockets.sendTo(JSON.stringify({'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': 'open', 'remoteID': window.clientID, 'forUserID': forUserID}));
+
+            return $peer;
+        },
+
         connect: function(forUserID){
-            //$this.uuid = $this.createUUID();
-
-            //if(rtcOptions != null){ $this.options = rtcOptions; }
-            console.log(forUserID);
-
-            $this.openConnection(forUserID, true);
+            var $peer = $this.createConnection(forUserID);
+            $this.openConnection($peer, true);
         },
 
         // ---- Opening Connection ---- /
-        openConnection: function(forUserID, isCaller){
-
-            $this.peerConnection = new RTCPeerConnection($this.peerConnectionConfig);
-            $this.peerConnection.onicecandidate = function(event){
-                $this.gotIceCandidate(event, forUserID);
-            }
-
-            // $this.peerConnection.onaddstream = $this.gotRemoteStream;
-            // if($this.options.video === true){
-            //     if($this.localStream != null){
-            //         $this.peerConnection.addStream($this.localStream);
-            //         var localStreamID = $this.localStream.id;
-            //         window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'stream', 'state': 'open', 'remoteID': window.clientID, 'streamID': localStreamID }));
-            //     }
-            // }
-
-            //if($this.options.datachannel === true){
-                $this.sendChannel = $this.peerConnection.createDataChannel(window.clientID, $this.dataConstraint);
-                $this.sendChannel.onopen = $this.onSendChannelStateChange();
-                $this.sendChannel.onclose = $this.onSendChannelStateChange();
-                $this.peerConnection.ondatachannel = $this.receiveChannelCallback;
-                window.webSockets.sendTo(JSON.stringify({'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': 'open', 'remoteID': window.clientID, 'forUserID': forUserID}));
-            //}
+        openConnection: function($peerUser, isCaller){
 
             if(isCaller == true) {
-                $this.peerConnection.createOffer().then(function(description){
-                    $this.createdDescription(description, forUserID);
+
+                console.log("Caller: " + $peerUser.remoteID);
+
+                $peerUser.peerConnection.createOffer().then(function(description){
+                    $this.createdDescription(description, $peerUser.remoteID, $peerUser);
                 }).catch($this.errorHandler);
+
             } else {
-                //window.webSockets.send(JSON.stringify({'event': 'stream', 'type': 'state', 'state': 'open', 'uuid': $this.uuid}));
+
+                var $peer = $this.getPeerByID($peerUser.remoteID);
+
+                if($peer == null){
+                    $peer = $this.createConnection($peerUser.remoteID);
+                }
+
+                console.log("NOT Caller: " + $peer.remoteID);
+                return $peer;
             }
 
         },
 
         // ---- On Send DataChannel State Changed ---- /
-        onSendChannelStateChange: function(){
-            var readyState = $this.sendChannel.readyState;
+        onSendChannelStateChange: function($peer){
+            var readyState = $peer.sendChannel.readyState;
             var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': readyState };
             if($this.on.status){
                 $this.on.status.emit(sendDetails);
@@ -118,8 +126,8 @@ PeersRTC = function(rtcOptions){
         },
 
         // ---- On Receive DataChannel State Changed ---- /
-        onReceiveChannelStateChange: function(){
-            var readyState = $this.receiveChannel.readyState;
+        onReceiveChannelStateChange: function($peer){
+            var readyState = $peer.receiveChannel.readyState;
             var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'recieve', 'state': readyState };
             if($this.on.status){
                 $this.on.status.emit(sendDetails);
@@ -128,45 +136,55 @@ PeersRTC = function(rtcOptions){
 
         // ---- Closing Connection ---- /
         closeConnection: function(){
-            if($this.peerConnection != null){
+            // if($this.peerConnection != null){
+            //
+            //     if($this.sendChannel){
+            //         trace('Closing data channels');
+            //         if($this.sendChannel != null) { $this.sendChannel.close(); }
+            //         trace('Closed data channel with label: ' + $this.sendChannel.label);
+            //         if($this.receiveChannel != null) { $this.receiveChannel.close(); }
+            //         trace('Closed data channel with label: ' + $this.receiveChannel.label);
+            //     }
+            //
+            //     if($this.peerConnection != null) {
+            //         $this.peerConnection.close();
+            //         $this.peerConnection = null;
+            //         trace('Closed peer connections');
+            //         //window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'stream', 'state': 'close', 'order': 'remote', 'remoteID': window.clientID }));
+            //     }
+            //
+            // }
+        },
 
-                if($this.sendChannel){
-                    trace('Closing data channels');
-                    if($this.sendChannel != null) { $this.sendChannel.close(); }
-                    trace('Closed data channel with label: ' + $this.sendChannel.label);
-                    if($this.receiveChannel != null) { $this.receiveChannel.close(); }
-                    trace('Closed data channel with label: ' + $this.receiveChannel.label);
+        getPeerByID: function(peerID){
+            var $peer = null;
+            for (i = 0; i < $this.peerConnections.length; i++) {
+                console.warn($this.peerConnections[i].remoteID + " - " + peerID);
+                if($this.peerConnections[i].remoteID === peerID){
+                    $peer = $this.peerConnections[i];
+                    break;
                 }
-
-                if($this.peerConnection != null) {
-                    $this.peerConnection.close();
-                    $this.peerConnection = null;
-                    trace('Closed peer connections');
-                    //window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'stream', 'state': 'close', 'order': 'remote', 'remoteID': window.clientID }));
-                }
-
             }
+            return $peer;
         },
 
         // --------------------- Processing SDP offer Respone ------------------------- //
 
         processOffer: function(signal){
 
-            if(!$this.peerConnection){
-                $this.openConnection(signal.remoteID, false);
-            }
+            var $peer = $this.openConnection(signal, false);
 
             if(signal.sdp) {
-                $this.peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
+                $peer.peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
                     // Only create answers in response to offers
                     if(signal.sdp.type == 'offer') {
-                        $this.peerConnection.createAnswer().then(function(description){
-                            $this.createdDescription(description, signal.remoteID);
+                        $peer.peerConnection.createAnswer().then(function(description){
+                            $this.createdDescription(description, signal.remoteID, $peer);
                         }).catch($this.errorHandler);
                     }
                 }).catch($this.errorHandler);
             } else if(signal.ice) {
-                $this.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch($this.errorHandler);
+                $peer.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch($this.errorHandler);
             }
         },
 
@@ -177,9 +195,9 @@ PeersRTC = function(rtcOptions){
             }
         },
 
-        createdDescription: function(description, forUserID) {
-            $this.peerConnection.setLocalDescription(description).then(function() {
-                window.webSockets.sendTo(JSON.stringify({'event': 'offer', 'sdp': $this.peerConnection.localDescription, 'remoteID': window.clientID, 'forUserID': forUserID})); //, 'uuid': $this.uuid
+        createdDescription: function(description, forUserID, $peer) {
+            $peer.peerConnection.setLocalDescription(description).then(function() {
+                window.webSockets.sendTo(JSON.stringify({'event': 'offer', 'sdp': $peer.peerConnection.localDescription, 'remoteID': window.clientID, 'forUserID': forUserID})); //, 'uuid': $this.uuid
             }).catch($this.errorHandler);
         },
 

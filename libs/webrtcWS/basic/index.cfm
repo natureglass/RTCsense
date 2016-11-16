@@ -42,6 +42,7 @@
     <h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a> <span>Transmit text</span></h1>
 
     <div id="buttons">
+      <button id="usersButton">Start ALL</button>
       <button id="startButton" disabled>Start</button>
       <button id="sendButton" disabled>Send</button>
       <button id="closeButton" disabled>Stop</button>

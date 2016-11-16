@@ -99,8 +99,6 @@
 
 	<script src="sensePlayer/js/common.js" type="text/javascript"></script>
 
-	<!-- WebSockets -->
-	<script src="sensePlayer/js/cfwebsockets.js" type="text/javascript"></script>
 
 	<!-- AUDIO/VIDEO -->
 	<!--- <script src="sensePlayer/js/devices/audioVideo/adapter.js" type="text/javascript"></script>
@@ -115,6 +113,12 @@
 
 	<!-- GEOLOCATION -->
 	<!--- <script src="sensePlayer/js/devices/geolocation/geolocation.js" type="text/javascript"></script> --->
+
+	<script type="text/javascript">
+        var randNum = Math.floor(Math.random() * 600) + 1;
+        window.userID  = "1";
+        window.username  = "user_" + randNum;
+    </script>
 
 	<script type="text/javascript">
 
@@ -152,11 +156,11 @@
 					canvas: canvasScreen, antialias: true
 				});
 
-				this.wsUsers = function(sendUsers){
-					$.getJSON("?Fa=getUsers", { id: window.clientID }, function(result){
-						sendUsers(result);
-					});
-				}
+				// this.wsUsers = function(sendUsers){
+				// 	$.getJSON("?Fa=getUsers", { id: window.clientID }, function(result){
+				// 		sendUsers(result);
+				// 	});
+				// }
 
 				// this.StereoEffect = new THREE.StereoEffect( this.default_renderer );
 				// this.CardboardEffect = new THREE.CardboardEffect( this.default_renderer );
@@ -176,7 +180,7 @@
 				window.addEventListener( 'resize', onWindowResize, false );
 
 				try {
-					<!--- <cfinclude template="../assets/js/scenes/#url.scenefile#"> --->
+					//<!--- <cfinclude template="../assets/js/scenes/#url.scenefile#"> --->
 					<cfoutput>#qryScene.code#</cfoutput>
 				} catch (e) {
 					debugError(e);

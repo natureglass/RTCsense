@@ -292,9 +292,9 @@ function wsMessage( data ){
     }
 
     // FrontEnd Editor event
-    if(typeof window.webSockets.onMessage === "function"){
-        window.webSockets.onMessage(data);
-    }
+    //if(typeof window.webSockets.onMessage === "function"){
+    //    window.webSockets.onMessage(data);
+    //}
 
 }
 
@@ -305,9 +305,9 @@ function wsEvent( data ){
     }
 
     // FrontEnd Editor event
-    if(typeof window.webSockets.onEvent === "function"){
-        window.webSockets.onEvent(data);
-    }
+    //if(typeof window.webSockets.onEvent === "function"){
+    //    window.webSockets.onEvent(data);
+    //}
 
 }
 
