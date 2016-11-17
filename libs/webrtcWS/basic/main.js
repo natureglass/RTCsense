@@ -102,7 +102,10 @@ document.addEventListener('DOMContentLoaded', function(){
             if (status.state === 'open') {
                 window.UI.openConnection();
 
-                document.getElementById("user_" + status.remoteID).innerHTML += " -> " + status.order;
+                var thisElem = document.getElementById("user_" + status.remoteID);
+                if(thisElem){
+                    thisElem.innerHTML += " -> " + status.order;
+                }
 
             } else if (status.state === 'closed') {
 

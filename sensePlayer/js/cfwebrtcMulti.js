@@ -158,7 +158,7 @@ PeersRTC = function(rtcOptions){
         },
 
         disconnect: function(remoteID, callback){
-            
+
             for (i = 0; i < $this.users.length; i++) {
                 if($this.users[i].remoteID === remoteID){
                     $this.users[i].options = {
