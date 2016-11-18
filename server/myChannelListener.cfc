@@ -39,22 +39,44 @@
 		try {
 
 			// Send message to specific User
-			if(StructKeyExists(message, "info")){
+			if(StructKeyExists(message, "msg")){
+
 				msg = DeserializeJSON(message.msg);
-				if(subscriberInfo.clientInfo.wsUserID == msg.forUserID){
-				 	return true;
+
+				if(IsDefined("msg.forUserID")){
+
+					if(subscriberInfo.clientInfo.wsUserID == msg.forUserID){
+					 	return true;
+					} else {
+						return false;
+					}
+
+				} else {
+
+					if(subscriberInfo.clientInfo.wsUserID != message.remoteID){
+						return true;
+					} else {
+						return false;
+					}
+
+				}
+
+			} else {
+
+				if(subscriberInfo.clientInfo.wsUserID != message.remoteID){
+					return true;
 				} else {
 					return false;
 				}
-				abort;
+
 			}
 
 			// Send message to ALL except the publisher
-			if(subscriberInfo.clientInfo.wsUserID != message.remoteID){
-				return true;
-			} else {
-				return false;
-			}
+			// if(subscriberInfo.clientInfo.wsUserID != message.remoteID){
+			// 	return true;
+			// } else {
+			// 	return false;
+			// }
 
 		} catch (any e) {
 			savecontent variable="tmpVariable" {
@@ -100,7 +122,7 @@
 		}
 
 		if (!StructKeyExists(message, "type")){
-			message['type'] = 'message';
+			//message['type'] = 'message';
 		}
 
 		message['localID'] = publisherInfo.clientInfo.wsUserID;

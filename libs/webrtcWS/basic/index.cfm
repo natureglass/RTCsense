@@ -42,9 +42,10 @@
     <h1><span>ClientID: </span><span style="color: red;" id="myClientID"></div></h1>
 
     <div id="buttons">
-      <button id="connectToAll">Conn ALL</button>
+      <button id="connectToAll" disabled>Conn ALL</button>
+      <button id="disconnectAll">Disc ALL</button>
       <button id="showUsers">Users</button>
-      <button id="sendButton">Send</button>
+      <button id="sendButton" disabled>Send</button>
     </div>
 
     <ul id="connectedUsersLog"></ul>
@@ -63,11 +64,11 @@
 
   </div>
 
-  <script src="sensePlayer/js/cfwebsockets.js"></script>
+  <!--- <script src="sensePlayer/js/cfwebsockets.js"></script>
   <script src="libs/webrtc/js/adapter.js"></script>
-  <script src="libs/webrtc/js/common.js"></script>
+  <script src="assets/js/common.js"></script>
 
-  <script src="sensePlayer/js/cfwebrtc.js"></script>
+  <script src="sensePlayer/js/cfwebrtc.js"></script> --->
   <script src="libs/webrtcWS/basic/main.js"></script>
 
   <style>

@@ -21,13 +21,17 @@ PeersRTC = function(rtcOptions){
         },
 
         // ---- Sending Message ---- /
-        sendData: function(msg){
+        sendData: function(msg, remoteID){
             trace('Sent Data: ' + msg);
-            // send to all peers?
-            //$this.sendChannel.send(msg);
-
             for (i = 0; i < $this.peerConnections.length; i++) {
-                $this.peerConnections[i].sendChannel.send(msg);
+                if(remoteID == null){
+                    $this.peerConnections[i].sendChannel.send(msg);
+                } else {
+                    if($this.peerConnections[i].clientID === remoteID){
+                        $this.peerConnections[i].sendChannel.send(msg);
+                        break;
+                    }
+                }
             }
         },
 
@@ -39,20 +43,6 @@ PeersRTC = function(rtcOptions){
             }
         },
 
-        // ---- DataChannel CallBack ---- /
-        receiveChannelCallback: function(event, $peer){
-            trace('Receive Channel Callback');
-            $peer.receiveChannel = event.channel;
-            $peer.receiveChannel.onmessage = $this.onReceiveMessageCallback;
-            $peer.receiveChannel.onopen = function(){ $this.onReceiveChannelStateChange($peer); }
-            $peer.receiveChannel.onclose = function(){ $this.onReceiveChannelStateChange($peer); }
-            //$this.onReceiveChannelStateChange($peer);
-        },
-
-        getUsersInfo: function(){
-            window.webSockets.send(JSON.stringify({'event': 'info'}));
-        },
-
         getUsers: function(callback){
             $this.getJSON('?fa=getUsers', { id: window.clientID }).then(function(users) {
                 callback(users);
@@ -61,165 +51,281 @@ PeersRTC = function(rtcOptions){
             });
         },
 
-        createConnection(forUserID){
-            $this.peerConnections.push({
-                remoteID: forUserID,
-                peerConnection: new RTCPeerConnection($this.peerConnectionConfig),
-                dataConstraint: null,
-                receiveChannel: null,
-                sendChannel: null,
-                options : {
-                    send : { video: false, audio: false, data: false },
-                    receive: { video: false, audio: false, data: false }
-                }
-            });
+// ---------------------------------------------------------------------- //
 
-            var $peer = $this.peerConnections[$this.peerConnections.length - 1];
+        createConnection: function(clientID){
 
-            $peer.peerConnection.onicecandidate = function(event){ $this.gotIceCandidate(event, forUserID); }
+            var $peer = $this.getPeerByID(clientID);
 
-            $peer.sendChannel = $peer.peerConnection.createDataChannel("main_SendReceive", $peer.dataConstraint);
-            $peer.sendChannel.onopen = $this.onSendChannelStateChange($peer);
-            $peer.sendChannel.onclose = $this.onSendChannelStateChange($peer);
-
-            $peer.peerConnection.ondatachannel = function(event){
-                $this.updatePeerOptions({'readyState': $peer.sendChannel.readyState, 'order': 'send', 'remoteID': forUserID});
-                $this.receiveChannelCallback(event, $peer);
+            // Creating New Peer if dosn't exist
+            if($peer == null){
+                $this.peerConnections.push({
+                    clientID: clientID,
+                    peerConnection: new RTCPeerConnection($this.peerConnectionConfig),
+                    dataConstraint: null,
+                    receiveChannel: null,
+                    sendChannel: null
+                });
+                $peer = $this.peerConnections[$this.peerConnections.length - 1];
+                $peer.peerConnection.clientID = clientID;
             }
 
-            window.webSockets.sendTo(JSON.stringify({'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': 'open', 'remoteID': window.clientID, 'forUserID': forUserID}));
+            // On Signaling State Change
+            $peer.peerConnection.onsignalingstatechange = $this.onsignalingstatechange;
+
+            // On Ice Candidate
+            $peer.peerConnection.onicecandidate = $this.gotIceCandidate;
+
+            // Creating Send DataChannel
+            $peer.sendChannel = $peer.peerConnection.createDataChannel("main_SendReceive", $peer.dataConstraint);
+            $peer.sendChannel.clientID = clientID;
+            $peer.sendChannel.onopen = $this.onSendChannelStateChange;
+            $peer.sendChannel.onclose = $this.onSendChannelStateChange;
+
+            // On DataChannel Creation
+            $peer.peerConnection.ondatachannel = function(event){
+
+                trace('Received Channel Callback');
+                $peer.receiveChannel = event.channel;
+                $peer.receiveChannel.clientID = this.clientID;
+                $peer.receiveChannel.onmessage = $this.onReceiveMessageCallback;
+                $peer.receiveChannel.onopen = $this.onReceiveChannelStateChange;
+                $peer.receiveChannel.onclose = $this.onReceiveChannelStateChange;
+            }
+
+            //window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': 'open', 'remoteID': window.clientID, 'forUserID': clientID}));
 
             return $peer;
         },
 
         connect: function(forUserID, options){
-            var isConnected = $this.checkPeerConnection(forUserID);
-            if(!isConnected){
+
+            var exist$peer = $this.getPeerByID(forUserID);
+
+            if(exist$peer == null){
+                //console.warn("1 Creating Peer!");
                 var $peer = $this.createConnection(forUserID);
                 $this.openConnection($peer, true);
             } else {
-                $this.errorHandler('already Connected!');
+                //console.warn("1 Existing Peer!");
+                $this.openConnection(exist$peer, true);
             }
+
         },
 
         // ---- Opening Connection ---- /
-        openConnection: function($peerUser, isCaller){
+        openConnection: function($peerUser, isCaller, callback){
 
             if(isCaller == true) {
 
-                console.log("Caller: " + $peerUser.remoteID);
-
-                $peerUser.peerConnection.createOffer().then(function(description){
-                    $this.createdDescription(description, $peerUser.remoteID, $peerUser);
-                }).catch($this.errorHandler);
+                console.log("Is Caller");
+                if($peerUser.peerConnection.signalingState === 'stable'){
+                    $peerUser.peerConnection.createOffer().then(function(description){
+                        $this.createdDescription(description, $peerUser);
+                    }).catch($this.errorHandler);
+                } else {
+                    console.warn("Caller Signaling State: " + $peerUser.peerConnection.signalingState);
+                }
 
             } else {
 
-                var $peer = $this.getPeerByID($peerUser.remoteID);
+                if ($peerUser.remoteID != window.clientID){
 
-                if($peer == null){
-                    $peer = $this.createConnection($peerUser.remoteID);
+                    //console.warn("Remote Caller: " + $peerUser.remoteID);
+                    var exist$peer = $this.getPeerByID($peerUser.remoteID);
+                    //console.log(exist$peer);
+
+                    if(exist$peer == null){
+                        //console.warn("2 Creating Peer!");
+                        $peer = $this.createConnection($peerUser.remoteID);
+                        callback($peer);
+                    } else {
+                        //console.warn("2 Existing Peer!");
+                        callback(exist$peer);
+                    }
+
                 }
 
-                //console.log("NOT Caller: " + $peer.remoteID);
-                return $peer;
             }
+
+            // if(isCaller == true) {
+            //     if($peerUser.peerConnection == null){
+            //         console.log($this.peerConnections);
+            //         console.log("Removing Garbage!");
+            //         $this.removeOBJbyAttr($this.peerConnections, 'remoteID', $peerUser.remoteID);
+            //     } else {
+            //         if($peerUser.peerConnection.signalingState === 'stable'){
+            //             $peerUser.peerConnection.createOffer().then(function(description){
+            //                 $this.createdDescription(description, $peerUser);
+            //             }).catch($this.errorHandler);
+            //         }
+            //     }
+            // } else {
+            //     var exist$peer = $this.getPeerByID($peerUser.remoteID);
+            //
+            //     if(exist$peer == null){
+            //         console.warn("2 Creating Peer!");
+            //         $peer = $this.createConnection($peerUser.remoteID);
+            //         callback($peer);
+            //     } else {
+            //         console.warn("2 Existing Peer!");
+            //         callback(exist$peer);
+            //     }
+            //
+            // }
 
         },
 
-        // ---- On Send DataChannel State Changed ---- /
-        onSendChannelStateChange: function($peer){
-            var readyState = $peer.sendChannel.readyState;
-            if(readyState === 'closed') {
-                console.warn(readyState);
-                $this.disconnect($peer.remoteID);
+        //console.warn("*************");
+        //console.warn(this.signalingState);
+        //console.warn(event);
+        //console.log(this);
+        //console.warn("*************");
+
+        // ---- On Peer State Changed ---- /
+        onsignalingstatechange: function(event){
+            if(this.signalingState === 'stable' || this.signalingState === 'closed'){
+                if($this.on.connection){
+                    var sendDetails = { 'event': 'status', 'type': 'peer', 'order': 'signaling', 'state': this.signalingState, 'remoteID': this.clientID, 'localID': window.clientID };
+                    $this.on.connection.emit(sendDetails);
+                }
             }
-            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': readyState, 'remoteID': $peer.remoteID, 'localID': window.clientID };
-            if($this.on.status){
-                $this.on.status.emit(sendDetails);
+        },
+
+        // ---- On Send DataChannel State Changed ---- /
+        onSendChannelStateChange: function(event){
+
+            trace("Send DataChannel is: " + this.readyState);
+
+            if(this.readyState === 'open' || this.readyState === 'closed'){
+
+                // Update Users[] DataChannel Peer Send State
+                $this.updateUserOptions({'type': 'datachannel', 'readyState': this.readyState, 'order': 'send', 'remoteID': this.clientID});
+
+                // Emit Send State Change
+                if($this.on.connection){
+                    var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'send', 'state': this.readyState, 'remoteID': this.clientID, 'localID': window.clientID };
+                    $this.on.connection.emit(sendDetails);
+                }
             }
         },
 
         // ---- On Receive DataChannel State Changed ---- /
-        onReceiveChannelStateChange: function($peer){
-            var readyState = $peer.receiveChannel.readyState;
-            if(readyState === 'open'){
-                $this.updatePeerOptions({'readyState': readyState, 'order': 'receive', 'remoteID': $peer.remoteID});
-            } else if(readyState === 'closed') {
-                console.warn(readyState);
-                $this.disconnect($peer.remoteID, function(){});
-            }
+        onReceiveChannelStateChange: function(event){
 
-            var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'receive', 'state': readyState, 'remoteID': $peer.remoteID, 'localID': window.clientID };
-            if($this.on.status){
-                $this.on.status.emit(sendDetails);
-            }
+            // console.warn("*************");
+            // console.warn(this.readyState);
+            // console.warn(event);
+            // console.log(this);
+            // console.warn("*************");
 
+            trace("Receive DataChannel is: " + this.readyState);
+
+            if(this.readyState === 'open' || this.readyState === 'closed'){
+
+                if(this.readyState === 'closed'){ $this.checkPeerState(this.clientID); }
+
+                // Update Users[] DataChannel Peer receive State
+                $this.updateUserOptions({'type': 'datachannel', 'readyState': this.readyState, 'order': 'receive', 'remoteID': this.clientID});
+
+                // Emit Send State Change
+                if($this.on.connection){
+                    var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'receive', 'state': this.readyState, 'remoteID': this.clientID, 'localID': window.clientID };
+                    $this.on.connection.emit(sendDetails);
+                }
+            }
+        },
+
+        checkPeerState: function(clientID){
+            var $peer = $this.getPeerByID(clientID);
+            if($peer.receiveChannel.readyState === 'closed' & $peer.sendChannel.readyState === 'closed'){
+                trace("Closing Peer: " + clientID);
+                $peer.peerConnection.close();
+                $this.removeOBJbyAttr($this.peerConnections, 'clientID', clientID);
+
+                console.warn("Peers Length: " + $this.peerConnections.length);
+                console.log($this.peerConnections);
+
+            }
+        },
+
+        // ---- On Receive DataChannel State Changed ---- /
+        // onReceiveChannelStateChange: function(event){
+        //
+        //     if(this.readyState === 'open'){
+        //         $this.updateUserOptions({'readyState': this.readyState, 'order': 'receive', 'remoteID': this.clientID});
+        //     } else if(this.readyState === 'closed') {
+        //         // Removing user from PeerConnections
+        //         $this.removeOBJbyAttr($this.peerConnections, 'remoteID', this.clientID);
+        //         $this.setUserDefaults(this.clientID);
+        //     }
+        //
+        //     if($this.on.status){
+        //         var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'receive', 'state': this.readyState, 'remoteID': $peer.remoteID, 'localID': window.clientID };
+        //         $this.on.status.emit(sendDetails);
+        //     }
+        //
+        // },
+
+        removeOBJbyAttr: function(arr, attr, value){
+            var i = arr.length;
+            while(i--){
+               if( arr[i]
+                   && arr[i].hasOwnProperty(attr)
+                   && (arguments.length > 2 && arr[i][attr] === value ) ){
+                   arr.splice(i,1);
+               }
+            }
+            return arr;
         },
 
         disconnect: function(remoteID, callback){
 
-            for (i = 0; i < $this.users.length; i++) {
-                if($this.users[i].remoteID === remoteID){
-                    $this.users[i].options = {
-                        send : { video: false, audio: false, data: false },
-                        receive: { video: false, audio: false, data: false }
-                    };
+            // determin remove type
+            var removeType = 'single';
+            if (typeof remoteID === "function" || remoteID == null) { removeType = 'all'; }
+
+            // close peerConnections
+            for (i = 0; i < $this.peerConnections.length; i++) {
+                if(removeType === 'single'){
+                    $this.closeConnection($this.peerConnections[i]);
+                    if (typeof callback === "function") { callback(remoteID); }
+                    break;
+                } else {
+                    $this.closeConnection($this.peerConnections[i]);
+                    if (typeof callback === "function") { callback(remoteID); }
                 }
             }
 
-            for (i = 0; i < $this.peerConnections.length; i++) {
-                if($this.peerConnections[i].remoteID === remoteID){
-                    var $peer = $this.peerConnections[i];
-                    if($peer.sendChannel){
-                        trace('Closing data channels');
-                        if($peer.sendChannel != null) { $peer.sendChannel.close(); }
-                        trace('Closed data channel with label: ' + $peer.sendChannel.label);
-                        if($peer.receiveChannel != null) { $peer.receiveChannel.close(); }
-                        trace('Closed data channel with label: ' + $peer.receiveChannel.label);
-                    }
-
-                    if($peer.peerConnection != null) {
-                        $peer.peerConnection.close();
-                        $peer.peerConnection = null;
-                        trace('Closed peer connections');
-                    }
-
-                    $this.peerConnections.splice(i, 1);
-
-                    callback(remoteID);
-
-                } break;
-            }
         },
 
-        // ---- Closing Connection ---- /
-        closeConnection: function(){
-            // if($this.peerConnection != null){
-            //
-            //     if($this.sendChannel){
-            //         trace('Closing data channels');
-            //         if($this.sendChannel != null) { $this.sendChannel.close(); }
-            //         trace('Closed data channel with label: ' + $this.sendChannel.label);
-            //         if($this.receiveChannel != null) { $this.receiveChannel.close(); }
-            //         trace('Closed data channel with label: ' + $this.receiveChannel.label);
-            //     }
-            //
-            //     if($this.peerConnection != null) {
-            //         $this.peerConnection.close();
-            //         $this.peerConnection = null;
-            //         trace('Closed peer connections');
-            //         //window.webSockets.send(JSON.stringify({'event': 'status', 'type': 'stream', 'state': 'close', 'order': 'remote', 'remoteID': window.clientID }));
-            //     }
-            //
-            // }
+        closeConnection: function($peer){
+
+            if($peer.sendChannel){
+                if($peer.sendChannel != null) {
+                    $peer.sendChannel.close();
+                }
+                trace('Closed DataChannel with label: ' + $peer.sendChannel.label);
+            }
+
+            if($peer.receiveChannel){
+                if($peer.receiveChannel != null) {
+                    $peer.receiveChannel.close();
+                }
+                trace('Closed DataChannel with label: ' + $peer.receiveChannel.label);
+            }
+
+            if($peer.peerConnection != null) {
+                $peer.peerConnection.close();
+                trace('Closed peer connections');
+            }
+
         },
 
         getPeerByID: function(peerID){
             var $peer = null;
             for (i = 0; i < $this.peerConnections.length; i++) {
-                //console.warn($this.peerConnections[i].remoteID + " - " + peerID);
-                if($this.peerConnections[i].remoteID === peerID){
+                if($this.peerConnections[i].clientID === peerID){
                     $peer = $this.peerConnections[i];
                     break;
                 }
@@ -227,36 +333,65 @@ PeersRTC = function(rtcOptions){
             return $peer;
         },
 
+        getUserByID: function(peerID){
+            var $user = null;
+            for (i = 0; i < $this.users.length; i++) {
+                if($this.users[i].clientID === peerID){
+                    $user = $this.users[i];
+                    break;
+                }
+            }
+            return $user;
+        },
+
         // --------------------- Processing SDP offer Respone ------------------------- //
 
         processOffer: function(signal){
 
-            var $peer = $this.openConnection(signal, false);
+            $this.openConnection(signal, false, function($peer){
 
-            if(signal.sdp) {
-                $peer.peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
-                    // Only create answers in response to offers
-                    if(signal.sdp.type == 'offer') {
-                        $peer.peerConnection.createAnswer().then(function(description){
-                            $this.createdDescription(description, signal.remoteID, $peer);
+                if($peer.remoteID != window.clientID){
+
+                    if(signal.sdp) {
+
+                        //console.warn("Signaling sdp... "  + $peer.peerConnection.signalingState);
+
+                        $peer.peerConnection.setRemoteDescription(new RTCSessionDescription(signal.sdp)).then(function() {
+                            // Only create answers in response to offers
+
+                            if(signal.sdp.type == 'offer') {
+                                $peer.peerConnection.createAnswer().then(function(description){
+                                    $this.createdDescription(description, $peer);
+                                }).catch($this.errorHandler);
+                            }
+
                         }).catch($this.errorHandler);
+
+                    } else if(signal.ice) {
+
+                        //console.warn("Signaling ice... " + $peer.peerConnection.signalingState);
+                        $peer.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch($this.errorHandler);
+
                     }
-                }).catch($this.errorHandler);
-            } else if(signal.ice) {
-                $peer.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch($this.errorHandler);
-            }
+
+                } else {
+                    console.error(" **** We Got Conflict ****");
+                    console.error($peer);
+                }
+
+            });
+
         },
 
-        gotIceCandidate: function(event, forUserID) {
-            //console.warn(event.candidate);
+        gotIceCandidate: function(event) {
             if(event.candidate != null) {
-                window.webSockets.sendTo(JSON.stringify({'event': 'offer', 'ice': event.candidate, 'remoteID': window.clientID, 'forUserID': forUserID})); //, 'uuid': $this.uuid
+                window.webSockets.send(JSON.stringify({'event': 'offer', 'ice': event.candidate, 'remoteID': window.clientID, 'forUserID': this.clientID})); //, 'uuid': $this.uuid
             }
         },
 
-        createdDescription: function(description, forUserID, $peer) {
+        createdDescription: function(description, $peer) {
             $peer.peerConnection.setLocalDescription(description).then(function() {
-                window.webSockets.sendTo(JSON.stringify({'event': 'offer', 'sdp': $peer.peerConnection.localDescription, 'remoteID': window.clientID, 'forUserID': forUserID})); //, 'uuid': $this.uuid
+                window.webSockets.send(JSON.stringify({'event': 'offer', 'sdp': $peer.peerConnection.localDescription, 'remoteID': window.clientID, 'forUserID': $peer.remoteID})); //, 'uuid': $this.uuid
             }).catch($this.errorHandler);
         },
 
@@ -270,23 +405,19 @@ PeersRTC = function(rtcOptions){
         },
 
         checkPeerConnection: function(userID){
-            var isConnected = false;
+            var exists = false;
             for (i = 0; i < $this.peerConnections.length; i++) {
-                if($this.peerConnections[i].remoteID === userID){
-                    isConnected = true; break;
+                if($this.peerConnections[i].clientID === userID){
+                    exists = true; break;
                 }
             }
-            return isConnected;
+            return exists;
         },
 
-        updatePeerOptions: function(options){
-            for (i = 0; i < $this.peerConnections.length; i++) {
-                if($this.peerConnections[i].remoteID === options.remoteID){
-                    if(options.order === 'send') { $this.users[i].options.send.data = true; }
-                    else { $this.users[i].options.receive.data = true; }
-                    break;
-                }
-            }
+        updateUserOptions: function(options){
+            console.log(options.remoteID);
+            var $user = $this.getUserByID(options.remoteID);
+            $user.options[options.order][options.type] = options.readyState
         },
 
         createUUID: function() {
@@ -353,13 +484,13 @@ PeersRTC = function(rtcOptions){
         addUserInfo: function(data){
 
             var initOptions = {
-                send : { video: false, audio: false, data: false },
-                receive: { video: false, audio: false, data: false }
+                send : { video: null, audio: null, datachannel: null },
+                receive: { video: null, audio: null, datachannel: null }
             }
 
             var userExist = false;
             for (i = 0; i < $this.users.length; i++) {
-                if($this.users[i].remoteID === data.remoteID){
+                if($this.users[i].clientID === data.remoteID){
                     $this.users[i].options = initOptions;
                     userExist = true;
                     break;
@@ -368,19 +499,12 @@ PeersRTC = function(rtcOptions){
 
             if(!userExist){
                 $this.users.push({
-                    remoteID: data.remoteID,
+                    clientID: data.remoteID,
                     options: initOptions
                 });
             }
 
 
-        },
-        removeUserInfo: function(remoteID){
-            for (i = 0; i < $this.users.length; i++) {
-                if($this.users[i].remoteID === remoteID){
-                    $this.users.splice(i, 1);
-                }
-            }
         },
 
         getJSON: function(url, attr) {
@@ -413,45 +537,56 @@ PeersRTC = function(rtcOptions){
     }; $this = this.WebRTC;
 
     window.PeersRTC = {
+
         processOffer: function(signal){
             $this.processOffer(signal);
         },
-        onStatus: function(status){
-            if(status.type === 'stream'){
-                $this.sortStream2user({ 'type': 'id', 'streamID': status.streamID, 'remoteID': status.remoteID });
-            } else {
-                if($this.on.status){ $this.on.status.emit(status); }
-            }
-        },
-        addUserInfo: function(data){
+
+        // onStatus: function(status){
+        //     if(status.type === 'stream'){
+        //         $this.sortStream2user({ 'type': 'id', 'streamID': status.streamID, 'remoteID': status.remoteID });
+        //     } else {
+        //         if($this.on.status){ $this.on.status.emit(status); }
+        //     }
+        // },
+
+        // Emit Remote Users
+        onAddUserInfo: function(data){
             if(data.forUserID){
                 var sendMsg = {'event': 'system', type : "remote", status: "connected", 'localID':  window.clientID, 'remoteID': data.remoteID};
                 if($this.on.system){ $this.on.system.emit(sendMsg); }
             }
             $this.addUserInfo(data);
         },
+
         onSystem: function(data){
+
             // Send Local Options ON STARTUP to Everyone
             if(data.type === 'local' & data.status === 'connected'){
                 var sendMsg = {'event': 'usersInfo', 'remoteID': window.clientID, 'options': $this.options};
                 window.webSockets.send(JSON.stringify(sendMsg));
             }
+
             // Send Local Options to NEW remote User
             if(data.type === 'remote'){
                 if(data.status === 'connected'){
                     var sendMsg = {'event': 'usersInfo', 'forUserID': data.remoteID, 'remoteID': window.clientID, 'options': $this.options};
-                    window.webSockets.sendTo(JSON.stringify(sendMsg));
+                    window.webSockets.send(JSON.stringify(sendMsg));
                 } else if(data.status === 'disconnected'){
-                    $this.removeUserInfo(data.remoteID);
+                    // Removing User[] Peer
+                    $this.removeOBJbyAttr($this.users, 'clientID', data.remoteID);
                 }
             }
             if($this.on.system){ $this.on.system.emit(data); }
+
         },
+
         onError: function(error){
             if($this.on.error){
                 $this.on.error.emit(error);
             }
         }
+
     }
 
     return $this;

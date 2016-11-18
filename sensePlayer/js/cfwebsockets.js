@@ -191,7 +191,7 @@ var AdvancedSocket = {
     },
 
     disconnected : function(){
-        wsEvent({event: 'system', type: 'local', status: 'disconnected', localID: AdvancedSocket.clientID });
+        receiveMessage({'data': {event: 'system', type: 'local', status: 'disconnected', localID: AdvancedSocket.clientID }});
 
         AdvancedSocket.log('disconnected');
         AdvancedSocket.status = 'disconnected';
@@ -201,7 +201,7 @@ var AdvancedSocket = {
     },
 
     connecting : function(){
-        wsEvent({event: 'system', type: 'local', status: 'connecting', localID: AdvancedSocket.clientID });
+        receiveMessage({'data': {event: 'system', type: 'local', status: 'connecting', localID: AdvancedSocket.clientID }});
 
         AdvancedSocket.log('connecting');
         AdvancedSocket.status = 'connecting';
@@ -216,7 +216,7 @@ var AdvancedSocket = {
     connected : function (){
 
         if(AdvancedSocket.status !== 'connected'){
-          wsEvent({event: 'system', type: 'local', status: 'connected', localID: AdvancedSocket.clientID });
+          receiveMessage({'data': {event: 'system', type: 'local', status: 'connected', localID: AdvancedSocket.clientID }});
 
           AdvancedSocket.log('connected');
           AdvancedSocket.status = 'connected';
@@ -247,67 +247,45 @@ window.webSockets = {
         ws.publish("chat", {
             remoteID: window.clientID, msg: sendMSG }
         );
-    },
-    sendTo: function(sendMSG){
-        ws.publish("chat", {
-            remoteID: window.clientID, info: true, msg: sendMSG }
-        );
     }
 }
 
 function receiveMessage(objData){
-    if(objData.data.type === 'remote'){
-        wsEvent(objData.data);
-    } else if(objData.data.type === 'message'){
-        wsMessage(objData.data);
+    var data = objData.data;
+
+    if(data.msg){
+
+        var response = JSON.parse(data.msg);
+
+        switch (response.event) {
+            case 'offer': // Remote User Gave us an Offer
+                if(window.PeersRTC){
+                    window.PeersRTC.processOffer(response);
+                }
+                break;
+
+            // case 'status': // Stream Status
+            //     if(window.PeersRTC){ window.PeersRTC.onStatus(response); }
+            //     break;
+
+            case 'usersInfo': // Users info
+                if(window.PeersRTC){ window.PeersRTC.onAddUserInfo(response); }
+                break;
+
+            case 'error': // Stream Status
+                if(window.PeersRTC){ window.PeersRTC.onError(response); }
+                break;
+
+            default:
+                console.warn('WHAT WAS THAT?');
+                console.info(data);
+        }
+
+    } else {
+        if(window.PeersRTC){
+            window.PeersRTC.onSystem(data);
+        }
     }
-}
-
-function wsMessage( data ){
-
-    var response = JSON.parse(data.msg);
-
-    switch (response.event) {
-        case 'offer': // Remote User Gave us an Offer
-            if(window.PeersRTC){
-                window.PeersRTC.processOffer(response);
-            }
-            break;
-
-        case 'status': // Stream Status
-            if(window.PeersRTC){ window.PeersRTC.onStatus(response); }
-            break;
-
-        case 'usersInfo': // Users info
-            if(window.PeersRTC){ window.PeersRTC.addUserInfo(response); }
-            break;
-
-        case 'error': // Stream Status
-            if(window.PeersRTC){ window.PeersRTC.onError(response); }
-            break;
-
-        default:
-            console.warn('WHAT WAS THAT?');
-            console.info(data);
-    }
-
-    // FrontEnd Editor event
-    //if(typeof window.webSockets.onMessage === "function"){
-    //    window.webSockets.onMessage(data);
-    //}
-
-}
-
-function wsEvent( data ){
-
-    if(window.PeersRTC){
-        window.PeersRTC.onSystem(data);
-    }
-
-    // FrontEnd Editor event
-    //if(typeof window.webSockets.onEvent === "function"){
-    //    window.webSockets.onEvent(data);
-    //}
 
 }
 
