@@ -29,15 +29,12 @@ window.UI = {
     },
 
     disconnectPeer: function(remoteID){
-        peers.disconnect(remoteID, function(id){
-            console.info("Peer " + id + " disconnected!");
-        });
+        peers.disconnect(remoteID);
     },
 
     // --- On WebRTC Message --- //
     onMessage: function(data){
         dataChannelReceive.value = data.msg;
-        console.info('MSG from RemoteID: ' + data.remoteID);
     }
 
 };
@@ -49,8 +46,14 @@ window.UI = {
 
 // --- Get WS Users --- //
 connectToAll.onclick = function(){
+
+    var options = { // DataChannel Send/Recieve is always True by Default
+        video: { send: false, receive : false },
+        audio: { send: false, receive : false }
+    }
+
     for (i = 0; i < $this.users.length; i++) {
-        peers.connect(peers.users[i].remoteID);
+        peers.connect(peers.users[i].clientID, options);
     }
 
     window.UI.openConnection();
@@ -58,10 +61,8 @@ connectToAll.onclick = function(){
 
 
 disconnectAll.onclick = function(){
-
-    peers.disconnect(function(id){
-        console.info("Peer " + id + " disconnected!");
-    });
+    console.log("Disconnecting All!");
+    peers.disconnect();
 
 }
 
@@ -78,50 +79,75 @@ sendButton.onclick = function(){
     peers.sendData(sendData);
 }
 
-// --------------------------------------- WEBRTC ------------------------------------ //
+// --------------------------------------- PEERS WEBRTC ------------------------------------ //
 
 document.addEventListener('DOMContentLoaded', function(){
 
     peers = new PeersRTC();
 
-    // Incoming Messages
-    peers.on('message', function(msg){
-        window.UI.onMessage(msg);
-    });
-
     // Incoming Connections
     peers.on('connection', function(conn){
 
+        // On Peer Status
         if(conn.type === 'peer'){
+
+            // Connections is Stable
             if(conn.state === 'stable'){
+
                 var thisElem = document.getElementById("user_" + conn.remoteID);
-                if(thisElem){ thisElem.innerHTML += " Peer"; }
+                if(thisElem){ thisElem.innerHTML = conn.remoteID +  " -> " + conn.type; }
+
                 window.UI.openConnection();
+
+            // Connections is Closed
             } else if(conn.state === 'closed'){
+
                 var thisElem = document.getElementById("user_" + conn.remoteID);
-                if(thisElem){ thisElem.innerHTML = conn.remoteID; }
-                window.UI.closeConnection();
+                if(thisElem){ thisElem.innerHTML += " -> " + conn.state; }
+
+                if(!peers.peerConnections.length){ window.UI.closeConnection(); }
+
+            // Renegotiating Connection
+            } else if(conn.state === 'renegotiate'){
+
+                var thisElem = document.getElementById("user_" + conn.remoteID);
+                if(thisElem){ thisElem.innerHTML += " -> " + conn.state; }
+
+                window.UI.openConnection();
+
             }
+
         }
 
+        // On DataChannel Status
         if(conn.type === 'datachannel'){
+
+            // Send/Recieve Connection
             if(conn.state === 'open'){
                 var thisElem = document.getElementById("user_" + conn.remoteID);
                 if(thisElem){ thisElem.innerHTML += " -> " + conn.order; }
             }
+
         }
 
         console.info(conn.type + ' state is: ' + conn.state + " / Order: " + conn.order);
 
     });
 
-// ------------------------------------- COMMON CALLS -------------------------------------  //
-
-    peers.on('status', function(status){
-
-        console.warn(status.type + ' state is: ' + status.state + " / Order: " + status.order);
-
+    peers.on('error', function(report){
+        if(report.type === 'local'){
+            console.error("LOCAL Error / LocalID: " + report.localID + " / " + report.error);
+        } else {
+            console.error("REMOTE Error / RemoteID: " + report.remoteID + " / " + report.error);
+        }
     });
+
+    // Incoming Messages
+    peers.on('message', function(msg){
+        window.UI.onMessage(msg);
+    });
+
+// ------------------------------------- SYSTEM STATUS -------------------------------------  //
 
     peers.on('system', function(system){
 
@@ -157,28 +183,15 @@ document.addEventListener('DOMContentLoaded', function(){
 
     });
 
-    peers.on('error', function(report){
-        if(report.type === 'local'){
-            console.error("LOCAL Error / LocalID: " + report.localID + " / " + report.error);
-        } else {
-            console.error("REMOTE Error / RemoteID: " + report.remoteID + " / " + report.error);
-        }
-    });
-
 // ----------------------------------------------------------------------------------------- //
   function onUserClick(){
 
       var userID = parseInt(this.getAttribute('userID'));
 
-      console.info("Connecting to: " + userID);
-
-      var options = {
-          datachannel: { send: true, receive : true },
+      var options = { // DataChannel Send/Recieve is always True by Default
           video: { send: false, receive : false },
-          audio: { send: false, receive : false },
+          audio: { send: false, receive : false }
       }
-
-      if(window.clientID == userID){ alert("Conflict on Create! 2"); }
 
       peers.connect(userID, options);
   }
