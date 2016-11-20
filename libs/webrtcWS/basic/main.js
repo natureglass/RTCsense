@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function(){
         } else {
             console.error("REMOTE Error / RemoteID: " + report.remoteID + " / " + report.error);
         }
+        //alert(report.error);
     });
 
     // Incoming Messages

@@ -85,7 +85,9 @@ PeersRTC = function(rtcOptions){
                     $this.reconnectPeer($peer.clientID);
 
                 } else {
-                    console.warn('DataChannel Send is: ' + $peer.sendChannel.readyState);
+
+                    $this.remoteDisconnect($peer.clientID);
+                    console.warn('****** DataChannel Send is: ' + $peer.sendChannel.readyState + " *******");
                 }
 
             }
@@ -278,6 +280,15 @@ PeersRTC = function(rtcOptions){
 
         },
 
+        remoteDisconnect: function(clientID){
+
+            $this.disconnect(clientID, function(){
+                console.warn('******** SENDING DISCONNECT');
+                var sendMsg = {'event': 'usersInfo', 'type': 'disconnect', 'forUserID': clientID ,'remoteID': window.clientID };
+                window.webSockets.send(JSON.stringify(sendMsg));
+            });
+        },
+
         disconnect: function(remoteID, callback){
 
             // Determin remove type
@@ -288,8 +299,9 @@ PeersRTC = function(rtcOptions){
 
                 for (i = 0; i < $this.peerConnections.length; i++) {
                     if($this.peerConnections[i].clientID === remoteID){
-                        $this.closeConnection($this.peerConnections[i]);
-                        callback(remoteID);
+                        $this.closeConnection($this.peerConnections[i], function(){
+                            if(typeof callback === "function"){ callback(remoteID); }
+                        });
                         break;
                     }
                 }
@@ -307,7 +319,7 @@ PeersRTC = function(rtcOptions){
 
         },
 
-        closeConnection: function($peer){
+        closeConnection: function($peer, callback){
 
             if($peer.sendChannel){
                 if($peer.sendChannel != null) {
@@ -326,6 +338,10 @@ PeersRTC = function(rtcOptions){
             if($peer.peerConnection != null) {
                 trace("Closing Peer: " + clientID);
                 $peer.peerConnection.close();
+            }
+
+            if(typeof callback === "function"){
+                callback($peer);
             }
 
         },
@@ -358,7 +374,18 @@ PeersRTC = function(rtcOptions){
 
             $this.openConnection(signal, false, function($peer){
 
-                if(signal.sdp) {
+                if(signal.ice) {
+
+                    trace("Processing ICE Offer from: " + $peer.clientID + " / signalingState: " + $peer.peerConnection.signalingState);
+
+                    if($peer.peerConnection.remoteDescription){
+                        $peer.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(function(error){$this.errorHandler});
+                    } else {
+                        //$this.remoteDisconnect($peer.clientID);
+                        console.warn("****** remoteDescription is NULL *******");
+                    }
+
+                } else if(signal.sdp) {
 
                     trace("Processing SDP Offer from: " + $peer.clientID + " / signalingState: " + $peer.peerConnection.signalingState);
 
@@ -372,16 +399,17 @@ PeersRTC = function(rtcOptions){
                         }
 
                     }).catch($this.errorHandler);
-
-                } else if(signal.ice) {
-
-                    trace("Processing ICE Offer from: " + $peer.clientID + " / signalingState: " + $peer.peerConnection.signalingState);
-
-                    $peer.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch($this.errorHandler);
-
                 }
 
             });
+
+        },
+
+        processSDP: function(signal){
+
+        },
+
+        processICE: function(signal){
 
         },
 
@@ -556,10 +584,25 @@ PeersRTC = function(rtcOptions){
         // },
 
         // Emit Remote Users
-        onAddUserInfo: function(data){
+        onUserInfo: function(data){
             if(data.forUserID){
-                var sendMsg = {'event': 'system', type : "remote", status: "connected", 'localID':  window.clientID, 'remoteID': data.remoteID};
-                if($this.on.system){ $this.on.system.emit(sendMsg); }
+                if(data.type === 'info'){
+                    var sendMsg = {'event': 'system', type : "remote", status: "connected", 'localID':  window.clientID, 'remoteID': data.remoteID};
+                    if($this.on.system){ $this.on.system.emit(sendMsg); }
+                } else if(data.type === 'disconnect'){
+                    console.warn(' ********** YES MASTER ************ ');
+                    $this.disconnect(data.remoteID, function(){
+                        console.warn(' ********** DISCONNECTED!! ************ ');
+                        var sendMsg = {'event': 'usersInfo', 'type': 'reconnect', 'forUserID': data.remoteID ,'remoteID': window.clientID };
+                        window.webSockets.send(JSON.stringify(sendMsg));
+                    });
+                } else if(data.type === 'reconnect'){
+                    console.warn(' ********** RECONNECT ************ ');
+                    // Reconnect to existing Peer
+                    $this.connect(data.remoteID);
+                    //setTimeout(function(){ $this.reconnectPeer(data.remoteID); }, 1000);
+                }
+
             }
             $this.addUserInfo(data);
         },
@@ -568,14 +611,14 @@ PeersRTC = function(rtcOptions){
 
             // Send Local Options ON STARTUP to Everyone
             if(data.type === 'local' & data.status === 'connected'){
-                var sendMsg = {'event': 'usersInfo', 'remoteID': window.clientID, 'options': $this.options};
+                var sendMsg = {'event': 'usersInfo', 'type': 'info', 'remoteID': window.clientID, 'options': $this.options};
                 window.webSockets.send(JSON.stringify(sendMsg));
             }
 
             // Send Local Options to NEW remote User
             if(data.type === 'remote'){
                 if(data.status === 'connected'){
-                    var sendMsg = {'event': 'usersInfo', 'forUserID': data.remoteID, 'remoteID': window.clientID, 'options': $this.options};
+                    var sendMsg = {'event': 'usersInfo', 'type': 'info', 'forUserID': data.remoteID, 'remoteID': window.clientID, 'options': $this.options};
                     window.webSockets.send(JSON.stringify(sendMsg));
                 } else if(data.status === 'disconnected'){
                     // Removing User[] Peer

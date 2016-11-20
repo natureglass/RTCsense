@@ -269,7 +269,7 @@ function receiveMessage(objData){
             //     break;
 
             case 'usersInfo': // Users info
-                if(window.PeersRTC){ window.PeersRTC.onAddUserInfo(response); }
+                if(window.PeersRTC){ window.PeersRTC.onUserInfo(response); }
                 break;
 
             case 'error': // Stream Status
