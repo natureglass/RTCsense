@@ -372,8 +372,12 @@ PeersRTC = function(rtcOptions){
 
         remoteCommand: function(clientID, command){
 
+            var sendDetails;
+
             // Ask Remote Peer for a New Offer
             if(command === 'disconnect'){
+
+                sendDetails = { 'event': 'status', 'type': 'peer', 'order': 'signaling', 'state': 'reconnecting', 'remoteID': $peer.clientID, 'localID': window.clientID };
 
                 $this.disconnect(clientID, function(){
                     console.warn('******** SENDING DISCONNECT');
@@ -384,10 +388,16 @@ PeersRTC = function(rtcOptions){
             // Ask Remote Peer to Disconnect
             } else if(command === 'offer'){
 
+                sendDetails = { 'event': 'status', 'type': 'peer', 'order': 'ICE restart', 'state': 'renegotiate', 'remoteID': $peer.clientID, 'localID': window.clientID };
+
                 console.warn('******** ASKING FOR NEW OFFER');
                 var sendMsg = {'event': 'usersInfo', 'type': command, 'forUserID': clientID ,'remoteID': window.clientID };
                 window.webSockets.send(JSON.stringify(sendMsg));
 
+            }
+
+            if($this.on.connection & sendDetails){
+                $this.on.connection.emit(sendDetails);
             }
 
         },
@@ -400,17 +410,21 @@ PeersRTC = function(rtcOptions){
 
             if(removeType === 'single'){
 
+                var foundPeer = false;
+
                 for (i = 0; i < $this.peerConnections.length; i++) {
                     if($this.peerConnections[i].clientID === remoteID){
                         $this.closeConnection($this.peerConnections[i], function(){
                             if(typeof callback === "function"){ callback(remoteID); }
                         });
+                        foundPeer = true;
                         break;
                     }
-                    return;
                 }
 
-                if(typeof callback === "function"){ callback(remoteID); }
+                if(!foundPeer){
+                    if(typeof callback === "function"){ callback(remoteID); }
+                }
 
             } else {
 
