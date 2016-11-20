@@ -21,25 +21,61 @@ PeersRTC = function(rtcOptions){
 
         // ---- Sending Message ---- /
         sendData: function(msg, clientID){
+
+            var $errorPeer;
+
             for (i = 0; i < $this.peerConnections.length; i++) {
-                if($this.peerConnections[i].sendChannel.readyState === 'open'){
+
+                if( $this.peerConnections[i].peerConnection.signalingState === 'stable' &
+                    $this.peerConnections[i].sendChannel.readyState === 'open') {
+
                     trace('Sending to ' + $this.peerConnections[i].clientID +' Data: ' + msg);
+
                     if(clientID == null){
+
+                        // Sending to Everyone
                         $this.peerConnections[i].sendChannel.send(msg);
+
                     } else {
+
+                        // Sending to clientID
                         if($this.peerConnections[i].clientID === clientID){
                             $this.peerConnections[i].sendChannel.send(msg);
                             break;
                         }
+
                     }
+
+                } else if($this.peerConnections[i].receiveChannel === null) {
+
+                    $errorPeer = $this.peerConnections[i];
+
                 } else {
 
-                    console.warn('Cant send Data to: ' + clientID);
+                    console.warn('***********************');
+                    console.warn('Cant send Data to: ' + $this.peerConnections[i].clientID);
+                    console.warn('*********************** ' + $this.peerConnections[i].peerConnection.signalingState);
 
-                    $this.reconnectPeer(clientID);
+                    $this.iceRestart($this.peerConnections[i]);
 
                 }
+
             }
+
+            if($errorPeer){ // Restart existing Peer
+
+                console.warn('*********************** RECONNECTING PEEER');
+                var initiated = new Date().valueOf() - $errorPeer.timestamp;
+                if(initiated > 3000){
+                    console.warn('*********************** Sending Disconnect');
+                    $this.remoteCommand($errorPeer.clientID, 'disconnect');
+                    $errorPeer.timestamp = new Date().valueOf();
+                } else {
+                    console.log(initiated);
+                }
+
+            }
+
         },
 
         // ---- Recieving Message ---- /
@@ -68,34 +104,63 @@ PeersRTC = function(rtcOptions){
 
                 // Creating New Peer
                 $peer = $this.createConnection(forUserID);
-                $this.openConnection($peer, true);
+                $this.openConnection($peer, true, function(signalingState){
+
+                    if(signalingState === 'stable'){
+                        console.warn(" ******* Success Signaling ******* ");
+                    } else { console.warn(" ******* signalingState Failed: " + signalingState); }
+
+                });
+
+            } else if($peer.peerConnection.iceConnectionState === 'failed'){
+
+                // Restarting ICE
+                $this.iceRestart($peer);
+
+            } else if($peer.receiveChannel) {
+
+                if($peer.sendChannel.readyState === 'open' & $peer.receiveChannel.readyState === 'open'){
+
+                    // Restarting ICE
+                    $this.iceRestart($peer);
+
+                } else {
+
+                    // Restart existing Peer
+                    $this.reconnectPeer($peer.clientID);
+
+                }
 
             } else {
 
-                var initiated = new Date().valueOf() - $peer.timestamp;
-                if(initiated > 3000 || ($peer.sendChannel.readyState === 'open' & $peer.receiveChannel.readyState === 'open')){
+                // Restart existing Peer
+                $this.reconnectPeer($peer.clientID);
 
-                    if($peer.sendChannel.readyState === 'open'){
-
-                        console.warn(initiated);
-
-                        trace('Renegotiating with: ' + $peer.clientID);
-
-                        if($this.on.connection){
-                            var sendDetails = { 'event': 'status', 'type': 'peer', 'order': 'renegotiate', 'state': 'renegotiate', 'remoteID': $peer.clientID, 'localID': window.clientID };
-                            $this.on.connection.emit(sendDetails);
-                        }
-
-                        // Reconnect to existing Peer
-                        $this.reconnectPeer($peer.clientID);
-
-                    } else {
-
-                        $this.remoteCommand($peer.clientID, 'disconnect');
-                        console.warn('****** DataChannel Send is: ' + $peer.sendChannel.readyState + " *******");
-                    }
-                }
             }
+
+        },
+
+        iceRestart: function($peer){
+
+            // Renegotiate exisitng Peer
+            var offerOptions = { iceRestart:true };
+            $this.openConnection($peer, true, function(signalingState){
+
+                if(signalingState === 'stable'){
+
+                    if($this.on.connection){
+                        var sendDetails = { 'event': 'status', 'type': 'peer', 'order': 'ICE restart', 'state': 'renegotiate', 'remoteID': $peer.clientID, 'localID': window.clientID };
+                        $this.on.connection.emit(sendDetails);
+                    }
+
+                } else {
+
+                    console.warn($peer.clientID + " ******* signalingState Failed: " + signalingState);
+                    $this.reconnectPeer($peer.clientID);
+
+                }
+
+            }, offerOptions);
 
         },
 
@@ -150,18 +215,25 @@ PeersRTC = function(rtcOptions){
         },
 
         // ---- Opening Connection ---- /
-        openConnection: function($peerUser, isCaller, callback){
+        openConnection: function($peerUser, isCaller, callback, offerOptions){
 
             if(isCaller == true) {
 
                 trace("Creating Offer to: " + $peerUser.clientID);
 
                 if($peerUser.peerConnection.signalingState === 'stable'){
-                    $peerUser.peerConnection.createOffer().then(function(description){
+                    $peerUser.peerConnection.createOffer(offerOptions).then(function(description){
                         $this.createdDescription(description, $peerUser);
                     }).catch($this.errorHandler);
+
+                    // Return Stable for Success
+                    callback($peerUser.peerConnection.signalingState);
+
                 } else {
+
                     console.warn('Its not stable!');
+                    // Return having-offer for failure
+                    callback($peerUser.peerConnection.signalingState);
                 }
 
             } else {
@@ -184,7 +256,7 @@ PeersRTC = function(rtcOptions){
         },
 
         onnegotiationneeded: function(event){
-            trace('onnegotiationneeded, signalingState: ' + this.signalingState);
+            console.warn('onnegotiationneeded, signalingState: ' + this.signalingState);
         },
 
         // ---- On Peer State Changed ---- /
@@ -257,7 +329,17 @@ PeersRTC = function(rtcOptions){
         checkPeerState: function(clientID){
             var $peer = $this.getPeerByID(clientID);
             if($peer){
-                if($peer.receiveChannel != null){
+
+                if($peer.peerConnection.signalingState === 'have-local-offer'){
+
+                    console.warn('***********************');
+                    console.warn('signalingState Still Got have-local-offer: ' + $peer.clientID);
+                    console.warn('***********************');
+
+                    $this.iceRestart($this.peerConnections[i]);
+
+
+                } else if($peer.receiveChannel != null){
                     trace("Closing Peer: " + clientID);
                     $peer.peerConnection.close();
                 }
@@ -278,7 +360,7 @@ PeersRTC = function(rtcOptions){
 
         reconnectPeer: function(clientID){
 
-            trace('Reconnecting Peer: ' + clientID);
+            console.warn('Reconnecting Peer: ' + clientID);
 
             $this.disconnect(clientID, function(){
                 setTimeout(function(){
@@ -290,13 +372,24 @@ PeersRTC = function(rtcOptions){
 
         remoteCommand: function(clientID, command){
 
+            // Ask Remote Peer for a New Offer
             if(command === 'disconnect'){
+
                 $this.disconnect(clientID, function(){
                     console.warn('******** SENDING DISCONNECT');
                     var sendMsg = {'event': 'usersInfo', 'type': command, 'forUserID': clientID ,'remoteID': window.clientID };
                     window.webSockets.send(JSON.stringify(sendMsg));
                 });
+
+            // Ask Remote Peer to Disconnect
+            } else if(command === 'offer'){
+
+                console.warn('******** ASKING FOR NEW OFFER');
+                var sendMsg = {'event': 'usersInfo', 'type': command, 'forUserID': clientID ,'remoteID': window.clientID };
+                window.webSockets.send(JSON.stringify(sendMsg));
+
             }
+
         },
 
         disconnect: function(remoteID, callback){
@@ -314,7 +407,10 @@ PeersRTC = function(rtcOptions){
                         });
                         break;
                     }
+                    return;
                 }
+
+                if(typeof callback === "function"){ callback(remoteID); }
 
             } else {
 
@@ -392,8 +488,15 @@ PeersRTC = function(rtcOptions){
                         $peer.peerConnection.addIceCandidate(new RTCIceCandidate(signal.ice)).catch(function(error){$this.errorHandler});
                     } else {
 
-                        console.warn("****** remoteDescription is NULL *******");
-                        $this.reconnectPeer(data.remoteID);
+                        console.warn('******************');
+                        console.warn('*** ICE FAILED *** ' + $peer.peerConnection.iceConnectionState);
+                        console.warn('******************');
+
+                        console.warn("*** remoteDescription is EMPTY ***");
+
+                        $this.disconnect($peer.clientID, function(){
+                            console.warn('*** DISCONNECTED AFER SDP FAILED *** ');
+                        });
 
                     }
 
@@ -406,7 +509,25 @@ PeersRTC = function(rtcOptions){
                         // Only create answers in response to offers
                         if(signal.sdp.type == 'offer') {
                             $peer.peerConnection.createAnswer().then(function(description){
-                                $this.createdDescription(description, $peer);
+
+                                var iceState = $peer.peerConnection.iceConnectionState;
+
+                                if(iceState === 'failed'){
+
+                                    console.warn('******************');
+                                    console.warn('*** SDP FAILED *** ' + iceState);
+                                    console.warn('******************');
+
+                                    $this.disconnect($peer.clientID, function(){
+                                        console.warn('*** DISCONNECTED AFER SDP FAILED *** ');
+                                    });
+
+                                } else {
+
+                                    $this.createdDescription(description, $peer);
+
+                                }
+
                             }).catch($this.errorHandler);
                         }
 
@@ -414,14 +535,6 @@ PeersRTC = function(rtcOptions){
                 }
 
             });
-
-        },
-
-        processSDP: function(signal){
-
-        },
-
-        processICE: function(signal){
 
         },
 
@@ -597,24 +710,51 @@ PeersRTC = function(rtcOptions){
 
         // Emit Remote Users
         onUserInfo: function(data){
+
+            // Adding UserInfo to users[]
+            if(data.type === 'info'){
+                $this.addUserInfo(data);
+            }
+
             if(data.forUserID){
+
                 if(data.type === 'info'){
+
+                    // New User Info to system
                     var sendMsg = {'event': 'system', type : "remote", status: "connected", 'localID':  window.clientID, 'remoteID': data.remoteID};
                     if($this.on.system){ $this.on.system.emit(sendMsg); }
+
                 } else if(data.type === 'disconnect'){
-                    console.warn(' ********** YES MASTER ************ ');
+
+                    // Remote User asked to disconnect
                     $this.disconnect(data.remoteID, function(){
-                        console.warn(' ********** DISCONNECTED!! ************ ');
+                        console.warn(' ********** DISCONNECTED ************ ');
                         var sendMsg = {'event': 'usersInfo', 'type': 'reconnect', 'forUserID': data.remoteID ,'remoteID': window.clientID };
                         window.webSockets.send(JSON.stringify(sendMsg));
                     });
+
                 } else if(data.type === 'reconnect'){
-                    console.warn(' ********** RECONNECT ************ ');
+
+                    // Remote User asked to reconnect
+                    console.warn(' ********** RECONNECTING ************ ');
+
+                    $this.connect(data.remoteID);
+
                     // Reconnect to existing Peer
-                    $this.reconnectPeer(data.remoteID);
+                    //$this.reconnectPeer(data.remoteID);
+
+                } else if(data.type === 'offer'){
+
+                    console.warn(' ********** CREATING NEW OFFER ************ ');
+                    var $peer = $this.getPeerByID(data.remoteID);
+
+                    // Renegotiate exisitng Peer
+                    iceRestart($peer)
+
                 }
+
             }
-            $this.addUserInfo(data);
+
         },
 
         onSystem: function(data){

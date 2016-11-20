@@ -16,7 +16,7 @@ window.UI = {
     openConnection: function(){
         dataChannelSend.placeholder = '';
         dataChannelSend.disabled = false;
-        dataChannelSend.focus();
+        //dataChannelSend.focus();
         sendButton.disabled = false;
     },
 
@@ -24,7 +24,7 @@ window.UI = {
     closeConnection: function(){
         dataChannelSend.placeholder = '';
         dataChannelSend.disabled = true;
-        dataChannelSend.focus();
+        //dataChannelSend.focus();
         sendButton.disabled = true;
     },
 
