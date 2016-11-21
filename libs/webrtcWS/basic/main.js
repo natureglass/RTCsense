@@ -68,6 +68,8 @@ disconnectAll.onclick = function(){
 
 // --- Show Users Array --- //
 showUsers.onclick = function(){
+    console.info(peers.connStatus);
+    console.info(peers.watingList);
     console.info(peers.users);
     console.info(peers.peerConnections);
 }

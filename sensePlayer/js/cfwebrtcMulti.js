@@ -6,6 +6,9 @@ PeersRTC = function(rtcOptions){
         streams: [{}],
         peerConnections: [],
 
+        watingList: [],
+        connStatus: "ready",
+
         peerConnectionConfig : {
             'iceServers': [
                 {'urls': 'stun:stun.services.mozilla.com'},
@@ -98,43 +101,53 @@ PeersRTC = function(rtcOptions){
 
         connect: function(forUserID, options){
 
-            var $peer = $this.getPeerByID(forUserID);
+            $this.watingList.push(forUserID);
 
-            if($peer == null){
+            if($this.connStatus === "ready"){
 
-                // Creating New Peer
-                $peer = $this.createConnection(forUserID);
-                $this.openConnection($peer, true, function(signalingState){
+                $this.connStatus = "connecting";
 
-                    if(signalingState === 'stable'){
-                        console.warn(" ******* Success Signaling ******* ");
-                    } else { console.warn(" ******* signalingState Failed: " + signalingState); }
+                var $peer = $this.getPeerByID(forUserID);
 
-                });
+                if($peer == null){
 
-            } else if($peer.peerConnection.iceConnectionState === 'failed'){
+                    // Creating New Peer
+                    $peer = $this.createConnection(forUserID);
+                    $this.openConnection($peer, true, function(signalingState){
 
-                // Restarting ICE
-                $this.iceRestart($peer);
+                        if(signalingState === 'stable'){
+                            console.warn(" ******* Success Signaling ******* ");
+                        } else { console.warn(" ******* signalingState Failed: " + signalingState); }
 
-            } else if($peer.receiveChannel) {
+                    });
 
-                if($peer.sendChannel.readyState === 'open' & $peer.receiveChannel.readyState === 'open'){
+                } else if($peer.peerConnection.iceConnectionState === 'failed'){
 
                     // Restarting ICE
                     $this.iceRestart($peer);
 
+                } else if($peer.receiveChannel) {
+
+                    if($peer.sendChannel.readyState === 'open' & $peer.receiveChannel.readyState === 'open'){
+
+                        // Restarting ICE
+                        $this.iceRestart($peer);
+
+                    } else {
+
+                        console.warn("************ this 1");
+                        // Restart existing Peer
+                        $this.reconnectPeer($peer.clientID);
+
+                    }
+
                 } else {
 
+                    console.warn("************ this 2");
                     // Restart existing Peer
                     $this.reconnectPeer($peer.clientID);
 
                 }
-
-            } else {
-
-                // Restart existing Peer
-                $this.reconnectPeer($peer.clientID);
 
             }
 
@@ -142,25 +155,35 @@ PeersRTC = function(rtcOptions){
 
         iceRestart: function($peer){
 
-            // Renegotiate exisitng Peer
-            var offerOptions = { iceRestart:true };
-            $this.openConnection($peer, true, function(signalingState){
 
-                if(signalingState === 'stable'){
+            var initiated = new Date().valueOf() - $peer.timestamp;
+            if(initiated > 3000){
 
-                    if($this.on.connection){
-                        var sendDetails = { 'event': 'status', 'type': 'peer', 'order': 'ICE restart', 'state': 'renegotiate', 'remoteID': $peer.clientID, 'localID': window.clientID };
-                        $this.on.connection.emit(sendDetails);
+                $peer.timestamp = new Date().valueOf();
+
+                // Renegotiate exisitng Peer
+                var offerOptions = { iceRestart:true };
+                $this.openConnection($peer, true, function(signalingState){
+
+                    if(signalingState === 'stable'){
+
+                        if($this.on.connection){
+                            var sendDetails = { 'event': 'status', 'type': 'peer', 'order': 'ICE restart', 'state': 'renegotiate', 'remoteID': $peer.clientID, 'localID': window.clientID };
+                            $this.on.connection.emit(sendDetails);
+                        }
+
+                    } else {
+
+                        console.warn($peer.clientID + " ******* signalingState Failed: " + signalingState);
+                        $this.reconnectPeer($peer.clientID);
+
                     }
 
-                } else {
+                }, offerOptions);
 
-                    console.warn($peer.clientID + " ******* signalingState Failed: " + signalingState);
-                    $this.reconnectPeer($peer.clientID);
-
-                }
-
-            }, offerOptions);
+            } else {
+                console.log(initiated);
+            }
 
         },
 
@@ -261,6 +284,7 @@ PeersRTC = function(rtcOptions){
 
         // ---- On Peer State Changed ---- /
         onsignalingstatechange: function(event){
+
             if(this.signalingState === 'stable' || this.signalingState === 'closed'){
                 if($this.on.connection){
                     var sendDetails = { 'event': 'status', 'type': 'peer', 'order': 'signaling', 'state': this.signalingState, 'remoteID': this.clientID, 'localID': window.clientID };
@@ -270,6 +294,12 @@ PeersRTC = function(rtcOptions){
                 // Removing PeerConnection[]
                 if(this.signalingState === 'closed'){
                     var $peers = $this.removeOBJbyAttr($this.peerConnections, 'clientID', this.clientID);
+                }
+
+                if(this.signalingState === 'stable'){
+                    $this.removeWatingList(this.clientID);
+                    $this.connStatus = "ready";
+                    $this.checkWatingUsers();
                 }
 
             } else {
@@ -313,7 +343,29 @@ PeersRTC = function(rtcOptions){
                     var sendDetails = { 'event': 'status', 'type': 'datachannel', 'order': 'receive', 'state': this.readyState, 'remoteID': this.clientID, 'localID': window.clientID };
                     $this.on.connection.emit(sendDetails);
                 }
+
+                if(this.readyState === 'open'){
+
+                    $this.removeWatingList(this.clientID);
+                    $this.checkWatingUsers();
+
+                }
+
             }
+        },
+
+        checkWatingUsers: function(){
+
+            if($this.watingList.length != 0){
+                var waitingUserID = $this.watingList[0];
+
+                console.warn($this.watingList);
+                console.warn("********* connecting to: " + waitingUserID);
+
+                $this.connStatus = "ready";
+                $this.connect(waitingUserID);
+            }
+
         },
 
         onremovestream: function(event){
@@ -364,8 +416,11 @@ PeersRTC = function(rtcOptions){
 
             $this.disconnect(clientID, function(){
                 setTimeout(function(){
-                    $this.connect(clientID);
-                }, 1000);
+                    //$this.removeWatingList(clientID);
+                    //$this.connStatus = "ready";
+                    //$this.connect(clientID);
+                    $this.remoteCommand(clientID, 'disconnect');
+                }, 3000);
             });
 
         },
@@ -428,6 +483,10 @@ PeersRTC = function(rtcOptions){
 
             } else {
 
+                // Clearing wating List
+                $this.watingList = [];
+                $this.connStatus = "ready";
+
                 // Closing all Peers
                 var i = $this.peerConnections.length;
                 while(i--){
@@ -475,6 +534,19 @@ PeersRTC = function(rtcOptions){
                 }
             }
             return $peer;
+        },
+
+        removeWatingList: function(clientID){
+
+            var index = $this.watingList.indexOf(clientID);
+
+            if (index > -1) {
+                console.warn("removing: " + $this.watingList[index]);
+                $this.watingList.splice(index, 1);
+            } else {
+                console.warn('*********** Not removed! ' + $this.watingList[index]);
+            }
+
         },
 
         getUserByID: function(peerID){
@@ -752,10 +824,9 @@ PeersRTC = function(rtcOptions){
                     // Remote User asked to reconnect
                     console.warn(' ********** RECONNECTING ************ ');
 
+                    $this.removeWatingList(data.remoteID);
+                    $this.connStatus = "ready";
                     $this.connect(data.remoteID);
-
-                    // Reconnect to existing Peer
-                    //$this.reconnectPeer(data.remoteID);
 
                 } else if(data.type === 'offer'){
 
